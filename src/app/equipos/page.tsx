@@ -29,7 +29,7 @@ export const metadata = {
   description: "Conoce nuestro catálogo de equipos de depilación láser de diodo disponibles para alquiler. Tecnología avanzada."
 };
 
-export const revalidate = 60; // ISR: Revalidate page data every 60 seconds
+export const dynamic = 'force-dynamic'; // Desactivar cache estático de Vercel
 
 export default async function EquiposPage() {
   const { data: equipos, error } = await supabase.from('equipos').select('*');
