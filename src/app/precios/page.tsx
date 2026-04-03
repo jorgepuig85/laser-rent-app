@@ -9,6 +9,8 @@ export const metadata = {
   description: "Conoce nuestros precios de alquiler de equipos de depilación láser por día, semana o mes. Rentabilidad asegurada."
 };
 
+export const revalidate = 60; // ISR: Revalidate page data every 60 seconds
+
 export default async function PreciosPage() {
   // Fetch popular pricing dynamically from Supabase
   const { data: tarifaData, error } = await supabase
