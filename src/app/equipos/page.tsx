@@ -1,14 +1,28 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/lib/supabaseClient";
 
 const PLACEHOLDER_EQUIPMENT = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23f8fafc'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='24' fill='%2394a3b8'%3EImagen Equipo%3C/text%3E%3C/svg%3E";
 
-// Static variable removed, fetching from Supabase
+interface EquipoEspecificaciones {
+  potencia?: string;
+  frecuencia?: string;
+  peso?: string;
+  features?: string[];
+  availability?: string;
+}
+
+interface Equipo {
+  id: string;
+  nombre: string;
+  descripcion: string;
+  especificaciones?: EquipoEspecificaciones;
+  imagen_url?: string;
+}
 
 export const metadata = {
   title: "Equipos de Depilación Láser | LaserRent Pro",
@@ -33,13 +47,13 @@ export default async function EquiposPage() {
       </div>
 
       <div className="grid gap-12 lg:grid-cols-2">
-        {equiposData.map((equipo: any) => (
+        {equiposData.map((equipo: Equipo) => (
           <Card key={equipo.id} className="overflow-hidden border-2 transition-all hover:border-primary/20 hover:shadow-xl flex flex-col">
             <div className="grid sm:grid-cols-2 h-full">
               <div className="relative aspect-square sm:aspect-auto bg-muted">
                 <Image
                   src={PLACEHOLDER_EQUIPMENT}
-                  alt={equipo.name}
+                  alt={equipo.nombre}
                   fill
                   className="object-cover"
                   sizes="(max-width: 640px) 100vw, 50vw"
