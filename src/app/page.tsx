@@ -3,7 +3,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2, Shield, Zap, TrendingUp } from "lucide-react";
 
-const PLACEHOLDER_HERO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800'%3E%3Crect width='1200' height='800' fill='%23f1f5f9'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='32' fill='%2364748b'%3EHero Image (Laser Equipment)%3C/text%3E%3C/svg%3E";
+const HERO_IMAGE = "/hero-profesional.webp";
+const BENEFITS_IMAGE = "/beneficios-tech.webp";
+const CTA_IMAGE = "/clinica-interior.webp";
 
 export default function Home() {
   return (
@@ -38,7 +40,7 @@ export default function Home() {
               <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent z-10 rounded-2xl mix-blend-overlay"></div>
               {/* Image Placeholder */}
               <Image
-                src={PLACEHOLDER_HERO}
+                src={HERO_IMAGE}
                 alt="Máquina de depilación láser profesional"
                 fill
                 priority
@@ -54,56 +56,72 @@ export default function Home() {
       <section className="py-20 md:py-28 bg-muted/30">
         <div className="mx-auto w-full max-w-7xl px-4 md:px-6">
           <div className="text-center space-y-4 mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">¿Por qué elegir LaserRent Pro?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">¿Por qué elegir Laser Rent?</h2>
             <p className="text-muted-foreground text-lg max-w-[700px] mx-auto">
-              Maximizamos tu rentabilidad eliminando los costos operativos de mantenimiento y reparaciones.
+              Maximizamos tu rentabilidad eliminando los costos operativos de mantenimiento y reparaciones con tecnología certificada.
             </p>
           </div>
 
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              {
-                icon: Zap,
-                title: "Tecnología Punta",
-                desc: "Equipos de última generación con diodo y tres longitudes de onda para todos los fototipos de piel."
-              },
-              {
-                icon: Shield,
-                title: "Soporte Técnico",
-                desc: "Asistencia rápida y mantenimiento preventivo incluido en todos nuestros planes."
-              },
-              {
-                icon: TrendingUp,
-                title: "Alta Rentabilidad",
-                desc: "Comienza a generar ingresos desde el primer día sin descapitalizarte."
-              },
-              {
-                icon: CheckCircle2,
-                title: "Capacitación Incluida",
-                desc: "Te enseñamos a usar el equipo para asegurar los mejores resultados en tus pacientes."
-              }
-            ].map((benefit, i) => (
-              <div key={i} className="group relative overflow-hidden rounded-2xl border bg-background p-8 shadow-sm transition-all hover:shadow-md hover:-translate-y-1">
-                <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform">
-                  <benefit.icon className="h-6 w-6" />
+          <div className="flex flex-col lg:flex-row gap-12 items-center">
+            <div className="lg:w-1/2 relative h-[400px] w-full rounded-2xl overflow-hidden shadow-xl order-2 lg:order-1">
+              <Image 
+                src={BENEFITS_IMAGE}
+                alt="Tecnología láser avanzada"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="lg:w-1/2 grid gap-6 sm:grid-cols-2 order-1 lg:order-2">
+              {[
+                {
+                  icon: Zap,
+                  title: "Tecnología Punta",
+                  desc: "Equipos de última generación con diodo y tres longitudes de onda para todos los fototipos de piel."
+                },
+                {
+                  icon: Shield,
+                  title: "Soporte Técnico",
+                  desc: "Asistencia rápida y mantenimiento preventivo incluido en todos nuestros planes."
+                },
+                {
+                  icon: TrendingUp,
+                  title: "Alta Rentabilidad",
+                  desc: "Comienza a generar ingresos desde el primer día sin descapitalizarte."
+                },
+                {
+                  icon: CheckCircle2,
+                  title: "Capacitación Incluida",
+                  desc: "Te enseñamos a usar el equipo para asegurar los mejores resultados en tus pacientes."
+                }
+              ].map((benefit, i) => (
+                <div key={i} className="group relative overflow-hidden rounded-2xl border bg-background p-8 shadow-sm transition-all hover:shadow-md hover:-translate-y-1">
+                  <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform">
+                    <benefit.icon className="h-6 w-6" />
+                  </div>
+                  <h3 className="mb-2 text-xl font-bold">{benefit.title}</h3>
+                  <p className="text-muted-foreground leading-relaxed">{benefit.desc}</p>
                 </div>
-                <h3 className="mb-2 text-xl font-bold">{benefit.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">{benefit.desc}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-primary/5 -skew-y-3 transform origin-top-left"></div>
-        <div className="mx-auto w-full max-w-4xl px-4 md:px-6 relative text-center space-y-8">
-          <h2 className="text-3xl md:text-5xl font-bold">Lleva tu centro de estética al siguiente nivel</h2>
-          <p className="text-xl text-muted-foreground">
+      <section className="py-32 relative overflow-hidden text-white">
+        <Image 
+          src={CTA_IMAGE}
+          alt="Interior de clínica estética"
+          fill
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-primary/80 backdrop-blur-[2px]"></div>
+        <div className="mx-auto w-full max-w-4xl px-4 md:px-6 relative text-center space-y-8 animate-in fade-in zoom-in duration-700">
+          <h2 className="text-4xl md:text-6xl font-bold tracking-tight">Lleva tu centro de estética al siguiente nivel</h2>
+          <p className="text-xl text-white/90 font-medium">
             Reserva tu equipo hoy y comienza a ofrecer tratamientos de depilación definitiva de alta eficacia.
           </p>
-          <Button size="lg" className="h-16 px-10 text-lg rounded-full shadow-xl hover:scale-105 transition-transform" render={<Link href="https://wa.me/5492954631456" target="_blank" rel="noopener noreferrer" />}>
+          <Button size="lg" className="h-16 px-10 text-lg rounded-full shadow-2xl bg-white text-primary hover:bg-white/90 hover:scale-105 transition-transform" render={<Link href="https://wa.me/5492954631456?text=Hola!%20Me%20interesa%20alquilar%20un%20equipo%20de%20depilaci%C3%B3n%20en%20La%20Pampa.%20Me%20poudr%C3%ADas%20dar%20m%C3%A1s%20informaci%C3%B3n%3F" target="_blank" rel="noopener noreferrer" />}>
             Chatea con un Asesor
           </Button>
         </div>

@@ -8,8 +8,11 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Alquiler de Equipos de Depilación Láser | LaserRent Pro",
-  description: "Alquiler de equipos de depilación láser para profesionales. Máxima rentabilidad, tecnología de punta y soporte. Planes diarios y semanales.",
+  title: "Alquiler de Depilación Láser en Santa Rosa, La Pampa | Laser Rent",
+  description: "Líderes en alquiler de equipos de depilación láser Soprano en La Pampa. Tecnología de punta, soporte técnico y capacitación para tu centro de estética.",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 import { Navbar } from "@/components/Navbar";
