@@ -8,7 +8,7 @@ export function Navbar() {
       <div className="mx-auto w-full max-w-7xl px-4 md:px-6 flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <Image
-            src="/logo-laser-rent.svg"
+            src="https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/logo-laser-rent.svg"
             alt="Laser Rent Logo"
             width={150}
             height={40}

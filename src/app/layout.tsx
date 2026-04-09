@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: "Alquiler de Depilación Láser en Santa Rosa, La Pampa | Laser Rent",
   description: "Líderes en alquiler de equipos de depilación láser Soprano en La Pampa. Tecnología de punta, soporte técnico y capacitación para tu centro de estética.",
   icons: {
-    icon: "/favicon.png",
+    icon: "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/favicon.png",
   },
 };
 

@@ -6,7 +6,7 @@ export function Footer() {
       <div className="mx-auto w-full max-w-7xl px-4 md:px-6 flex flex-col items-center justify-between gap-6 md:flex-row">
         <div className="flex flex-col items-center md:items-start gap-2">
           <Image
-            src="/logo-laser-rent.svg"
+            src="https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/logo-laser-rent.svg"
             alt="Laser Rent Logo"
             width={120}
             height={32}
