@@ -12,7 +12,10 @@ export default async function ProtectedLayout({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/?error=necesitas-login&next=/alquiler");
+    const { headers } = await import("next/headers");
+    const headersList = headers();
+    const currentPath = headersList.get("x-url") || "/alquiler";
+    redirect(`/?error=necesitas-login&next=${currentPath}`);
   }
 
   const { data: pro } = await supabase

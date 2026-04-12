@@ -83,11 +83,11 @@ export default async function PreciosPage() {
 
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 items-stretch">
         {plans.map((plan, i) => (
-          <Card key={i} className={`group relative flex flex-col h-full border-2 transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl hover:border-slate-300 ${plan.popular ? 'border-blue-600 shadow-xl z-10 scale-105 hover:scale-[1.07]' : 'border-slate-100'}`}>
+          <Card key={i} className={`group relative flex flex-col h-full border-2 transition-all duration-500 ease-in-out hover:scale-105 hover:shadow-2xl hover:border-blue-200/50 ${plan.popular ? 'border-blue-600 shadow-xl z-20 scale-105 hover:scale-[1.08]' : 'border-slate-100/50'}`}>
             {plan.popular && (
-              <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-30">
-                <span className="bg-blue-600 text-white text-[11px] font-bold uppercase tracking-[0.2em] py-2 px-6 rounded-full shadow-[0_4px_20px_rgba(37,99,235,0.4)] border border-blue-400/30 whitespace-nowrap">
-                  Más Popular
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-30">
+                <span className="bg-blue-600 text-white text-[10px] font-black uppercase tracking-[0.25em] py-1.5 px-5 rounded-full shadow-[0_4px_20px_rgba(37,99,235,0.4)] border border-blue-400/30 whitespace-nowrap">
+                  Opción Profesional
                 </span>
               </div>
             )}
