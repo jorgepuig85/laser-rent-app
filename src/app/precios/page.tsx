@@ -82,61 +82,54 @@ export default async function PreciosPage() {
       </div>
 
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 items-stretch">
-        {plans.map((plan, i) => {
-          const cardContent = (
-            <Card className={`group relative flex flex-col h-full border-2 transition-all duration-500 ease-in-out hover:shadow-2xl hover:border-blue-200/50 ${plan.popular ? 'border-blue-600 shadow-xl z-20 hover:scale-[1.02]' : 'border-slate-100/50'}`}>
-              <CardHeader className={`text-center flex-initial space-y-4 pt-10 pb-6 ${plan.popular ? 'bg-blue-50/30' : ''}`}>
-                <CardTitle className="text-2xl font-serif">{plan.name}</CardTitle>
-                <CardDescription className="h-10 text-sm px-4">{plan.description}</CardDescription>
-                <div className="pt-4 pb-2">
-                  <span className="text-5xl font-extrabold tracking-tight text-slate-900">{plan.price}</span>
-                  {plan.price !== "Consultar" && <span className="text-slate-500 font-bold ml-2 text-sm uppercase">ARS</span>}
-                </div>
-              </CardHeader>
-              <CardContent className="flex-1">
-                <ul className="space-y-4">
-                  {plan.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 text-green-500 mr-3 shrink-0" />
-                      <span className="text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-              <CardFooter className="pt-8">
-                <Button 
-                  size="lg" 
-                  className="w-full h-12 rounded-xl font-bold transition-all hover:scale-[1.02]" 
-                  variant={plan.popular ? 'default' : 'outline'} 
-                  render={
-                    plan.name === "Mensual" ? (
-                      <Link href={`https://wa.me/5492954631456?text=${encodeURIComponent("Hola! Me interesa consultar por el alquiler mensual del ADSS FG2000B.")}`} target="_blank" rel="noopener noreferrer" />
-                    ) : (
-                      <Link href="/alquiler" />
-                    )
-                  }
-                >
-                  {plan.cta}
-                </Button>
-              </CardFooter>
-            </Card>
-          );
-
-          if (plan.popular) {
-            return (
-              <div key={i} className="relative pt-8 transition-transform duration-500 hover:scale-105">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 z-30">
-                  <span className="bg-blue-600 text-white text-[10px] font-black uppercase tracking-[0.25em] py-2 px-6 rounded-full shadow-[0_4px_20px_rgba(37,99,235,0.4)] border border-blue-400/30 whitespace-nowrap">
-                    Opción Profesional
+        {plans.map((plan, i) => (
+          <Card 
+            key={i} 
+            className={`group relative flex flex-col h-full border-2 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:border-blue-200/50 ${plan.popular ? 'border-blue-600 shadow-xl z-10' : 'border-slate-100/50'}`}
+          >
+            <CardHeader className={`text-center flex-initial space-y-4 pt-10 pb-6 ${plan.popular ? 'bg-blue-50/30' : ''}`}>
+              {plan.popular && (
+                <div className="mb-2">
+                  <span className="bg-blue-600 text-white text-[10px] font-black uppercase tracking-[0.2em] py-1.5 px-4 rounded-full shadow-md">
+                    Opción Más Elegida
                   </span>
                 </div>
-                {cardContent}
+              )}
+              <CardTitle className="text-2xl font-serif">{plan.name}</CardTitle>
+              <CardDescription className="h-10 text-sm px-4">{plan.description}</CardDescription>
+              <div className="pt-4 pb-2">
+                <span className="text-5xl font-extrabold tracking-tight text-slate-900">{plan.price}</span>
+                {plan.price !== "Consultar" && <span className="text-slate-500 font-bold ml-2 text-sm uppercase">ARS</span>}
               </div>
-            );
-          }
-
-          return <div key={i} className="transition-transform duration-500 hover:scale-105">{cardContent}</div>;
-        })}
+            </CardHeader>
+            <CardContent className="flex-1">
+              <ul className="space-y-4">
+                {plan.features.map((feature, idx) => (
+                  <li key={idx} className="flex items-start">
+                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-3 shrink-0" />
+                    <span className="text-sm">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+            <CardFooter className="pt-8">
+              <Button 
+                size="lg" 
+                className="w-full h-12 rounded-xl font-bold transition-all hover:scale-[1.02]" 
+                variant={plan.popular ? 'default' : 'outline'} 
+                render={
+                  plan.name === "Mensual" ? (
+                    <Link href={`https://wa.me/5492954631456?text=${encodeURIComponent("Hola! Me interesa consultar por el alquiler mensual del ADSS FG2000B.")}`} target="_blank" rel="noopener noreferrer" />
+                  ) : (
+                    <Link href="/alquiler" />
+                  )
+                }
+              >
+                {plan.cta}
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
       </div>
 
       <div className="mt-24 text-center bg-muted/30 p-8 rounded-2xl border border-border/50 max-w-4xl mx-auto">

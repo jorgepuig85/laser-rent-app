@@ -9,7 +9,7 @@ export function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-url", path);
 
-  // Return response with the new headers
+  // Return response with the new headers as per standard injection
   return NextResponse.next({
     request: {
       headers: requestHeaders,

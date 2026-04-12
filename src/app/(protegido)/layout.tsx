@@ -16,10 +16,10 @@ export default async function ProtectedLayout({
     try {
       const headersList = await headers();
       const currentPath = headersList.get("x-url") || "/alquiler";
-      redirect(`/?error=necesitas-login&next=${currentPath}`);
+      redirect("/?login=true&next=" + encodeURIComponent(currentPath));
     } catch (e) {
       console.error("Redirect error in layout:", e);
-      redirect("/?error=auth-required&next=/alquiler");
+      redirect("/?login=true&next=%2Falquiler");
     }
   }
   // v2.1: Force build cache clean
