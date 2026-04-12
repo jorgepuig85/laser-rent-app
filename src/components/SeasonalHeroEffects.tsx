@@ -4,7 +4,7 @@ import React, { useEffect, useRef } from "react";
 import { useSeason } from "@/context/SeasonContext";
 
 export function SeasonalHeroEffects() {
-  const { season } = useSeason();
+  const { season, theme } = useSeason();
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -51,18 +51,18 @@ export function SeasonalHeroEffects() {
         
         // Season-specific particle Logic
         if (season === "autumn") {
-          const colors = ["#D4AF37", "#92400E", "#B45309", "#78350F"];
+          const colors = [theme.primary, theme.accent, "#B45309", "#78350F"];
           this.color = colors[Math.floor(Math.random() * colors.length)];
           this.type = "leaf";
         } else if (season === "winter") {
-          this.color = "#FFFFFF";
+          this.color = theme.primary;
           this.type = "snow";
           this.speedY = Math.random() * 2 + 1;
         } else if (season === "spring") {
-          this.color = "#F472B6";
+          this.color = theme.primary;
           this.type = "petal";
         } else {
-          this.color = "rgba(255, 255, 255, 0.1)";
+          this.color = theme.glow;
           this.type = "wave";
         }
       }

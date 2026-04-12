@@ -84,7 +84,7 @@ export default async function CompletarPerfil() {
           </div>
           <button
             type="submit"
-            className="w-full mt-2 inline-flex items-center justify-center rounded-full text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-600 text-white hover:bg-blue-700 hover:scale-[1.02] h-12 px-8 shadow-lg shadow-blue-600/20"
+            className="w-full mt-2 inline-flex items-center justify-center rounded-full text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-white hover:opacity-90 hover:scale-[1.02] h-12 px-8 shadow-lg shadow-primary/20"
           >
             Guardar y Continuar
           </button>

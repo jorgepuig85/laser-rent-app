@@ -63,7 +63,7 @@ export default async function AlquilerPage() {
             fill
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent flex items-end p-8">
+          <div className="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent flex items-end p-8">
             <div className="text-white">
               <h3 className="font-serif text-2xl font-bold">ADSS FG2000B</h3>
               <p className="text-white/80">Plataforma Trío Laser</p>

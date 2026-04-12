@@ -55,7 +55,7 @@ export async function Navbar() {
               <Suspense fallback={null}>
                 <LoginRedirectInput />
               </Suspense>
-              <Button type="submit" className="bg-slate-900 text-white rounded-full px-6">
+              <Button type="submit" className="bg-primary text-white rounded-full px-6">
                 <UserCircle className="mr-2 h-4 w-4" />
                 Login Profesional
               </Button>

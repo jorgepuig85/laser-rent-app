@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { supabase } from "@/lib/supabaseClient";
 
 export const metadata = {
-  title: "Planes y Precios de Alquiler | LaserRent Pro",
+  title: "Planes y Precios de Alquiler | Centro de Belleza",
   description: "Conoce nuestros precios de alquiler de equipos de depilación láser por día, semana o mes. Rentabilidad asegurada."
 };
 
@@ -85,12 +85,12 @@ export default async function PreciosPage() {
         {plans.map((plan, i) => (
           <Card 
             key={i} 
-            className={`group relative flex flex-col h-full border-2 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:border-blue-200/50 ${plan.popular ? 'border-blue-600 shadow-xl z-10' : 'border-slate-100/50'}`}
+            className={`group relative flex flex-col h-full border-2 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:border-primary/20 ${plan.popular ? 'border-primary shadow-xl z-10' : 'border-slate-100/50'}`}
           >
-            <CardHeader className={`text-center flex-initial space-y-4 pt-10 pb-6 ${plan.popular ? 'bg-blue-50/30' : ''}`}>
+            <CardHeader className={`text-center flex-initial space-y-4 pt-10 pb-6 ${plan.popular ? 'bg-primary/5' : ''}`}>
               {plan.popular && (
                 <div className="mb-2">
-                  <span className="bg-blue-600 text-white text-[10px] font-black uppercase tracking-[0.2em] py-1.5 px-4 rounded-full shadow-md">
+                  <span className="bg-primary text-white text-[10px] font-black uppercase tracking-[0.2em] py-1.5 px-4 rounded-full shadow-md">
                     Opción Más Elegida
                   </span>
                 </div>

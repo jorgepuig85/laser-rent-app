@@ -114,7 +114,7 @@ export function ReservationClient({
             <Button
               onClick={handleBooking}
               disabled={loading}
-              className="w-full h-12 rounded-full font-medium shadow-lg shadow-blue-600/20 bg-blue-600 hover:bg-blue-700 hover:scale-[1.02] transition-all text-white"
+              className="w-full h-12 rounded-full font-medium shadow-lg shadow-primary/20 bg-primary hover:opacity-100 hover:scale-[1.02] transition-all text-white font-bold"
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Confirmar Reserva

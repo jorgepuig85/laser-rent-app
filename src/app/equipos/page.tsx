@@ -53,7 +53,7 @@ export default function EquiposPage() {
               { icon: CheckCircle2, label: "Alta Frecuencia", desc: "Tratamientos ultra rápidos." }
             ].map((beneficio, i) => (
               <div key={i} className="flex flex-col gap-2 p-6 rounded-2xl bg-slate-50 border border-slate-100">
-                <beneficio.icon className="h-8 w-8 text-amber-500" />
+                <beneficio.icon className="h-8 w-8 text-primary" />
                 <h3 className="font-bold text-slate-900 mt-2">{beneficio.label}</h3>
                 <p className="text-sm text-slate-500">{beneficio.desc}</p>
               </div>
@@ -86,8 +86,8 @@ export default function EquiposPage() {
           </div>
           
           {/* Compromiso de Calidad */}
-          <div className="bg-blue-50/50 rounded-3xl p-8 border border-blue-100/50 space-y-4">
-            <div className="flex items-center gap-3 text-blue-700">
+          <div className="bg-primary/5 rounded-3xl p-8 border border-primary/10 space-y-4">
+            <div className="flex items-center gap-3 text-primary">
               <ShieldCheck className="h-6 w-6" />
               <h3 className="text-xl font-bold">Nuestro Compromiso de Calidad</h3>
             </div>
@@ -97,7 +97,7 @@ export default function EquiposPage() {
           </div>
 
           <div className="pt-4">
-            <Button size="lg" className="w-full sm:w-auto h-14 px-10 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-medium text-lg shadow-lg shadow-blue-600/20 transition-all hover:scale-[1.02]" render={<Link href="/alquiler" />}>
+            <Button size="lg" className="w-full sm:w-auto h-14 px-10 rounded-full bg-primary hover:bg-primary/90 text-white font-medium text-lg shadow-lg shadow-primary/20 transition-all hover:scale-[1.02]" render={<Link href="/alquiler" />}>
               Agendar Alquiler
             </Button>
           </div>

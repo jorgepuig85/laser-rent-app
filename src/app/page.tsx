@@ -29,7 +29,7 @@ export default function Home() {
                   Equipos de Última Generación
                 </div>
                 <h1 className="text-5xl font-serif font-extrabold tracking-tight sm:text-6xl xl:text-7xl text-foreground !leading-tight">
-                  Alquiler de Terapia Láser para <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-800">Profesionales</span>
+                  Alquiler de Terapia Láser para <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/80">Profesionales</span>
                 </h1>
                 <p className="max-w-[600px] text-lg text-slate-500 leading-relaxed">
                   Potencia tus ingresos sin inversión de capital. Alquilamos los equipos de depilación láser más avanzados del mercado con mantenimiento y soporte técnico incluido.
@@ -65,7 +65,7 @@ export default function Home() {
         <div className="mx-auto w-full max-w-7xl px-4 md:px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
             <div className="flex items-start gap-4 p-2">
-              <div className="bg-blue-100 p-3 rounded-2xl text-blue-600 shrink-0">
+              <div className="bg-primary/10 p-3 rounded-2xl text-primary shrink-0">
                 <Truck className="h-6 w-6" />
               </div>
               <div className="space-y-1">
@@ -76,7 +76,7 @@ export default function Home() {
               </div>
             </div>
             <div className="flex items-start gap-4 p-2">
-              <div className="bg-blue-100 p-3 rounded-2xl text-blue-600 shrink-0">
+              <div className="bg-primary/10 p-3 rounded-2xl text-primary shrink-0">
                 <ShieldCheck className="h-6 w-6" />
               </div>
               <div className="space-y-1">
@@ -87,7 +87,7 @@ export default function Home() {
               </div>
             </div>
             <div className="flex items-start gap-4 p-2">
-              <div className="bg-blue-100 p-3 rounded-2xl text-blue-600 shrink-0">
+              <div className="bg-primary/10 p-3 rounded-2xl text-primary shrink-0">
                 <GraduationCap className="h-6 w-6" />
               </div>
               <div className="space-y-1">
@@ -144,7 +144,7 @@ export default function Home() {
                 }
               ].map((benefit, i) => (
                 <div key={i} className="group relative overflow-hidden rounded-3xl bg-slate-50 p-8 shadow-sm transition-all hover:shadow-md hover:-translate-y-1">
-                  <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-blue-600 group-hover:scale-110 transition-transform">
+                  <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform">
                     <benefit.icon className="h-6 w-6" />
                   </div>
                   <h3 className="mb-2 text-xl font-bold text-slate-900">{benefit.title}</h3>
@@ -164,7 +164,7 @@ export default function Home() {
           fill
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-slate-900/70 backdrop-blur-[2px]"></div>
+        <div className="absolute inset-0 bg-primary/80 backdrop-blur-[2px]"></div>
         <div className="mx-auto w-full max-w-4xl px-4 md:px-6 relative text-center space-y-10 animate-in fade-in zoom-in duration-700">
           <h2 className="text-4xl md:text-6xl font-serif font-bold tracking-tight leading-tight">Lleva tu centro de estética al siguiente nivel</h2>
           <p className="text-xl text-white/90 font-medium">
