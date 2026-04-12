@@ -2,7 +2,7 @@
 import { createClient } from "@/lib/supabaseServer";
 import { revalidatePath } from "next/cache";
 
-export async function createRental(startDate: string, endDate: string, professionalId: string, professionalName: string) {
+export async function createRental(startDate: string, endDate: string, professionalId: string, professionalName: string, cost: number | null) {
   const supabase = await createClient();
   const title = `Reserva Web: ADSS FG2000B - ${professionalName}`;
   
@@ -14,7 +14,7 @@ export async function createRental(startDate: string, endDate: string, professio
       end_date: endDate,
       title: title,
       is_maintenance: false,
-      cost: null, 
+      cost: cost, 
     });
     
   if (error) {
