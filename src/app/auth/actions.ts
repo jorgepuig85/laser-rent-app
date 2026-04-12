@@ -17,7 +17,7 @@ export async function signIn() {
   const { data } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${getURL()}/api/auth/callback`,
+      redirectTo: "https://laser-rent-app.vercel.app/api/auth/callback",
     },
   });
 
