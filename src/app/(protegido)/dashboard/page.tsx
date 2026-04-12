@@ -2,6 +2,9 @@ import { createClient } from "@/lib/supabaseServer";
 import { redirect } from "next/navigation";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
+import Image from "next/image";
+
+const ADSS_IMAGE = "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/equipo_depilacion.webp";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -47,15 +50,23 @@ export default async function DashboardPage() {
                   key={r.id}
                   className="hover:bg-slate-50/50 transition-colors"
                 >
-                  <td className="px-6 py-4 font-medium text-slate-900">
-                    {r.title}
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-4">
+                      <div className="relative h-12 w-12 rounded-xl border border-slate-200 overflow-hidden bg-slate-50">
+                        <Image src={ADSS_IMAGE} alt="ADSS FG2000B" fill className="object-cover" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-slate-900">ADSS FG2000B</p>
+                        <p className="text-xs text-slate-500">Categoría: Trío Láser</p>
+                      </div>
+                    </div>
                   </td>
-                  <td className="px-6 py-4 text-slate-500">
+                  <td className="px-6 py-4 text-slate-500 font-medium">
                     {format(parseISO(r.start_date), "dd MMM yyyy", { locale: es })}{" "}
                     - {format(parseISO(r.end_date), "dd MMM yyyy", { locale: es })}
                   </td>
                   <td className="px-6 py-4">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">
                       Confirmada
                     </span>
                   </td>

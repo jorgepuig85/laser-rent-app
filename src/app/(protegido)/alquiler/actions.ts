@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 
 export async function createRental(startDate: string, endDate: string, professionalId: string, professionalName: string) {
   const supabase = await createClient();
-  const title = `Reserva Web: ${professionalName}`;
+  const title = `Reserva Web: ADSS FG2000B - ${professionalName}`;
   
   const { error } = await supabase
     .from('rentals')
