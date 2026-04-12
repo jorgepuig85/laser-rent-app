@@ -7,8 +7,8 @@ import { ShieldCheck, Zap, Sun, CheckCircle2 } from "lucide-react";
 const ADSS_IMAGE = "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/equipo_depilacion.webp";
 
 export const metadata = {
-  title: "Equipo ADSS FG2000B | LaserRent Pro",
-  description: "Descubre el ADSS FG2000B, la plataforma líder en depilación láser con tecnología trío (755nm, 808nm, 1064nm). Eficacia y rentabilidad para tu centro."
+  title: "Equipo ADSS FG2000B | Centro de Belleza",
+  description: "Descubre el ADSS FG2000B, la plataforma líder en depilación láser con tecnología trío. Calidad certificada en Santa Rosa y Miguel Riglos."
 };
 
 export default function EquiposPage() {

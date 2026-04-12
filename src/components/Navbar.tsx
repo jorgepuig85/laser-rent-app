@@ -20,7 +20,7 @@ export async function Navbar() {
         <Link href="/" className="flex items-center gap-2">
           <Image
             src="https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/logo-laser-rent.svg"
-            alt="Laser Rent Logo"
+            alt="Centro de Belleza Logo"
             width={150}
             height={40}
             className="h-10 w-auto"

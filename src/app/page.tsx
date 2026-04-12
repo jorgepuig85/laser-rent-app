@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2, Shield, Zap, TrendingUp, Truck, ShieldCheck, GraduationCap } from "lucide-react";
+import { SeasonalHeroEffects } from "@/components/SeasonalHeroEffects";
 
 const HERO_IMAGE = "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/hero-profesional.webp";
 const BENEFITS_IMAGE = "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/beneficios-tech.webp";
@@ -17,8 +18,9 @@ export default function Home() {
         <AutoLoginTrigger />
       </Suspense>
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-background pt-16 md:pt-24 lg:pt-32">
-        <div className="mx-auto w-full max-w-7xl px-4 md:px-6">
+      <section className="relative overflow-hidden pt-16 md:pt-24 lg:pt-32">
+        <SeasonalHeroEffects />
+        <div className="mx-auto w-full max-w-7xl px-4 md:px-6 relative z-10">
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-center">
             <div className="flex flex-col justify-center space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
               <div className="space-y-4">
