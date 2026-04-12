@@ -35,10 +35,14 @@ export function SeasonalHeroEffects() {
       rotationSpeed: number;
       color: string;
       type: string;
+      canvasWidth: number;
+      canvasHeight: number;
 
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height - canvas.height;
+      constructor(width: number, height: number) {
+        this.canvasWidth = width;
+        this.canvasHeight = height;
+        this.x = Math.random() * width;
+        this.y = Math.random() * height - height;
         this.size = Math.random() * 15 + 5;
         this.speedX = Math.random() * 2 - 1;
         this.speedY = Math.random() * 1 + 1;
@@ -68,9 +72,9 @@ export function SeasonalHeroEffects() {
         this.x += this.speedX + Math.sin(this.y / 50) * 0.5;
         this.rotation += this.rotationSpeed;
 
-        if (this.y > canvas.height) {
+        if (this.y > this.canvasHeight) {
           this.y = -20;
-          this.x = Math.random() * canvas.width;
+          this.x = Math.random() * this.canvasWidth;
         }
       }
 
@@ -111,11 +115,12 @@ export function SeasonalHeroEffects() {
       particles = [];
       const count = season === "autumn" ? 30 : 50;
       for (let i = 0; i < count; i++) {
-        particles.push(new Particle());
+        particles.push(new Particle(canvas.width, canvas.height));
       }
     };
 
     const animate = () => {
+      if (!ctx || !canvas) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       particles.forEach((p) => {
         p.update();
