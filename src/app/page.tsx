@@ -7,9 +7,15 @@ const HERO_IMAGE = "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/p
 const BENEFITS_IMAGE = "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/beneficios-tech.webp";
 const CTA_IMAGE = "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/clinica-interior.webp";
 
+import { AutoLoginTrigger } from "@/components/AutoLoginTrigger";
+import { Suspense } from "react";
+
 export default function Home() {
   return (
     <div className="flex flex-col min-h-[calc(100vh-4rem)]">
+      <Suspense fallback={null}>
+        <AutoLoginTrigger />
+      </Suspense>
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-background pt-16 md:pt-24 lg:pt-32">
         <div className="mx-auto w-full max-w-7xl px-4 md:px-6">

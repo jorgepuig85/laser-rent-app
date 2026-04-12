@@ -27,8 +27,13 @@ export async function GET(request: Request) {
           .from("external_professionals")
           .update({ auth_id: user.id })
           .eq("id", proExists.id);
+        
+        // Regla de oro: Si falta CUIT o Teléfono, completar perfil
+        if (!proExists.cuit || !proExists.phone) {
+          return NextResponse.redirect(`${origin}/completar-perfil?next=${encodeURIComponent(next)}`);
+        }
       } else {
-        // Crear nuevo registro
+        // Crear nuevo registro (perfil incompleto por definición)
         await supabase
           .from("external_professionals")
           .insert({
@@ -36,6 +41,8 @@ export async function GET(request: Request) {
             name: user.user_metadata?.full_name || user.email?.split("@")[0] || "Profesional",
             auth_id: user.id,
           });
+        
+        return NextResponse.redirect(`${origin}/completar-perfil?next=${encodeURIComponent(next)}`);
       }
 
       return NextResponse.redirect(`${origin}${next}`);
