@@ -20,10 +20,10 @@ export default function Home() {
                   <span className="flex h-2 w-2 rounded-full bg-primary mr-2"></span>
                   Equipos de Última Generación
                 </div>
-                <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl xl:text-6xl text-foreground">
-                  Alquiler de Terapia Láser para <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600">Profesionales</span>
+                <h1 className="text-5xl font-serif font-extrabold tracking-tight sm:text-6xl xl:text-7xl text-foreground !leading-tight">
+                  Alquiler de Terapia Láser para <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-800">Profesionales</span>
                 </h1>
-                <p className="max-w-[600px] text-lg text-muted-foreground leading-relaxed">
+                <p className="max-w-[600px] text-lg text-slate-500 leading-relaxed">
                   Potencia tus ingresos sin inversión de capital. Alquilamos los equipos de depilación láser más avanzados del mercado con mantenimiento y soporte técnico incluido.
                 </p>
               </div>
@@ -53,11 +53,11 @@ export default function Home() {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-20 md:py-28 bg-muted/30">
+      <section className="py-24 md:py-32 bg-white">
         <div className="mx-auto w-full max-w-7xl px-4 md:px-6">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">¿Por qué elegir Laser Rent?</h2>
-            <p className="text-muted-foreground text-lg max-w-[700px] mx-auto">
+          <div className="text-center space-y-4 mb-20">
+            <h2 className="text-4xl md:text-5xl font-serif font-bold tracking-tight text-slate-900">¿Por qué elegir Laser Rent?</h2>
+            <p className="text-slate-500 text-lg max-w-[700px] mx-auto">
               Maximizamos tu rentabilidad eliminando los costos operativos de mantenimiento y reparaciones con tecnología certificada.
             </p>
           </div>
@@ -94,12 +94,12 @@ export default function Home() {
                   desc: "Te enseñamos a usar el equipo para asegurar los mejores resultados en tus pacientes."
                 }
               ].map((benefit, i) => (
-                <div key={i} className="group relative overflow-hidden rounded-2xl border bg-background p-8 shadow-sm transition-all hover:shadow-md hover:-translate-y-1">
-                  <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform">
+                <div key={i} className="group relative overflow-hidden rounded-3xl bg-slate-50 p-8 shadow-sm transition-all hover:shadow-md hover:-translate-y-1">
+                  <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-blue-600 group-hover:scale-110 transition-transform">
                     <benefit.icon className="h-6 w-6" />
                   </div>
-                  <h3 className="mb-2 text-xl font-bold">{benefit.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed">{benefit.desc}</p>
+                  <h3 className="mb-2 text-xl font-bold text-slate-900">{benefit.title}</h3>
+                  <p className="text-slate-500 leading-relaxed">{benefit.desc}</p>
                 </div>
               ))}
             </div>
@@ -108,16 +108,16 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-32 relative overflow-hidden text-white">
+      <section className="py-32 md:py-40 relative overflow-hidden text-white">
         <Image 
           src={CTA_IMAGE}
           alt="Interior de clínica estética"
           fill
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-primary/80 backdrop-blur-[2px]"></div>
-        <div className="mx-auto w-full max-w-4xl px-4 md:px-6 relative text-center space-y-8 animate-in fade-in zoom-in duration-700">
-          <h2 className="text-4xl md:text-6xl font-bold tracking-tight">Lleva tu centro de estética al siguiente nivel</h2>
+        <div className="absolute inset-0 bg-slate-900/70 backdrop-blur-[2px]"></div>
+        <div className="mx-auto w-full max-w-4xl px-4 md:px-6 relative text-center space-y-10 animate-in fade-in zoom-in duration-700">
+          <h2 className="text-4xl md:text-6xl font-serif font-bold tracking-tight leading-tight">Lleva tu centro de estética al siguiente nivel</h2>
           <p className="text-xl text-white/90 font-medium">
             Reserva tu equipo hoy y comienza a ofrecer tratamientos de depilación definitiva de alta eficacia.
           </p>

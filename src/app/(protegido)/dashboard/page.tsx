@@ -26,13 +26,13 @@ export default async function DashboardPage() {
     .order("start_date", { ascending: true });
 
   return (
-    <div className="max-w-4xl mx-auto py-12 px-4">
-      <h1 className="text-4xl font-bold tracking-tight text-slate-900 mb-8">
+    <div className="max-w-4xl mx-auto py-24 px-4">
+      <h1 className="text-4xl md:text-5xl font-serif font-bold tracking-tight text-slate-900 mb-12">
         Mis Reservas
       </h1>
 
       {rentals && rentals.length > 0 ? (
-        <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+        <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
           <table className="w-full text-sm text-left">
             <thead className="bg-slate-50 text-slate-700 font-medium border-b border-slate-100">
               <tr>

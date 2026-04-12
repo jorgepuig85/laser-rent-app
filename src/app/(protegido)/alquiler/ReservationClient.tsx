@@ -65,15 +65,15 @@ export function ReservationClient({
   };
 
   return (
-    <div className="space-y-6 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-      <div className="grid gap-2">
+    <div className="space-y-8 bg-white p-8 md:p-10 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
+      <div className="grid gap-3">
         <label className="text-sm font-medium text-slate-700">
           Selecciona los días de alquiler
         </label>
         <Popover>
           <PopoverTrigger className={cn(
-            "inline-flex w-full sm:w-[400px] items-center justify-start whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2",
-            !date && "text-muted-foreground"
+            "inline-flex w-full sm:w-[400px] items-center justify-start whitespace-nowrap rounded-xl text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-slate-200 bg-slate-50 hover:bg-slate-100 hover:text-slate-900 h-12 px-4 py-2 shadow-sm",
+            !date && "text-slate-500"
           )}>
             <CalendarIcon className="mr-2 h-4 w-4" />
             {date?.from ? (
@@ -107,7 +107,7 @@ export function ReservationClient({
       <Button
         onClick={handleBooking}
         disabled={!date?.from || !date?.to || loading}
-        className="w-full sm:w-auto mt-4 px-8 bg-slate-900 hover:bg-slate-800 text-white"
+        className="w-full sm:w-auto mt-6 h-12 px-10 rounded-full font-medium shadow-lg shadow-blue-600/20 bg-blue-600 hover:bg-blue-700 hover:scale-[1.02] transition-all text-white"
       >
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         Confirmar Reserva

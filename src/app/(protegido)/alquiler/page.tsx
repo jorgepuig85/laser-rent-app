@@ -26,12 +26,12 @@ export default async function AlquilerPage() {
     .eq("is_maintenance", false);
 
   return (
-    <div className="max-w-4xl mx-auto py-12 px-4">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold tracking-tight text-slate-900 mb-2">
+    <div className="max-w-4xl mx-auto py-24 px-4">
+      <div className="mb-12">
+        <h1 className="text-4xl md:text-5xl font-serif font-bold tracking-tight text-slate-900 mb-4">
           Reservar Cabina
         </h1>
-        <p className="text-slate-500">
+        <p className="text-lg text-slate-500">
           Selecciona un rango de fechas para bloquear tu alquiler. Las fechas en gris ya están ocupadas.
         </p>
       </div>
