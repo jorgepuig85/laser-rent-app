@@ -92,7 +92,7 @@ export default function EquiposPage() {
               <h3 className="text-xl font-bold">Nuestro Compromiso de Calidad</h3>
             </div>
             <p className="text-slate-600 leading-relaxed italic">
-              "Cada ADSS FG2000B de nuestra flota es entregado con calibración verificada y desinfectado bajo estrictas normas de bioseguridad, garantizando un entorno de trabajo seguro y profesional para vos y tus pacientes."
+              &quot;Cada ADSS FG2000B de nuestra flota es entregado con calibración verificada y desinfectado bajo estrictas normas de bioseguridad, garantizando un entorno de trabajo seguro y profesional para vos y tus pacientes.&quot;
             </p>
           </div>
 
