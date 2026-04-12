@@ -85,8 +85,8 @@ export default async function PreciosPage() {
         {plans.map((plan, i) => (
           <Card key={i} className={`relative flex flex-col h-full border-2 ${plan.popular ? 'border-primary shadow-2xl scale-105 z-10' : 'border-border/50'}`}>
             {plan.popular && (
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                <span className="bg-primary text-primary-foreground text-xs font-bold uppercase tracking-wider py-1 px-4 rounded-full">
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
+                <span className="bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest py-1.5 px-4 rounded-full shadow-lg shadow-blue-600/20 border border-blue-500">
                   Más Popular
                 </span>
               </div>
@@ -110,7 +110,18 @@ export default async function PreciosPage() {
               </ul>
             </CardContent>
             <CardFooter className="pt-8">
-              <Button size="lg" className="w-full" variant={plan.popular ? 'default' : 'outline'} render={<Link href={`https://wa.me/5492954631456?text=Hola,%20me%20interesa%20informaci%C3%B3n%20sobre%20el%20plan%20${encodeURIComponent(plan.name)}`} target="_blank" rel="noopener noreferrer" />}>
+              <Button 
+                size="lg" 
+                className="w-full h-12 rounded-xl font-bold transition-all hover:scale-[1.02]" 
+                variant={plan.popular ? 'default' : 'outline'} 
+                render={
+                  plan.name === "Mensual" ? (
+                    <Link href={`https://wa.me/5492954631456?text=${encodeURIComponent("Hola! Me interesa consultar por el alquiler mensual del ADSS FG2000B.")}`} target="_blank" rel="noopener noreferrer" />
+                  ) : (
+                    <Link href="/alquiler" />
+                  )
+                }
+              >
                 {plan.cta}
               </Button>
             </CardFooter>
