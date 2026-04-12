@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { format, isWithinInterval, parseISO, startOfDay, differenceInDays } from "date-fns";
-import { Calendar as CalendarIcon, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { es } from "date-fns/locale";
 

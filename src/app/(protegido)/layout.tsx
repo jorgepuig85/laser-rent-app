@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabaseServer";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 
 export default async function ProtectedLayout({
   children,
@@ -12,8 +13,7 @@ export default async function ProtectedLayout({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    const { headers } = await import("next/headers");
-    const headersList = headers();
+    const headersList = await headers();
     const currentPath = headersList.get("x-url") || "/alquiler";
     redirect(`/?error=necesitas-login&next=${currentPath}`);
   }
