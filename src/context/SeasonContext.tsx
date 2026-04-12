@@ -6,14 +6,15 @@ import { Season, THEMES, getSeasonForDate, ThemeConfig } from "@/lib/themes";
 
 interface SeasonContextType {
   season: Season;
+  setSeason: (season: Season) => void;
   theme: ThemeConfig;
 }
 
 const SeasonContext = createContext<SeasonContextType | undefined>(undefined);
 
-function SeasonInnerProvider({ children }: { children: React.ReactNode }) {
+function SeasonSearchParamsHandler() {
   const searchParams = useSearchParams();
-  const [season, setSeason] = useState<Season>("autumn");
+  const { setSeason } = useSeason();
 
   useEffect(() => {
     const forcedSeason = searchParams.get("season") as Season;
@@ -22,7 +23,13 @@ function SeasonInnerProvider({ children }: { children: React.ReactNode }) {
     } else {
       setSeason(getSeasonForDate(new Date()));
     }
-  }, [searchParams]);
+  }, [searchParams, setSeason]);
+
+  return null;
+}
+
+export function SeasonProvider({ children }: { children: React.ReactNode }) {
+  const [season, setSeason] = useState<Season>("autumn");
 
   useEffect(() => {
     const theme = THEMES[season];
@@ -32,22 +39,16 @@ function SeasonInnerProvider({ children }: { children: React.ReactNode }) {
     root.style.setProperty("--seasonal-background", theme.background);
     root.style.setProperty("--seasonal-glow", theme.glow);
     
-    // Update body data attribute for conditional styling if needed
     document.body.setAttribute("data-season", season);
   }, [season]);
 
   return (
-    <SeasonContext.Provider value={{ season, theme: THEMES[season] }}>
+    <SeasonContext.Provider value={{ season, theme: THEMES[season], setSeason }}>
+      <Suspense fallback={null}>
+        <SeasonSearchParamsHandler />
+      </Suspense>
       {children}
     </SeasonContext.Provider>
-  );
-}
-
-export function SeasonProvider({ children }: { children: React.ReactNode }) {
-  return (
-    <Suspense fallback={<>{children}</>}>
-      <SeasonInnerProvider>{children}</SeasonInnerProvider>
-    </Suspense>
   );
 }
 
