@@ -84,6 +84,17 @@ export default function EquiposPage() {
               </div>
             </div>
           </div>
+          
+          {/* Compromiso de Calidad */}
+          <div className="bg-blue-50/50 rounded-3xl p-8 border border-blue-100/50 space-y-4">
+            <div className="flex items-center gap-3 text-blue-700">
+              <ShieldCheck className="h-6 w-6" />
+              <h3 className="text-xl font-bold">Nuestro Compromiso de Calidad</h3>
+            </div>
+            <p className="text-slate-600 leading-relaxed italic">
+              "Cada ADSS FG2000B de nuestra flota es entregado con calibración verificada y desinfectado bajo estrictas normas de bioseguridad, garantizando un entorno de trabajo seguro y profesional para vos y tus pacientes."
+            </p>
+          </div>
 
           <div className="pt-4">
             <Button size="lg" className="w-full sm:w-auto h-14 px-10 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-medium text-lg shadow-lg shadow-blue-600/20 transition-all hover:scale-[1.02]" render={<Link href="/alquiler" />}>

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle2, Shield, Zap, TrendingUp } from "lucide-react";
+import { ArrowRight, CheckCircle2, Shield, Zap, TrendingUp, Truck, ShieldCheck, GraduationCap } from "lucide-react";
 
 const HERO_IMAGE = "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/hero-profesional.webp";
 const BENEFITS_IMAGE = "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/beneficios-tech.webp";
@@ -53,6 +53,47 @@ export default function Home() {
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, 50vw"
               />
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* Brand Authority Trust Bar */}
+      <section className="bg-slate-50 border-y border-slate-100 py-12">
+        <div className="mx-auto w-full max-w-7xl px-4 md:px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+            <div className="flex items-start gap-4 p-2">
+              <div className="bg-blue-100 p-3 rounded-2xl text-blue-600 shrink-0">
+                <Truck className="h-6 w-6" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-bold text-slate-900">Logística Propia</h3>
+                <p className="text-sm text-slate-500 leading-relaxed">
+                  Entrega y retiro bonificado en Santa Rosa y zona de influencia.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4 p-2">
+              <div className="bg-blue-100 p-3 rounded-2xl text-blue-600 shrink-0">
+                <ShieldCheck className="h-6 w-6" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-bold text-slate-900">Equipos Certificados</h3>
+                <p className="text-sm text-slate-500 leading-relaxed">
+                  Realizamos mantenimiento preventivo exhaustivo antes de cada jornada.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4 p-2">
+              <div className="bg-blue-100 p-3 rounded-2xl text-blue-600 shrink-0">
+                <GraduationCap className="h-6 w-6" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-bold text-slate-900">Capacitación Inicial</h3>
+                <p className="text-sm text-slate-500 leading-relaxed">
+                  Te brindamos entrenamiento técnico en tu primera sesión de uso.
+                </p>
+              </div>
             </div>
           </div>
         </div>
