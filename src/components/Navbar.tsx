@@ -5,6 +5,9 @@ import { createClient } from "@/lib/supabaseServer";
 import { signIn, signOut } from "@/app/auth/actions";
 import { LogOut, UserCircle } from "lucide-react";
 
+import { LoginRedirectInput } from "./LoginRedirectInput";
+import { Suspense } from "react";
+
 export async function Navbar() {
   const supabase = await createClient();
   const {
@@ -49,6 +52,9 @@ export async function Navbar() {
             </div>
           ) : (
             <form action={signIn}>
+              <Suspense fallback={null}>
+                <LoginRedirectInput />
+              </Suspense>
               <Button type="submit" className="bg-slate-900 text-white rounded-full px-6">
                 <UserCircle className="mr-2 h-4 w-4" />
                 Login Profesional

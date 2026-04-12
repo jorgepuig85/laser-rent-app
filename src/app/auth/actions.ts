@@ -12,12 +12,14 @@ function getURL() {
   return url;
 }
 
-export async function signIn() {
+export async function signIn(formData: FormData) {
   const supabase = await createClient();
+  const nextDestination = formData.get("next") as string || "/alquiler";
+  
   const { data } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: "https://laser-rent-app.vercel.app/api/auth/callback",
+      redirectTo: `https://laser-rent-app.vercel.app/api/auth/callback?next=${encodeURIComponent(nextDestination)}`,
     },
   });
 
@@ -25,7 +27,7 @@ export async function signIn() {
     redirect(data.url);
   } else {
     // Fallback if error
-    redirect("/?error=auth_failed");
+    redirect(`/?error=auth_failed&next=${encodeURIComponent(nextDestination)}`);
   }
 }
 

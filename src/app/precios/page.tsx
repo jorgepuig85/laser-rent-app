@@ -81,22 +81,22 @@ export default async function PreciosPage() {
         </p>
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 items-center">
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 items-stretch">
         {plans.map((plan, i) => (
-          <Card key={i} className={`relative flex flex-col h-full border-2 ${plan.popular ? 'border-primary shadow-2xl scale-105 z-10' : 'border-border/50'}`}>
+          <Card key={i} className={`group relative flex flex-col h-full border-2 transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl hover:border-slate-300 ${plan.popular ? 'border-blue-600 shadow-xl z-10 scale-105 hover:scale-[1.07]' : 'border-slate-100'}`}>
             {plan.popular && (
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
-                <span className="bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest py-1.5 px-4 rounded-full shadow-lg shadow-blue-600/20 border border-blue-500">
+              <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-30">
+                <span className="bg-blue-600 text-white text-[11px] font-bold uppercase tracking-[0.2em] py-2 px-6 rounded-full shadow-[0_4px_20px_rgba(37,99,235,0.4)] border border-blue-400/30 whitespace-nowrap">
                   Más Popular
                 </span>
               </div>
             )}
-            <CardHeader className="text-center flex-1 space-y-4">
-              <CardTitle className="text-2xl">{plan.name}</CardTitle>
-              <CardDescription className="h-10 text-sm">{plan.description}</CardDescription>
+            <CardHeader className={`text-center flex-initial space-y-4 pt-10 pb-6 ${plan.popular ? 'bg-blue-50/30' : ''}`}>
+              <CardTitle className="text-2xl font-serif">{plan.name}</CardTitle>
+              <CardDescription className="h-10 text-sm px-4">{plan.description}</CardDescription>
               <div className="pt-4 pb-2">
-                <span className="text-5xl font-extrabold">{plan.price}</span>
-                {plan.price !== "Consultar" && <span className="text-muted-foreground font-medium ml-2">ARS</span>}
+                <span className="text-5xl font-extrabold tracking-tight text-slate-900">{plan.price}</span>
+                {plan.price !== "Consultar" && <span className="text-slate-500 font-bold ml-2 text-sm uppercase">ARS</span>}
               </div>
             </CardHeader>
             <CardContent className="flex-1">
