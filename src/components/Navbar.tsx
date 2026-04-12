@@ -1,10 +1,18 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabaseServer";
+import { signIn, signOut } from "@/app/auth/actions";
+import { LogOut, UserCircle } from "lucide-react";
 
-export function Navbar() {
+export async function Navbar() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+    <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto w-full max-w-7xl px-4 md:px-6 flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <Image
@@ -16,19 +24,37 @@ export function Navbar() {
             priority
           />
         </Link>
-        <nav className="flex items-center gap-6 text-sm font-medium">
-          <Link href="/" className="transition-colors hover:text-primary">
-            Inicio
-          </Link>
-          <Link href="/equipos" className="transition-colors hover:text-primary">
+        <nav className="flex items-center gap-4 sm:gap-6 text-sm font-medium">
+          <Link href="/equipos" className="hidden sm:inline-flex transition-colors hover:text-primary">
             Equipos
           </Link>
-          <Link href="/precios" className="transition-colors hover:text-primary">
+          <Link href="/precios" className="hidden sm:inline-flex transition-colors hover:text-primary">
             Precios
           </Link>
-          <Button className="hidden sm:inline-flex" render={<Link href="https://wa.me/5492954631456" target="_blank" rel="noopener noreferrer" />}>
-            Contactar
-          </Button>
+
+          {user ? (
+            <div className="flex items-center gap-4 border-l pl-4 ml-2">
+              <Link href="/alquiler" className="transition-colors font-semibold text-slate-800 hover:text-primary">
+                Alquilar
+              </Link>
+              <Link href="/dashboard" className="transition-colors hover:text-primary hidden sm:block">
+                Reservas
+              </Link>
+              <form action={signOut}>
+                <Button variant="ghost" size="sm" type="submit" className="text-slate-600 hover:text-red-600 transition-colors">
+                  <LogOut className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Salir</span>
+                </Button>
+              </form>
+            </div>
+          ) : (
+            <form action={signIn}>
+              <Button type="submit" className="bg-slate-900 text-white rounded-full px-6">
+                <UserCircle className="mr-2 h-4 w-4" />
+                Login Profesional
+              </Button>
+            </form>
+          )}
         </nav>
       </div>
     </header>
