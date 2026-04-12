@@ -13,10 +13,17 @@ export default async function ProtectedLayout({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    const headersList = await headers();
-    const currentPath = headersList.get("x-url") || "/alquiler";
-    redirect(`/?error=necesitas-login&next=${currentPath}`);
+    try {
+      const headersList = await headers();
+      const currentPath = headersList.get("x-url") || "/alquiler";
+      redirect(`/?error=necesitas-login&next=${currentPath}`);
+    } catch (e) {
+      console.error("Redirect error in layout:", e);
+      redirect("/?error=auth-required&next=/alquiler");
+    }
   }
+  // v2.1: Force build cache clean
+
 
   const { data: pro } = await supabase
     .from("external_professionals")
