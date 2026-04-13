@@ -4,7 +4,7 @@ import { Mail, Phone, MapPin } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="border-t py-16 bg-slate-50 relative z-10">
+    <footer className="border-t py-12 bg-slate-50 relative z-10">
       <div className="mx-auto w-full max-w-7xl px-4 md:px-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
           {/* Columna 1: Branding & Missión */}
@@ -48,10 +48,13 @@ export function Footer() {
                 <Phone className="h-4 w-4 text-[--seasonal-primary]" />
                 <span className="text-sm font-semibold text-slate-600">+54 9 2954 631456</span>
               </Link>
-              <div className="flex items-center gap-3 text-slate-500">
+              <Link 
+                href="mailto:notificaciones@centrodebelleza.com.ar"
+                className="flex items-center gap-3 text-slate-500 hover:text-[--seasonal-primary] transition-colors w-fit"
+              >
                 <Mail className="h-4 w-4 text-[--seasonal-primary]" />
-                <span className="text-sm text-slate-600">info@centrodebelleza.com.ar</span>
-              </div>
+                <span className="text-sm text-slate-600">notificaciones@centrodebelleza.com.ar</span>
+              </Link>
               <div className="flex items-start gap-3 text-slate-500">
                 <MapPin className="h-4 w-4 text-[--seasonal-primary] shrink-0" />
                 <span className="text-sm text-slate-600">Sede Central: Santa Rosa, La Pampa.</span>
@@ -65,8 +68,8 @@ export function Footer() {
             © 2026 Centro de Belleza. Todos los derechos reservados.
           </p>
           <div className="flex gap-6">
-            <Link href="#" className="text-slate-400 hover:text-[--seasonal-primary] text-xs transition-colors">Términos</Link>
-            <Link href="#" className="text-slate-400 hover:text-[--seasonal-primary] text-xs transition-colors">Privacidad</Link>
+            <Link href="/terminos" className="text-slate-400 hover:text-[--seasonal-primary] text-xs transition-colors">Términos</Link>
+            <Link href="/privacidad" className="text-slate-400 hover:text-[--seasonal-primary] text-xs transition-colors">Privacidad</Link>
           </div>
         </div>
       </div>
