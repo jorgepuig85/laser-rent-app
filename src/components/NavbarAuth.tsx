@@ -57,7 +57,7 @@ export function NavbarAuth() {
   }
 
   return (
-    <Link href="/auth/login">
+    <Link href="/?login=true&next=/alquiler">
       <Button className="bg-primary text-white rounded-full px-6">
         <UserCircle className="mr-2 h-4 w-4" />
         Login Profesional

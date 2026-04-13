@@ -1,23 +1,59 @@
+import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export function middleware(request: NextRequest) {
-  // Get the current URL pathname
-  const path = request.nextUrl.pathname;
-  
-  // Clone request headers and set the x-url header
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-url", path);
-
-  // Return response with the new headers as per standard injection
-  return NextResponse.next({
+export async function middleware(request: NextRequest) {
+  let response = NextResponse.next({
     request: {
-      headers: requestHeaders,
+      headers: request.headers,
     },
   });
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          );
+        },
+      },
+    }
+  );
+
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const pathname = request.nextUrl.pathname;
+  
+  // Custom header for server-side path detection
+  response.headers.set("x-url", pathname);
+
+  // Protected Routes Logic
+  const protectedRoutes = ["/alquiler", "/dashboard", "/completar-perfil"];
+  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
+
+  if (isProtectedRoute && !user) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/";
+    url.searchParams.set("login", "true");
+    url.searchParams.set("next", pathname);
+    return NextResponse.redirect(url);
+  }
+
+  return response;
 }
 
-// Ensure it runs for all routes except static assets
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api).*)"],
 };
