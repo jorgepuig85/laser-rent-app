@@ -1,11 +1,6 @@
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
-
 export default function PrivacidadPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-white">
-      <Navbar />
-      <main className="flex-grow container mx-auto max-w-4xl px-4 py-16 md:py-24">
+    <main className="container mx-auto max-w-4xl px-4 pt-32 pb-16 md:pb-24">
         <h1 className="text-4xl font-bold text-slate-900 mb-8 border-b pb-4 border-[--seasonal-primary]/20">
           Política de Privacidad
         </h1>
@@ -42,7 +37,5 @@ export default function PrivacidadPage() {
           </section>
         </div>
       </main>
-      <Footer />
-    </div>
   );
 }
