@@ -15,7 +15,7 @@ export async function GET(request: Request) {
     if (!error && authData.user) {
       const user = authData.user;
       // 1. Obtener datos del profesional en una sola pasada
-      const { data: pro, error: proError } = await supabase
+      const { data: pro } = await supabase
         .from("external_professionals")
         .select("id, cuit, phone, auth_id")
         .eq("email", user.email)

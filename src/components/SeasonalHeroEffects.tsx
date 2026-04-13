@@ -136,7 +136,7 @@ export function SeasonalHeroEffects() {
       window.removeEventListener("resize", resize);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [season]);
+  }, [season, theme.accent, theme.glow, theme.primary]);
 
   return (
     <canvas

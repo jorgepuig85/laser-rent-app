@@ -11,6 +11,7 @@ import { User } from "@supabase/supabase-js";
 export function NavbarAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isLoginLoading, setIsLoginLoading] = useState(false);
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -68,7 +69,6 @@ export function NavbarAuth() {
     );
   }
 
-  const [isLoginLoading, setIsLoginLoading] = useState(false);
 
   return (
     <Link href="/?login=true&next=/alquiler" onClick={() => setIsLoginLoading(true)}>
