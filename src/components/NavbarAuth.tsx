@@ -38,9 +38,21 @@ export function NavbarAuth() {
   if (loading) return <div className="w-32 h-10 animate-pulse bg-slate-100 rounded-full" />;
 
   if (user) {
+    const fullName = user.user_metadata?.full_name || user.email?.split("@")[0] || "Profesional";
+    const firstName = fullName.split(" ")[0];
+
     return (
       <div className="flex items-center gap-4 border-l pl-4 ml-2">
-        <Link href="/alquiler" className="transition-colors font-semibold text-slate-800 hover:text-[--seasonal-primary]">
+        <div className="flex flex-col items-end mr-2">
+          <span className="text-sm font-serif italic text-[--seasonal-primary] hidden md:inline whitespace-nowrap">
+            Hola, {fullName}
+          </span>
+          <span className="text-sm font-serif italic text-[--seasonal-primary] md:hidden whitespace-nowrap">
+            {firstName}
+          </span>
+        </div>
+        
+        <Link href="/alquiler" className="transition-colors font-semibold text-slate-800 hover:text-[--seasonal-primary] hidden lg:block">
           Alquilar
         </Link>
         <Link href="/dashboard" className="transition-colors hover:text-[--seasonal-primary] hidden sm:block">

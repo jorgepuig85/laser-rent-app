@@ -4,6 +4,8 @@ import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import Image from "next/image";
 
+import { CancelButton } from "./CancelButton";
+
 const ADSS_IMAGE = "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/equipo_depilacion.webp";
 
 export default async function DashboardPage() {
@@ -29,7 +31,7 @@ export default async function DashboardPage() {
     .order("start_date", { ascending: true });
 
   return (
-    <div className="max-w-4xl mx-auto py-24 px-4">
+    <div className="max-w-5xl mx-auto py-24 px-4 min-h-[70vh]">
       <h1 className="text-4xl md:text-5xl font-serif font-bold tracking-tight text-slate-900 mb-12">
         Mis Reservas
       </h1>
@@ -37,11 +39,12 @@ export default async function DashboardPage() {
       {rentals && rentals.length > 0 ? (
         <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
           <table className="w-full text-sm text-left">
-            <thead className="bg-slate-50 text-slate-700 font-medium border-b border-slate-100">
+            <thead className="bg-slate-50 text-slate-700 font-medium border-b border-slate-100 uppercase tracking-wider text-[10px]">
               <tr>
                 <th className="px-6 py-4">Reserva</th>
                 <th className="px-6 py-4">Período</th>
                 <th className="px-6 py-4">Estado</th>
+                <th className="px-6 py-4 text-right">Gestión</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -61,7 +64,7 @@ export default async function DashboardPage() {
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-slate-500 font-medium">
+                  <td className="px-6 py-4 text-slate-500 font-medium whitespace-nowrap">
                     {format(parseISO(r.start_date), "dd MMM yyyy", { locale: es })}{" "}
                     - {format(parseISO(r.end_date), "dd MMM yyyy", { locale: es })}
                   </td>
@@ -69,6 +72,9 @@ export default async function DashboardPage() {
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">
                       Confirmada
                     </span>
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <CancelButton rentalId={r.id} startDate={r.start_date} />
                   </td>
                 </tr>
               ))}

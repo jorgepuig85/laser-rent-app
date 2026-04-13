@@ -25,3 +25,23 @@ export async function createRental(startDate: string, endDate: string, professio
   revalidatePath('/alquiler');
   revalidatePath('/dashboard');
 }
+
+export async function cancelRental(rentalId: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("No autorizado");
+
+  const { error } = await supabase
+    .from('rentals')
+    .delete()
+    .eq('id', rentalId);
+    
+  if (error) {
+    console.error(error);
+    throw new Error("No se pudo cancelar la reserva.");
+  }
+  
+  revalidatePath('/dashboard');
+  revalidatePath('/alquiler');
+}

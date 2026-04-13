@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { createRental } from "./actions";
 import Link from "next/link";
+import { toast } from "sonner";
+import { CheckCircle2 } from "lucide-react";
 
 interface ReservationClientProps {
   professionalId: string;
@@ -57,9 +59,15 @@ export function ReservationClient({
     try {
       await createRental(startStr, endStr, professionalId, professionalName, totalCost);
       setDate(undefined);
-      alert("Reserva confirmada con éxito. Ya puedes verla en tu dashboard.");
+      toast.success("¡Reserva confirmada con éxito!", {
+        description: "Ya puedes revisar los detalles en tu dashboard profesional.",
+        icon: <CheckCircle2 className="h-5 w-5 text-[--seasonal-primary]" />,
+        duration: 5000,
+      });
     } catch (err: unknown) {
-      alert((err as Error).message || "Error al procesar la reserva");
+      toast.error("Error al procesar la reserva", {
+        description: (err as Error).message || "Ocurrió un problema inesperado.",
+      });
     } finally {
       setLoading(false);
     }

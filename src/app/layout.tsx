@@ -27,6 +27,7 @@ import { Footer } from "@/components/Footer";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { SeasonProvider } from "@/context/SeasonContext";
 import { SeasonalCursor } from "@/components/SeasonalCursor";
+import { Toaster } from "sonner";
 
 export default function RootLayout({
   children,
@@ -40,6 +41,12 @@ export default function RootLayout({
       >
         <SeasonProvider>
           <SeasonalCursor />
+          <Toaster 
+            position="top-right"
+            toastOptions={{
+              className: "font-serif border-[--seasonal-primary] bg-white text-slate-900 border",
+            }}
+          />
           <Navbar />
           <main className="flex-1 transition-colors duration-1000">
             {children}
