@@ -2,8 +2,32 @@
 import { createClient } from "@/lib/supabaseServer";
 import { revalidatePath } from "next/cache";
 
-export async function createRental(startDate: string, endDate: string, professionalId: string, professionalName: string, cost: number | null) {
+export async function createRental(startDate: string, endDate: string, professionalId: string, professionalName: string, cost: number | null, captchaToken: string) {
   const supabase = await createClient();
+
+  // 1. Verificar reCAPTCHA (Simulado - requiere secret key en env)
+  if (!captchaToken) {
+    throw new Error("reCAPTCHA inválido.");
+  }
+  // En producción se validaría contra: https://www.google.com/recaptcha/api/siteverify
+
+  // 2. Limitar reservas activas (máximo 5)
+  const today = new Date().toISOString().split('T')[0];
+  const { count, error: countError } = await supabase
+    .from('rentals')
+    .select('*', { count: 'exact', head: true })
+    .eq('external_professional_id', professionalId)
+    .gte('start_date', today);
+
+  if (countError) {
+    console.error(countError);
+    throw new Error("Error al validar límite de reservas.");
+  }
+
+  if (count !== null && count >= 5) {
+    throw new Error("Límite de reservas alcanzado. Máximo 5 reservas pendientes.");
+  }
+
   const title = `Reserva Web: ADSS FG2000B - ${professionalName}`;
   
   const { error } = await supabase

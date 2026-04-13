@@ -14,26 +14,28 @@ export async function GET(request: Request) {
 
     if (!error && authData.user) {
       const user = authData.user;
-      // Vincular con external_professionals
-      const { data: proExists } = await supabase
+      // 1. Obtener datos del profesional en una sola pasada
+      const { data: pro, error: proError } = await supabase
         .from("external_professionals")
-        .select("id, cuit, phone")
+        .select("id, cuit, phone, auth_id")
         .eq("email", user.email)
-        .single();
+        .maybeSingle();
 
-      if (proExists) {
-        // Actualizar auth_id en caso de ser nulo o viejo
-        await supabase
-          .from("external_professionals")
-          .update({ auth_id: user.id })
-          .eq("id", proExists.id);
+      if (pro) {
+        // 2. Si existe, asegurar vinculación (auth_id) si no la tiene
+        if (!pro.auth_id) {
+          await supabase
+            .from("external_professionals")
+            .update({ auth_id: user.id })
+            .eq("id", pro.id);
+        }
         
-        // Regla de oro: Si falta CUIT o Teléfono, completar perfil
-        if (!proExists.cuit || !proExists.phone) {
+        // 3. Redirigir según completitud (CUIT/Phone son obligatorios)
+        if (!pro.cuit || !pro.phone) {
           return NextResponse.redirect(`${origin}/completar-perfil?next=${encodeURIComponent(next)}`);
         }
       } else {
-        // Crear nuevo registro (perfil incompleto por definición)
+        // 4. Nuevo registro (perfil incompleto)
         await supabase
           .from("external_professionals")
           .insert({
@@ -45,6 +47,7 @@ export async function GET(request: Request) {
         return NextResponse.redirect(`${origin}/completar-perfil?next=${encodeURIComponent(next)}`);
       }
 
+      // 5. Redirección final directa
       return NextResponse.redirect(`${origin}${next}`);
     }
   }

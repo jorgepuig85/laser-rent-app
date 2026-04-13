@@ -13,6 +13,9 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { CheckCircle2 } from "lucide-react";
 
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
+import { addDays, isAfter } from "date-fns";
+
 interface ReservationClientProps {
   professionalId: string;
   professionalName: string;
@@ -28,6 +31,7 @@ export function ReservationClient({
 }: ReservationClientProps) {
   const [date, setDate] = useState<DateRange | undefined>(undefined);
   const [loading, setLoading] = useState(false);
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   const disabledIntervals = existingRentals.map((rental) => ({
     start: startOfDay(parseISO(rental.start_date)),
@@ -35,7 +39,14 @@ export function ReservationClient({
   }));
 
   const isDateDisabled = (checkDate: Date) => {
-    if (startOfDay(checkDate) < startOfDay(new Date())) return true;
+    const today = startOfDay(new Date());
+    const sixtyDaysLater = addDays(today, 60);
+
+    // Bloqueo Hoy y pasado: Mínimo 24hs de antelación
+    if (startOfDay(checkDate) <= today) return true;
+
+    // Ventana de 60 días
+    if (isAfter(startOfDay(checkDate), sixtyDaysLater)) return true;
 
     return disabledIntervals.some((interval) =>
       isWithinInterval(startOfDay(checkDate), {
@@ -57,7 +68,14 @@ export function ReservationClient({
     const endStr = format(date.to, "yyyy-MM-dd");
 
     try {
-      await createRental(startStr, endStr, professionalId, professionalName, totalCost);
+      if (!executeRecaptcha) {
+        toast.error("reCAPTCHA no disponible. Inténtalo de nuevo.");
+        return;
+      }
+
+      const gReCaptchaToken = await executeRecaptcha("booking");
+      
+      await createRental(startStr, endStr, professionalId, professionalName, totalCost, gReCaptchaToken);
       setDate(undefined);
       toast.success("¡Reserva confirmada con éxito!", {
         description: "Ya puedes revisar los detalles en tu dashboard profesional.",
@@ -130,6 +148,10 @@ export function ReservationClient({
           </div>
         )}
       </div>
+      
+      <p className="text-[11px] text-slate-400 italic font-serif text-center w-full">
+        * Validez de precios garantizada por 60 días desde la fecha de reserva.
+      </p>
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { LogOut, UserCircle } from "lucide-react";
+import { LogOut, UserCircle, Loader2 } from "lucide-react";
 import { createBrowserClient } from "@supabase/ssr";
 import { signOut } from "@/app/auth/actions";
 import { User } from "@supabase/supabase-js";
@@ -68,11 +68,17 @@ export function NavbarAuth() {
     );
   }
 
+  const [isLoginLoading, setIsLoginLoading] = useState(false);
+
   return (
-    <Link href="/?login=true&next=/alquiler">
-      <Button className="bg-primary text-white rounded-full px-6">
-        <UserCircle className="mr-2 h-4 w-4" />
-        Login Profesional
+    <Link href="/?login=true&next=/alquiler" onClick={() => setIsLoginLoading(true)}>
+      <Button disabled={isLoginLoading} className="bg-primary text-white rounded-full px-6 min-w-[160px]">
+        {isLoginLoading ? (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        ) : (
+          <UserCircle className="mr-2 h-4 w-4" />
+        )}
+        {isLoginLoading ? "Cargando..." : "Login Profesional"}
       </Button>
     </Link>
   );

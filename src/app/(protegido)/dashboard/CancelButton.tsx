@@ -7,6 +7,8 @@ import { cancelRental } from "../alquiler/actions";
 import { Loader2, XCircle, Info } from "lucide-react";
 import { differenceInHours, parseISO } from "date-fns";
 
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+
 interface CancelButtonProps {
   rentalId: string;
   startDate: string;
@@ -14,6 +16,7 @@ interface CancelButtonProps {
 
 export function CancelButton({ rentalId, startDate }: CancelButtonProps) {
   const [loading, setLoading] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   const hoursLeft = differenceInHours(parseISO(startDate), new Date());
   const canCancel = hoursLeft >= 48;
@@ -29,10 +32,12 @@ export function CancelButton({ rentalId, startDate }: CancelButtonProps) {
     );
   }
 
-  const handleCancel = async () => {
-    // Custom confirm via toast or simple window.confirm for now
-    if (!window.confirm("¿Confirmas la cancelación de esta reserva? Sanación de 48hs aplicada.")) return;
-    
+  const handleCancelClick = () => {
+    setIsDialogOpen(true);
+  };
+
+  const confirmCancel = async () => {
+    setIsDialogOpen(false);
     setLoading(true);
     try {
       await cancelRental(rentalId);
@@ -49,19 +54,30 @@ export function CancelButton({ rentalId, startDate }: CancelButtonProps) {
   };
 
   return (
-    <Button 
-      variant="ghost" 
-      size="sm" 
-      onClick={handleCancel}
-      disabled={loading}
-      className="text-slate-500 hover:text-red-600 hover:bg-red-50 transition-all group h-8 px-3 rounded-lg"
-    >
-      {loading ? (
-        <Loader2 className="h-3.5 w-3.5 animate-spin mr-2" />
-      ) : (
-        <XCircle className="h-3.5 w-3.5 mr-2 group-hover:scale-110 transition-transform" />
-      )}
-      <span className="text-xs font-semibold">Cancelar Reserva</span>
-    </Button>
+    <>
+      <Button 
+        variant="ghost" 
+        size="sm" 
+        onClick={handleCancelClick}
+        disabled={loading}
+        className="text-slate-500 hover:text-red-600 hover:bg-red-50 transition-all group h-8 px-3 rounded-lg"
+      >
+        {loading ? (
+          <Loader2 className="h-3.5 w-3.5 animate-spin mr-2" />
+        ) : (
+          <XCircle className="h-3.5 w-3.5 mr-2 group-hover:scale-110 transition-transform" />
+        )}
+        <span className="text-xs font-semibold">Cancelar Reserva</span>
+      </Button>
+
+      <ConfirmDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onConfirm={confirmCancel}
+        title="¿Estás seguro de que deseas cancelar esta jornada?"
+        description="Esta acción es irreversible y liberará el equipo para otros profesionales inmediatamente."
+        loading={loading}
+      />
+    </>
   );
 }
