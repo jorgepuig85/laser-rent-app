@@ -73,7 +73,7 @@ export default async function PreciosPage() {
   ];
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 md:px-6 py-16 md:py-24 animate-in fade-in duration-500">
+    <div className="mx-auto w-full max-w-7xl px-4 md:px-6 py-16 md:py-24 reveal-up">
       <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">Planes Flexibles para tu Negocio</h1>
         <p className="text-xl text-muted-foreground">
@@ -85,7 +85,7 @@ export default async function PreciosPage() {
         {plans.map((plan, i) => (
           <Card 
             key={i} 
-            className={`group relative flex flex-col h-full border-2 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:border-primary/20 ${plan.popular ? 'border-primary shadow-xl z-10' : 'border-slate-100/50'}`}
+            className={`group relative flex flex-col h-full border-2 transition-all duration-300 ease-in-out premium-card-glow ${plan.popular ? 'border-primary shadow-xl z-10 scale-105' : 'border-slate-100/50'}`}
           >
             <CardHeader className={`text-center flex-initial space-y-4 pt-10 pb-6 ${plan.popular ? 'bg-primary/5' : ''}`}>
               {plan.popular && (
@@ -115,7 +115,7 @@ export default async function PreciosPage() {
             <CardFooter className="pt-8">
               <Button 
                 size="lg" 
-                className="w-full h-12 rounded-xl font-bold transition-all hover:scale-[1.02]" 
+                className={`w-full h-12 rounded-xl font-bold transition-all hover:scale-[1.02] ${plan.popular ? 'btn-glint' : ''}`}
                 variant={plan.popular ? 'default' : 'outline'} 
                 render={
                   plan.name === "Mensual" ? (

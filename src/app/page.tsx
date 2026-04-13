@@ -18,28 +18,28 @@ export default function Home() {
         <AutoLoginTrigger />
       </Suspense>
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-16 md:pt-24 lg:pt-32">
+      <section className="relative overflow-hidden pt-16 md:pt-24 lg:pt-32 min-h-[85vh] flex items-center">
         <SeasonalHeroEffects />
         <div className="mx-auto w-full max-w-7xl px-4 md:px-6 relative z-10">
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-center">
-            <div className="flex flex-col justify-center space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
+            <div className="flex flex-col justify-center space-y-8 reveal-up">
               <div className="space-y-4">
-                <div className="inline-flex items-center rounded-lg bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-                  <span className="flex h-2 w-2 rounded-full bg-primary mr-2"></span>
+                <div className="inline-flex items-center rounded-full bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-primary">
+                  <span className="flex h-2 w-2 rounded-full bg-primary mr-2 animate-pulse"></span>
                   Equipos de Última Generación
                 </div>
-                <h1 className="text-5xl font-serif font-extrabold tracking-tight sm:text-6xl xl:text-7xl text-foreground !leading-tight">
-                  Alquiler de Terapia Láser para <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/80">Profesionales</span>
+                <h1 className="text-5xl font-serif font-black tracking-tighter sm:text-7xl xl:text-8xl text-foreground !leading-[1.1]">
+                  Alquiler de Terapia Láser para <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/70">Profesionales</span>
                 </h1>
-                <p className="max-w-[600px] text-lg text-slate-500 leading-relaxed">
+                <p className="max-w-[600px] text-xl text-slate-500 leading-relaxed tracking-wide font-medium">
                   Potencia tus ingresos sin inversión de capital. Alquilamos los equipos de depilación láser más avanzados del mercado con mantenimiento y soporte técnico incluido.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="h-14 px-8 text-base shadow-lg transition-transform hover:scale-105" render={<Link href="/equipos" />}>
+                <Button size="lg" className="h-14 px-10 text-base shadow-xl transition-all hover:scale-105 btn-glint rounded-2xl" render={<Link href="/equipos" />}>
                   Ver Equipos <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
-                <Button variant="outline" size="lg" className="h-14 px-8 text-base border-primary/20 hover:bg-primary/5" render={<Link href="/precios" />}>
+                <Button variant="outline" size="lg" className="h-14 px-10 text-base border-primary/20 hover:bg-primary/5 rounded-2xl transition-all" render={<Link href="/precios" />}>
                   Consultar Planes
                 </Button>
               </div>
@@ -104,9 +104,9 @@ export default function Home() {
       {/* Benefits Section */}
       <section className="py-24 md:py-32 bg-white">
         <div className="mx-auto w-full max-w-7xl px-4 md:px-6">
-          <div className="text-center space-y-4 mb-20">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold tracking-tight text-slate-900">¿Por qué elegir Laser Rent?</h2>
-            <p className="text-slate-500 text-lg max-w-[700px] mx-auto">
+          <div className="text-center space-y-4 mb-20 reveal-up">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold tracking-tight text-slate-900">¿Por qué elegir Laser Rent?</h2>
+            <p className="text-slate-500 text-lg max-w-[700px] mx-auto tracking-wide">
               Maximizamos tu rentabilidad eliminando los costos operativos de mantenimiento y reparaciones con tecnología certificada.
             </p>
           </div>
