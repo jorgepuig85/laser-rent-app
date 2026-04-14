@@ -14,18 +14,28 @@ export const dynamic = 'force-dynamic'; // Desactivar cache estático de Vercel
 export default async function PreciosPage() {
   // Fetch popular pricing dynamically from Supabase
   const { data: tarifaData, error } = await supabase
-    .from('tarifas')
+    .from('rental_prices')
     .select('*')
-    .order('es_popular', { ascending: false })
     .limit(1)
     .single();
 
   if (error) {
-    console.error("Error fetching tarifas:", error);
+    console.error("Error fetching rental_prices:", error);
   }
 
-  const baseDia = tarifaData?.precio_dia ? `$${tarifaData.precio_dia.toLocaleString('es-AR')}` : "Consultar";
-  const baseSemana = tarifaData?.precio_semana ? `$${tarifaData.precio_semana.toLocaleString('es-AR')}` : "Consultar";
+  // Currency formatter for es-AR
+  const formatter = new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+
+  const dailyRate = tarifaData?.daily_rate || 0;
+  const weeklyRate = tarifaData?.weekly_rate || (dailyRate * 6);
+
+  const baseDia = dailyRate > 0 ? formatter.format(dailyRate) : "Consultar";
+  const baseSemana = weeklyRate > 0 ? formatter.format(weeklyRate) : "Consultar";
 
   const plans = [
     {
@@ -77,7 +87,7 @@ export default async function PreciosPage() {
       <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">Planes Flexibles para tu Negocio</h1>
         <p className="text-xl text-muted-foreground">
-          Sin sorpresas ni contratos ocultos. Pagás solo por el tiempo que necesitas el equipo y te dedicas a generar ingresos.
+          Sin sorpresas ni contratos ocultos. Pag&aacute;s solo por el tiempo que necesitas el equipo y te dedicas a generar ingresos.
         </p>
       </div>
 
@@ -98,7 +108,7 @@ export default async function PreciosPage() {
               <CardTitle className="text-2xl font-serif">{plan.name}</CardTitle>
               <CardDescription className="h-10 text-sm px-4">{plan.description}</CardDescription>
               <div className="pt-4 pb-2">
-                <span className="text-5xl font-extrabold tracking-tight text-slate-900">{plan.price}</span>
+                <span className="text-5xl font-extrabold tracking-tight text-slate-900 font-serif">{plan.price}</span>
                 {plan.price !== "Consultar" && <span className="text-slate-500 font-bold ml-2 text-sm uppercase">ARS</span>}
               </div>
             </CardHeader>
@@ -117,15 +127,17 @@ export default async function PreciosPage() {
                 size="lg" 
                 className={`w-full h-12 rounded-xl font-bold transition-all hover:scale-[1.02] ${plan.popular ? 'btn-glint' : ''}`}
                 variant={plan.popular ? 'default' : 'outline'} 
-                render={
-                  plan.name === "Mensual" ? (
-                    <Link href={`https://wa.me/5492954631456?text=${encodeURIComponent("Hola! Me interesa consultar por el alquiler mensual del ADSS FG2000B.")}`} target="_blank" rel="noopener noreferrer" />
-                  ) : (
-                    <Link href="/alquiler" />
-                  )
-                }
+                asChild
               >
-                {plan.cta}
+                {plan.name === "Mensual" ? (
+                  <Link href={`https://wa.me/5492954631456?text=${encodeURIComponent("Hola! Me interesa consultar por el alquiler mensual del ADSS FG2000B.")}`} target="_blank" rel="noopener noreferrer">
+                    {plan.cta}
+                  </Link>
+                ) : (
+                  <Link href="/alquiler">
+                    {plan.cta}
+                  </Link>
+                )}
               </Button>
             </CardFooter>
           </Card>
@@ -137,8 +149,10 @@ export default async function PreciosPage() {
         <p className="text-muted-foreground mb-6">
           Ofrecemos descuentos por reservas anticipadas y para clientes frecuentes. Contáctanos para armar un plan que se ajuste a tus horarios de atención.
         </p>
-        <Button variant="link" className="text-primary text-lg" render={<Link href="https://wa.me/5492954631456" target="_blank" rel="noopener noreferrer" />}>
-          Hablar con ventas →
+        <Button variant="link" className="text-primary text-lg" asChild>
+          <Link href="https://wa.me/5492954631456" target="_blank" rel="noopener noreferrer">
+            Hablar con ventas →
+          </Link>
         </Button>
       </div>
     </div>
