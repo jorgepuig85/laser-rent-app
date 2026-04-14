@@ -30,7 +30,7 @@ const RESOURCES = [
     icon: Share2,
     label: "Material para Redes",
     desc: "Imágenes, videos y copy listo para publicar",
-    href: "https://drive.google.com/drive/folders/1YourFolderIdHere",
+    href: "https://drive.google.com/drive/folders/1YourFolderIdHere", // TODO: Añadir link real
     color: "from-white to-[#FCFAf5]",
     iconColor: "text-[#B89B72]",
     border: "border-[#EAE3D5] hover:border-[#D4AF37]/40",
@@ -39,7 +39,7 @@ const RESOURCES = [
     icon: FileText,
     label: "Ficha Técnica",
     desc: "Especificaciones del equipo ADSS FG2000B",
-    href: "/ficha-tecnica-adss.pdf",
+    href: "/ficha-tecnica",
     color: "from-white to-[#FCFAf5]",
     iconColor: "text-[#B89B72]",
     border: "border-[#EAE3D5] hover:border-[#D4AF37]/40",
@@ -48,7 +48,7 @@ const RESOURCES = [
     icon: ScrollText,
     label: "Consentimientos Legales",
     desc: "Modelos de consentimiento para tus pacientes",
-    href: "/consentimientos-legales.pdf",
+    href: "/consentimiento-paciente",
     color: "from-white to-[#FCFAf5]",
     iconColor: "text-[#B89B72]",
     border: "border-[#EAE3D5] hover:border-[#D4AF37]/40",
@@ -186,10 +186,10 @@ export default async function DashboardPage() {
             </div>
             <div className="space-y-2">
               <p className="font-serif text-2xl font-bold text-white leading-tight">
-                Soporte Concierge
+                Asistencia Directa
               </p>
               <p className="text-sm font-light text-stone-400 leading-relaxed">
-                Asistencia técnica y comercial inmediata para tu centro.
+                Estamos con vos en cada jornada. Contactanos por WhatsApp ante cualquier duda técnica o comercial con el equipo.
               </p>
             </div>
             <div className="mt-auto">
