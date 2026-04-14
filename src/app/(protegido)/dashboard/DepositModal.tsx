@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { supabase } from "@/lib/supabaseClient";
 import { uploadReceipt } from "@/app/(protegido)/alquiler/actions";
 import {
@@ -33,7 +34,27 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Ensure we only render the portal on the client
+  useEffect(() => {
+    setMounted(true);
+    // Prevent body scroll while modal is open
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [onClose]);
 
   const copy = async (text: string, field: string) => {
     await navigator.clipboard.writeText(text);
@@ -77,10 +98,21 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm">
-      <div className="relative w-full max-w-lg bg-white rounded-[2.5rem] shadow-2xl shadow-stone-900/20 overflow-hidden">
-        {/* Header */}
+  if (!mounted) return null;
+
+  const modalContent = (
+    /* ── Portal backdrop ── */
+    <div
+      className="fixed inset-0 flex items-center justify-center p-4 bg-stone-900/70 backdrop-blur-sm"
+      style={{ zIndex: 9999 }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Modal pago de seña"
+    >
+      <div className="relative w-full max-w-lg bg-white rounded-[2.5rem] shadow-2xl shadow-stone-900/30 overflow-hidden animate-[fadeInScale_0.2s_ease-out_both]">
+
+        {/* ── Header ── */}
         <div className="bg-stone-900 px-8 py-6 flex items-center justify-between">
           <div>
             <p className="text-[10px] font-bold tracking-[0.25em] text-stone-500 uppercase mb-1">
@@ -90,15 +122,17 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
               Confirmar con Seña
             </h2>
           </div>
+          {/* Close button — prominent X */}
           <button
             onClick={onClose}
-            className="rounded-full bg-white/10 border border-white/10 p-2.5 text-white/60 hover:text-white transition-colors"
+            aria-label="Cerrar modal"
+            className="rounded-full bg-white/10 border border-white/20 p-2.5 text-white/60 hover:text-white hover:bg-white/20 transition-all duration-200 hover:scale-110 active:scale-95"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="px-8 py-7 space-y-6">
+        <div className="px-8 py-7 space-y-6 max-h-[80vh] overflow-y-auto">
           {/* Deposit amount highlight */}
           {depositAmount && (
             <div className="flex items-center justify-between bg-[#FCFAF5] border border-[#EAE3D5] rounded-2xl px-6 py-4">
@@ -239,4 +273,6 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
