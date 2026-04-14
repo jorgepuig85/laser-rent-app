@@ -123,22 +123,32 @@ export default async function PreciosPage() {
               </ul>
             </CardContent>
             <CardFooter className="pt-8">
-              <Button 
-                size="lg" 
-                className={`w-full h-12 rounded-xl font-bold transition-all hover:scale-[1.02] ${plan.popular ? 'btn-glint' : ''}`}
-                variant={plan.popular ? 'default' : 'outline'} 
-                asChild
-              >
-                {plan.name === "Mensual" ? (
-                  <Link href={`https://wa.me/5492954631456?text=${encodeURIComponent("Hola! Me interesa consultar por el alquiler mensual del ADSS FG2000B.")}`} target="_blank" rel="noopener noreferrer">
+              {plan.name === "Mensual" ? (
+                <Link 
+                  href={`https://wa.me/5492954631456?text=${encodeURIComponent("Hola! Me interesa consultar por el alquiler mensual del ADSS FG2000B.")}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-full"
+                >
+                  <Button 
+                    size="lg" 
+                    className={`w-full h-12 rounded-xl font-bold transition-all hover:scale-[1.02] ${plan.popular ? 'btn-glint' : ''}`}
+                    variant={plan.popular ? 'default' : 'outline'} 
+                  >
                     {plan.cta}
-                  </Link>
-                ) : (
-                  <Link href="/alquiler">
+                  </Button>
+                </Link>
+              ) : (
+                <Link href="/alquiler" className="w-full">
+                  <Button 
+                    size="lg" 
+                    className={`w-full h-12 rounded-xl font-bold transition-all hover:scale-[1.02] ${plan.popular ? 'btn-glint' : ''}`}
+                    variant={plan.popular ? 'default' : 'outline'} 
+                  >
                     {plan.cta}
-                  </Link>
-                )}
-              </Button>
+                  </Button>
+                </Link>
+              )}
             </CardFooter>
           </Card>
         ))}
@@ -149,11 +159,11 @@ export default async function PreciosPage() {
         <p className="text-muted-foreground mb-6">
           Ofrecemos descuentos por reservas anticipadas y para clientes frecuentes. Contáctanos para armar un plan que se ajuste a tus horarios de atención.
         </p>
-        <Button variant="link" className="text-primary text-lg" asChild>
-          <Link href="https://wa.me/5492954631456" target="_blank" rel="noopener noreferrer">
+        <Link href="https://wa.me/5492954631456" target="_blank" rel="noopener noreferrer">
+          <Button variant="link" className="text-primary text-lg">
             Hablar con ventas →
-          </Link>
-        </Button>
+          </Button>
+        </Link>
       </div>
     </div>
   );
