@@ -113,24 +113,40 @@ export function SeasonalHeroEffects() {
 
     const init = () => {
       particles = [];
-      const count = season === "autumn" ? 30 : 50;
+      const isMobile = window.innerWidth < 768;
+      // Drastically reduce particles on mobile to keep FPS stable and reduce CPU load
+      let count = season === "autumn" ? 30 : 50;
+      if (isMobile) count = Math.floor(count * 0.3);
+
       for (let i = 0; i < count; i++) {
         particles.push(new Particle(canvas.width, canvas.height));
       }
     };
 
-    const animate = () => {
+    let lastTime = 0;
+    const fps = 30;
+    const interval = 1000 / fps;
+
+    const animate = (timestamp: number) => {
       if (!ctx || !canvas) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach((p) => {
-        p.update();
-        p.draw();
-      });
+
+      const delta = timestamp - lastTime;
+
+      if (delta > interval) {
+        lastTime = timestamp - (delta % interval);
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach((p) => {
+          p.update();
+          p.draw();
+        });
+      }
+      
       animationFrameId = requestAnimationFrame(animate);
     };
 
     init();
-    animate();
+    animationFrameId = requestAnimationFrame(animate);
 
     return () => {
       window.removeEventListener("resize", resize);
@@ -142,7 +158,7 @@ export function SeasonalHeroEffects() {
     <canvas
       ref={canvasRef}
       className="absolute inset-0 pointer-events-none z-[-1]"
-      style={{ opacity: 0.4 }}
+      style={{ opacity: 0.4, willChange: "transform" }}
     />
   );
 }

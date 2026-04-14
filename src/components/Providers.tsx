@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
+import { LazyreCaptchaProvider } from "./LazyreCaptchaProvider";
 import { SeasonProvider } from "@/context/SeasonContext";
 import { Toaster } from "sonner";
 import { SeasonalCursor } from "./SeasonalCursor";
@@ -9,14 +9,7 @@ import { WhatsAppButton } from "./WhatsAppButton";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <GoogleReCaptchaProvider
-      reCaptchaKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "dummy-key"}
-      scriptProps={{
-        async: true,
-        defer: true,
-        appendTo: "head",
-      }}
-    >
+    <LazyreCaptchaProvider>
       <SeasonProvider>
         <SeasonalCursor />
         <Toaster
@@ -28,6 +21,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
         {children}
         <WhatsAppButton />
       </SeasonProvider>
-    </GoogleReCaptchaProvider>
+    </LazyreCaptchaProvider>
   );
 }

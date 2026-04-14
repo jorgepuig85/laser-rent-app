@@ -137,12 +137,14 @@
   .reveal-up {
     animation: reveal-up 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
     opacity: 0;
+    will-change: transform, opacity;
   }
 
   /* Automated Glint Effect for Premium Buttons */
   .btn-glint {
     position: relative;
     overflow: hidden !important;
+    will-change: transform;
   }
 
   .btn-glint::after {
@@ -160,11 +162,13 @@
     );
     transform: rotate(30deg);
     animation: glint 5s infinite;
+    will-change: left;
   }
 
   /* Subtle Card Glow */
   .premium-card-glow {
-    transition: all 0.4s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, box-shadow;
   }
 
   .premium-card-glow:hover {
