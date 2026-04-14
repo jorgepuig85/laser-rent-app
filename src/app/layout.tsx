@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
+import { Providers } from "@/components/Providers";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -22,14 +25,6 @@ export const metadata: Metadata = {
   },
 };
 
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
-import { WhatsAppButton } from "@/components/WhatsAppButton";
-import { SeasonProvider } from "@/context/SeasonContext";
-import { SeasonalCursor } from "@/components/SeasonalCursor";
-import { Toaster } from "sonner";
-import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -40,31 +35,13 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${playfair.variable} font-sans antialiased flex min-h-screen flex-col bg-white overflow-x-hidden`}
       >
-        <GoogleReCaptchaProvider 
-          reCaptchaKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "dummy-key"}
-          scriptProps={{
-            async: false,
-            defer: false,
-            appendTo: "head",
-            nonce: undefined,
-          }}
-        >
-          <SeasonProvider>
-            <SeasonalCursor />
-            <Toaster 
-              position="top-right"
-              toastOptions={{
-                className: "font-serif border-[--seasonal-primary] bg-white text-slate-900 border",
-              }}
-            />
-            <Navbar />
-            <main className="flex-1 transition-colors duration-1000">
-              {children}
-            </main>
-            <Footer />
-            <WhatsAppButton />
-          </SeasonProvider>
-        </GoogleReCaptchaProvider>
+        <Providers>
+          <Navbar />
+          <main className="flex-1 transition-colors duration-1000">
+            {children}
+          </main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );
