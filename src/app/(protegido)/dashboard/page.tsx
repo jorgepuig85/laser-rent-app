@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 
 import { CancelButton } from "./CancelButton";
+import { DepositButton } from "./DepositButton";
 
 const ADSS_IMAGE =
   "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/equipo_depilacion.webp";
@@ -72,7 +73,7 @@ export default async function DashboardPage() {
 
   const { data: rentals } = await supabase
     .from("rentals")
-    .select("*")
+    .select("id, title, start_date, end_date, status, receipt_url, deposit_amount, cost")
     .eq("external_professional_id", pro.id)
     .order("start_date", { ascending: true });
 
@@ -227,7 +228,8 @@ export default async function DashboardPage() {
                   <tr>
                     <th className="px-8 py-6">Equipo</th>
                     <th className="px-8 py-6">Período de Alquiler</th>
-                    <th className="px-8 py-6">Estado del Servicio</th>
+                    <th className="px-8 py-6">Estado</th>
+                    <th className="px-8 py-6">Seña</th>
                     <th className="px-8 py-6 text-right">Acciones</th>
                   </tr>
                 </thead>
@@ -238,6 +240,10 @@ export default async function DashboardPage() {
                       title: string;
                       start_date: string;
                       end_date: string;
+                      status: string;
+                      receipt_url: string | null;
+                      deposit_amount: number | null;
+                      cost: number | null;
                     }) => {
                       const isPast = !isFuture(parseISO(r.end_date));
                       return (
@@ -273,14 +279,39 @@ export default async function DashboardPage() {
                           </td>
                           <td className="px-8 py-6">
                             {isPast ? (
-                              <span className="inline-flex items-center px-4 py-1.5 rounded-full text-[9px] uppercase tracking-[0.15em] font-bold bg-stone-100 text-stone-400 border border-stone-200">
+                              <span className="inline-flex items-center px-3 py-1.5 rounded-full text-[9px] uppercase tracking-[0.15em] font-bold bg-stone-100 text-stone-400 border border-stone-200">
                                 Completada
                               </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[9px] uppercase tracking-[0.15em] font-bold bg-[#FCFAF5] text-[#B89B72] border border-[#EAE3D5] shadow-sm">
-                                <span className="h-1.5 w-1.5 rounded-full bg-[#B89B72] animate-pulse" />
+                            ) : r.status === 'pendiente' ? (
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] uppercase tracking-[0.15em] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+                                Pendiente
+                              </span>
+                            ) : r.status === 'reservado' ? (
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] uppercase tracking-[0.15em] font-bold bg-[#FCFAF5] text-[#B89B72] border border-[#EAE3D5]">
+                                <span className="h-1.5 w-1.5 rounded-full bg-[#B89B72]" />
                                 Confirmada
                               </span>
+                            ) : (
+                              <span className="inline-flex items-center px-3 py-1.5 rounded-full text-[9px] uppercase tracking-[0.15em] font-bold bg-stone-100 text-stone-400 border border-stone-200">
+                                {r.status}
+                              </span>
+                            )}
+                          </td>
+                          {/* Seña column */}
+                          <td className="px-8 py-6">
+                            {!isPast && r.status === 'pendiente' && !r.receipt_url ? (
+                              <DepositButton
+                                rentalId={r.id}
+                                depositAmount={r.deposit_amount}
+                                startDate={format(parseISO(r.start_date), "d 'de' MMM", { locale: es })}
+                              />
+                            ) : r.receipt_url ? (
+                              <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[9px] uppercase tracking-widest font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                ✓ Enviado
+                              </span>
+                            ) : (
+                              <span className="text-[10px] text-stone-300">—</span>
                             )}
                           </td>
                           <td className="px-8 py-6 text-right">

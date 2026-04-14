@@ -127,6 +127,7 @@ export async function createRental(
 
     // 10. Insert (RLS enforces ownership at DB level)
     const title = `Reserva Web: ADSS FG2000B - ${professionalName.trim().substring(0, 100)}`;
+    const depositAmount = cost !== null ? Math.round(cost * 0.2 * 100) / 100 : null;
     const { error: insertError } = await supabase.from("rentals").insert({
       external_professional_id: professionalId,
       start_date: startDate,
@@ -134,6 +135,8 @@ export async function createRental(
       title,
       is_maintenance: false,
       cost,
+      status: "pendiente",
+      deposit_amount: depositAmount,
     });
 
     if (insertError) {
@@ -166,6 +169,86 @@ export async function createRental(
     };
   }
 }
+
+// ─── uploadReceipt ─────────────────────────────────────────────────────────
+export async function uploadReceipt(
+  rentalId: string,
+  receiptUrl: string
+): Promise<ActionResult> {
+  try {
+    const supabase = await createClient();
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) return { success: false, error: "No autorizado." };
+
+    if (!validateUUID(rentalId)) return { success: false, error: "ID de reserva inválido." };
+    if (typeof receiptUrl !== "string" || !receiptUrl.startsWith("https://")) {
+      return { success: false, error: "URL de comprobante inválida." };
+    }
+
+    // RLS ensures only the owner can update their own pending rental
+    const { error } = await supabase
+      .from("rentals")
+      .update({ receipt_url: receiptUrl })
+      .eq("id", rentalId)
+      .eq("status", "pendiente");
+
+    if (error) {
+      console.error("[uploadReceipt] error:", error);
+      if (error.code === "42501") return { success: false, error: "Sin permiso para actualizar esta reserva." };
+      return { success: false, error: `Error al guardar comprobante: ${error.message}` };
+    }
+
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (e) {
+    console.error("[uploadReceipt] unexpected:", e);
+    return { success: false, error: "Error inesperado al subir comprobante." };
+  }
+}
+
+// ─── confirmPayment ────────────────────────────────────────────────────────
+// Admin-only: change rental status from 'pendiente' → 'reservado'
+export async function confirmPayment(rentalId: string): Promise<ActionResult> {
+  try {
+    const supabase = await createClient();
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) return { success: false, error: "No autorizado." };
+
+    if (!validateUUID(rentalId)) return { success: false, error: "ID de reserva inválido." };
+
+    // Server-side admin check (defence-in-depth on top of RLS)
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_admin")
+      .eq("id", user.id)
+      .single();
+
+    if (!profile?.is_admin) {
+      return { success: false, error: "Acceso denegado. Solo el administrador puede confirmar pagos." };
+    }
+
+    const { error } = await supabase
+      .from("rentals")
+      .update({ status: "reservado" })
+      .eq("id", rentalId)
+      .eq("status", "pendiente");
+
+    if (error) {
+      console.error("[confirmPayment] error:", error);
+      return { success: false, error: `Error al confirmar pago: ${error.message}` };
+    }
+
+    revalidatePath("/admin");
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (e) {
+    console.error("[confirmPayment] unexpected:", e);
+    return { success: false, error: "Error inesperado al confirmar el pago." };
+  }
+}
+
 
 // ─── cancelRental ──────────────────────────────────────────────────────────
 export async function cancelRental(rentalId: string): Promise<ActionResult> {
