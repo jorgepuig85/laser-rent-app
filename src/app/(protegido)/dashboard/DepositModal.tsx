@@ -13,11 +13,11 @@ import {
 } from "lucide-react";
 
 const BANK_INFO = {
-  banco: "Banco de La Pampa",
-  titular: "MPA Equipamiento Estético",
-  cbu: "0310000230000012345678", // ← REEMPLAZAR con CBU real
-  alias: "MPA.LASER.RENTA",     // ← REEMPLAZAR con Alias real
-  cuil: "20-34567890-1",         // ← REEMPLAZAR con CUIL real
+  banco: "Cuenta Virtual (CVU) — Mercado Pago / Billetera",
+  titular: "Jorge Antonio Puig",
+  cvu: "0000003100004637553302",
+  alias: "jorgeapuig1985",
+  cuil: "27-31379661-8",
 };
 
 interface Props {
@@ -126,27 +126,35 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
             </p>
             <div className="space-y-2">
               {[
-                { label: "Banco", value: BANK_INFO.banco, key: "banco" },
+                { label: "Tipo de cuenta", value: BANK_INFO.banco, key: "banco" },
                 { label: "Titular", value: BANK_INFO.titular, key: "titular" },
-                { label: "CBU", value: BANK_INFO.cbu, key: "cbu" },
-                { label: "Alias", value: BANK_INFO.alias, key: "alias" },
-                { label: "CUIL/CUIT", value: BANK_INFO.cuil, key: "cuil" },
+                { label: "CVU ★ Copiar para transferir", value: BANK_INFO.cvu, key: "cvu", highlight: true },
+                { label: "Alias (más fácil)", value: BANK_INFO.alias, key: "alias" },
+                { label: "CUIT / CUIL", value: BANK_INFO.cuil, key: "cuil" },
               ].map((item) => (
                 <div
                   key={item.key}
-                  className="flex items-center justify-between bg-stone-50 border border-stone-100 rounded-xl px-4 py-3"
+                  className={`flex items-center justify-between rounded-xl px-4 py-3 ${
+                    item.highlight
+                      ? "bg-[#FFF9EC] border-2 border-[#D4AF37]/40 shadow-sm"
+                      : "bg-stone-50 border border-stone-100"
+                  }`}
                 >
                   <div>
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-stone-400">
+                    <p className={`text-[9px] font-bold uppercase tracking-widest ${item.highlight ? "text-[#B89B72]" : "text-stone-400"}`}>
                       {item.label}
                     </p>
-                    <p className="text-sm font-semibold text-stone-800 font-mono mt-0.5">
+                    <p className={`text-sm font-semibold font-mono mt-0.5 ${item.highlight ? "text-stone-900 text-base tracking-wider" : "text-stone-800"}`}>
                       {item.value}
                     </p>
                   </div>
                   <button
                     onClick={() => copy(item.value, item.key)}
-                    className="rounded-lg bg-white border border-stone-200 p-2 text-stone-400 hover:text-[#B89B72] transition-colors"
+                    className={`rounded-lg border p-2 transition-colors ${
+                      item.highlight
+                        ? "bg-[#D4AF37]/10 border-[#D4AF37]/30 text-[#B89B72] hover:text-stone-900"
+                        : "bg-white border-stone-200 text-stone-400 hover:text-[#B89B72]"
+                    }`}
                   >
                     {copiedField === item.key ? (
                       <CheckCircle2 className="h-4 w-4 text-emerald-500" />
