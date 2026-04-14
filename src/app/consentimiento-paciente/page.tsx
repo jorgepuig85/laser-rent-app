@@ -1,13 +1,8 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
 import { ArrowLeft, Printer, ShieldCheck } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Consentimiento Informado — Depilación Láser | Panel Profesional",
-  description:
-    "Documento de consentimiento informado para tratamiento de depilación láser con equipo ADSS FG2000B.",
-  robots: "noindex, nofollow",
-};
 
 export default function ConsentimientoPacientePage() {
   return (

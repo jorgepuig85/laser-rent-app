@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
 import {
   Zap,
@@ -10,13 +11,6 @@ import {
   ArrowLeft,
   Printer,
 } from "lucide-react";
-
-export const metadata: Metadata = {
-  title: "Ficha Técnica — ADSS FG2000B | Panel Profesional",
-  description:
-    "Especificaciones técnicas completas del equipo ADSS FG2000B Trío Láser de diodo para depilación definitiva.",
-  robots: "noindex, nofollow",
-};
 
 const SPECS = [
   {

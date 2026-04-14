@@ -12,7 +12,6 @@ import {
   FileText,
   ScrollText,
   Sparkles,
-  Clock3,
 } from "lucide-react";
 
 import { CancelButton } from "./CancelButton";
