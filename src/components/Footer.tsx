@@ -72,6 +72,17 @@ export function Footer() {
             <Link href="/privacidad" className="text-slate-400 hover:text-[--seasonal-primary] text-xs transition-colors">Privacidad</Link>
           </div>
         </div>
+        
+        {/* Google reCAPTCHA Legal Notice */}
+        <div className="mt-8 text-center">
+          <p className="text-[10px] text-slate-400 leading-relaxed max-w-md mx-auto">
+            Este sitio está protegido por reCAPTCHA y se aplican la{' '}
+            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="hover:underline transition-all">Política de Privacidad</a>
+            {' '}y los{' '}
+            <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" className="hover:underline transition-all">Términos de Servicio</a>
+            {' '}de Google.
+          </p>
+        </div>
       </div>
     </footer>
   );

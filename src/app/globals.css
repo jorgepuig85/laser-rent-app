@@ -190,3 +190,8 @@
     transform: translateY(0);
   }
 }
+
+/* Hide reCAPTCHA badge - legal text moved to Footer */
+.grecaptcha-badge { 
+  visibility: hidden !important; 
+}
