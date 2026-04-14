@@ -11,14 +11,18 @@ export default async function AdminPage() {
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) return redirect("/?error=necesitas-login");
 
-  // 2. Admin check
+  // 2. Admin check — use SECURITY DEFINER RPC to bypass RLS edge cases
+  const { data: isAdminResult } = await supabase.rpc("get_my_is_admin");
+
+  // Fallback: also check profiles table directly
   const { data: profile } = await supabase
     .from("profiles")
     .select("is_admin, full_name")
     .eq("id", user.id)
     .single();
 
-  if (!profile?.is_admin) return redirect("/dashboard");
+  const isAdmin = isAdminResult === true || profile?.is_admin === true;
+  if (!isAdmin) return redirect("/dashboard");
 
   // 3. Fetch pending rentals with uploaded receipts
   // Supabase returns an array for relations — we normalize to single object
@@ -65,7 +69,7 @@ export default async function AdminPage() {
     total: allRentals?.length ?? 0,
   };
 
-  const adminName = profile.full_name?.split(" ")[0] ?? "Administrador";
+  const adminName = profile?.full_name?.split(" ")[0] ?? "Administrador";
 
   return (
     <div className="min-h-screen bg-[#FDFBF7]">

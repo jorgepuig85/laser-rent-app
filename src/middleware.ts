@@ -40,7 +40,7 @@ export async function middleware(request: NextRequest) {
   response.headers.set("x-url", pathname);
 
   // Protected Routes Logic
-  const protectedRoutes = ["/alquiler", "/dashboard", "/completar-perfil"];
+  const protectedRoutes = ["/alquiler", "/dashboard", "/completar-perfil", "/admin"];
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
 
   if (isProtectedRoute && !user) {
@@ -49,6 +49,19 @@ export async function middleware(request: NextRequest) {
     url.searchParams.set("login", "true");
     url.searchParams.set("next", pathname);
     return NextResponse.redirect(url);
+  }
+
+  // Admin Route Protection
+  if (pathname.startsWith("/admin") && user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_admin")
+      .eq("id", user.id)
+      .single();
+
+    if (!profile || !profile.is_admin) {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
   }
 
   return response;
