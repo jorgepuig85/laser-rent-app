@@ -40,13 +40,22 @@ export function CancelButton({ rentalId, startDate }: CancelButtonProps) {
     setIsDialogOpen(false);
     setLoading(true);
     try {
-      await cancelRental(rentalId);
+      const result = await cancelRental(rentalId);
+      if (!result.success) {
+        console.error("[CancelButton] cancelRental error:", result.error);
+        toast.error("No se pudo completar la cancelación", {
+          description: result.error,
+        });
+        return;
+      }
       toast.success("Reserva cancelada con éxito", {
         description: "El espacio ha sido liberado en el calendario.",
       });
     } catch (err: unknown) {
+      // Fallback: network or framework-level error
+      console.error("[CancelButton] unexpected error:", err);
       toast.error("No se pudo completar la cancelación", {
-        description: (err as Error).message || "Contacta con soporte si el problema persiste.",
+        description: "Ocurrió un problema de red. Contacta con soporte si persiste.",
       });
     } finally {
       setLoading(false);

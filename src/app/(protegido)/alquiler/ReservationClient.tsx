@@ -61,21 +61,39 @@ export function ReservationClient({
   const totalCost = selectedDays > 0 ? selectedDays * dailyRate : 0;
 
   const handleBooking = async () => {
-    if (!date?.from || !date?.to || isPromo) return;
+    if (!date?.from || isPromo) return;
     setLoading(true);
 
+    // For single-day selection, from === to
     const startStr = format(date.from, "yyyy-MM-dd");
-    const endStr = format(date.to, "yyyy-MM-dd");
+    const endStr = format(date.to ?? date.from, "yyyy-MM-dd");
 
     try {
       if (!executeRecaptcha) {
         toast.error("reCAPTCHA no disponible. Inténtalo de nuevo.");
+        setLoading(false);
         return;
       }
 
       const gReCaptchaToken = await executeRecaptcha("booking");
-      
-      await createRental(startStr, endStr, professionalId, professionalName, totalCost, gReCaptchaToken);
+
+      const result = await createRental(
+        startStr,
+        endStr,
+        professionalId,
+        professionalName,
+        totalCost,
+        gReCaptchaToken
+      );
+
+      if (!result.success) {
+        console.error("[ReservationClient] createRental error:", result.error);
+        toast.error("Error al procesar la reserva", {
+          description: result.error,
+        });
+        return;
+      }
+
       setDate(undefined);
       toast.success("¡Reserva confirmada con éxito!", {
         description: "Ya puedes revisar los detalles en tu dashboard profesional.",
@@ -83,8 +101,10 @@ export function ReservationClient({
         duration: 5000,
       });
     } catch (err: unknown) {
+      // Fallback: network or framework-level error
+      console.error("[ReservationClient] unexpected error:", err);
       toast.error("Error al procesar la reserva", {
-        description: (err as Error).message || "Ocurrió un problema inesperado.",
+        description: "Ocurrió un problema de red. Intentá nuevamente.",
       });
     } finally {
       setLoading(false);
