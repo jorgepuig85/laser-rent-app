@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { supabase } from "@/lib/supabaseClient";
+import { createBrowserClient } from "@supabase/ssr";
 import { uploadReceipt } from "@/app/(protegido)/alquiler/actions";
 import {
   X,
@@ -37,21 +37,20 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
   const [mounted, setMounted] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // Ensure we only render the portal on the client
+  // Instancia inicial genérica para leer la sesión actual
+  const [baseClient] = useState(() => createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  ));
+
   useEffect(() => {
     setMounted(true);
-    // Prevent body scroll while modal is open
     document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "";
-    };
+    return () => { document.body.style.overflow = ""; };
   }, []);
 
-  // Close on Escape key
   useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
+    const handleKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, [onClose]);
@@ -68,20 +67,41 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
     setError(null);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("No autorizado.");
+      // 1. Recuperamos la sesión activa antes de cada intento usando getSession()
+      const { data: { session } } = await baseClient.auth.getSession();
+      if (!session) throw new Error("No autorizado. Inicia sesión nuevamente.");
 
-      const ext = file.name.split(".").pop();
-      const path = `${user.id}/${rentalId}.${ext}`;
+      // 2. Cliente dedicado con Header Implícito forzado
+      const authClient = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+          global: {
+            headers: {
+              Authorization: `Bearer ${session.access_token}`,
+            },
+          },
+        }
+      );
 
-      const { error: uploadError } = await supabase.storage
+      // 3. Ruta simplificada pedida (raíz + Date + name)
+      const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+      const path = `${Date.now()}-${safeName}`;
+
+      // 4. Intento de subida con log exhaustivo y MIME type dinámico
+      const { data, error: uploadError } = await authClient.storage
         .from("comprobantes")
-        .upload(path, file, { upsert: true, contentType: file.type });
+        .upload(path, file, { 
+          upsert: true, 
+          contentType: file.type || "application/octet-stream"
+        });
 
-      if (uploadError) throw new Error(uploadError.message);
+      if (uploadError) {
+        console.error('ERROR DETALLADO STORAGE:', uploadError);
+        throw new Error(uploadError.message || "Error al subir archivo.");
+      }
 
-      // Get signed URL valid for 7 days
-      const { data: signed } = await supabase.storage
+      const { data: signed } = await authClient.storage
         .from("comprobantes")
         .createSignedUrl(path, 60 * 60 * 24 * 7);
 
@@ -92,6 +112,7 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
 
       onSuccess();
     } catch (e: unknown) {
+      console.error('ERROR DETALLADO STORAGE:', e);
       setError(e instanceof Error ? e.message : "Error inesperado. Intentá nuevamente.");
     } finally {
       setUploading(false);
