@@ -97,7 +97,7 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
           contentType: file.type || "application/octet-stream"
         });
 
-      const timeoutPromise = new Promise<{ data: any, error: any }>((_, reject) => 
+      const timeoutPromise = new Promise<{ data: { path: string } | null, error: Error | null }>((_, reject) => 
         setTimeout(() => reject(new Error("La subida tardó más de 10 segundos (Timeout).")), 10000)
       );
 

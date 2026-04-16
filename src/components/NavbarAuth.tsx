@@ -193,7 +193,7 @@ export function NavbarAuth({
   // Not logged in
   if (isMobileView || isMobileMenu) {
     return (
-      <Link href="/?login=true&next=/alquiler" onClick={() => { setIsLoginLoading(true); onCloseMenu && onCloseMenu(); }}>
+      <Link href="/?login=true&next=/alquiler" onClick={() => { setIsLoginLoading(true); if (onCloseMenu) onCloseMenu(); }}>
         <Button disabled={isLoginLoading} className="w-full bg-primary text-white rounded-full">
           {isLoginLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserCircle className="mr-2 h-4 w-4" />}
           Login
