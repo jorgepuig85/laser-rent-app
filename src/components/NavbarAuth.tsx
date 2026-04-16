@@ -21,6 +21,7 @@ export function NavbarAuth({
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isLoginLoading, setIsLoginLoading] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -29,6 +30,9 @@ export function NavbarAuth({
 
   /** Load user + admin flag from profiles */
   const loadUserAndProfile = async () => {
+    // Refresh session to avoid stale tokens
+    await supabase.auth.refreshSession();
+    
     const { data: { user: currentUser } } = await supabase.auth.getUser();
     setUser(currentUser);
 
@@ -37,7 +41,7 @@ export function NavbarAuth({
         .from("profiles")
         .select("is_admin")
         .eq("id", currentUser.id)
-        .single();
+        .maybeSingle();
       setIsAdmin(profile?.is_admin === true);
     } else {
       setIsAdmin(false);
@@ -47,21 +51,29 @@ export function NavbarAuth({
   };
 
   useEffect(() => {
+    setIsMounted(true);
     loadUserAndProfile();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        const currentUser = session?.user ?? null;
-        setUser(currentUser);
+      async (event, session) => {
+        if (event === "TOKEN_REFRESHED" || event === "SIGNED_IN" || event === "USER_UPDATED") {
+          const currentUser = session?.user ?? null;
+          setUser(currentUser);
 
-        if (currentUser) {
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("is_admin")
-            .eq("id", currentUser.id)
-            .single();
-          setIsAdmin(profile?.is_admin === true);
-        } else {
+          if (currentUser) {
+            const { data: profile } = await supabase
+              .from("profiles")
+              .select("is_admin")
+              .eq("id", currentUser.id)
+              .maybeSingle();
+            setIsAdmin(profile?.is_admin === true);
+          } else {
+            setIsAdmin(false);
+          }
+        }
+        
+        if (event === "SIGNED_OUT") {
+          setUser(null);
           setIsAdmin(false);
         }
 
@@ -73,7 +85,7 @@ export function NavbarAuth({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (loading) return <div className="w-32 h-10 animate-pulse bg-slate-100 rounded-full" />;
+  if (!isMounted || loading) return <div className="w-32 h-10 animate-pulse bg-slate-100 rounded-full" />;
 
   if (user) {
     const fullName = user.user_metadata?.full_name || user.email?.split("@")[0] || "Profesional";
