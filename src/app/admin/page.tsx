@@ -79,10 +79,9 @@ export default async function AdminPage() {
   const { data: rawHistoryRentals } = await supabase
     .from("rentals")
     .select(`
-      id, title, start_date, end_date, cost, deposit_amount, receipt_url, status, created_at,
+      id, title, start_date, end_date, cost, deposit_amount, receipt_url, status, created_at, is_maintenance,
       external_professionals ( name, phone, email )
     `)
-    .eq("is_maintenance", false)
     .order("created_at", { ascending: false });
 
   const historyRentals = await Promise.all(
@@ -115,8 +114,9 @@ export default async function AdminPage() {
   };
 
   const { data: maintenanceBlocksRaw } = await supabase
-    .from("maintenance_blocks")
+    .from("rentals")
     .select("id, start_date, end_date")
+    .eq("is_maintenance", true)
     .order("start_date", { ascending: true });
 
   const adminName = profile?.full_name?.split(" ")[0] ?? "Administrador";

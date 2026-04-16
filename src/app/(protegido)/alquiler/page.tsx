@@ -22,16 +22,10 @@ export default async function AlquilerPage() {
 
   if (!pro) return redirect("/completar-perfil");
 
-  // Obtener reservas y mantenimientos para inhabilitar fechas
+  // Obtener reservas (is_maintenance = false o true) para inhabilitar fechas en el calendario
   const { data: rentals } = await supabase
     .from("rentals")
     .select("start_date, end_date");
-
-  const { data: maintenance } = await supabase
-    .from("maintenance_blocks")
-    .select("start_date, end_date");
-
-  const allBlocks = [...(rentals || []), ...(maintenance || [])];
 
   // Obtener tarifa diaria
   const { data: priceData } = await supabase
@@ -57,7 +51,7 @@ export default async function AlquilerPage() {
         <ReservationClient
           professionalId={pro.id}
           professionalName={pro.name}
-          existingRentals={allBlocks}
+          existingRentals={rentals || []}
           dailyRate={dailyRate}
         />
         

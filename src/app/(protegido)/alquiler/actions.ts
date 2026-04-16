@@ -109,6 +109,16 @@ export async function createRental(
     const captchaError = await verifyCaptcha(captchaToken);
     if (captchaError) return { success: false, error: captchaError };
 
+    // 8.5 Verify collisions in calendar
+    const { data: rentalsOverlap } = await supabase
+      .from("rentals")
+      .select("id")
+      .or(`and(start_date.lte.${endDate},end_date.gte.${startDate})`);
+
+    if (rentalsOverlap && rentalsOverlap.length > 0) {
+      return { success: false, error: "Las fechas seleccionadas ya se encuentran ocupadas o en mantenimiento." };
+    }
+
     // 9. Rate-limit: máx 5 reservas activas
     const today = new Date().toISOString().split("T")[0];
     const { count, error: countError } = await supabase
