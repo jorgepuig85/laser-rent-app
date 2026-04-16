@@ -75,6 +75,14 @@ export function ReservationClient({
         return;
       }
 
+      const { createBrowserClient } = await import("@supabase/ssr");
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
+      // Forzar refresco de sesión activa si expiró para evitar error en el Server Action
+      await supabase.auth.getSession();
+
       const gReCaptchaToken = await executeRecaptcha("booking");
 
       const result = await createRental(

@@ -1,8 +1,9 @@
 import { createClient } from "@/lib/supabaseServer";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ShieldCheck, Sparkles, ArrowLeft } from "lucide-react";
+import { ShieldCheck, Sparkles, ArrowLeft, History } from "lucide-react";
 import { AdminActions } from "./AdminActions";
+import { AdminHistory } from "./AdminHistory";
 
 export default async function AdminPage() {
   const supabase = await createClient();
@@ -72,17 +73,43 @@ export default async function AdminPage() {
     }) ?? []
   );
 
-  // 4. Also fetch all rentals for stats
-  const { data: allRentals } = await supabase
+  // 4. Fetch all history rentals for stats and history table
+  const { data: rawHistoryRentals } = await supabase
     .from("rentals")
-    .select("status")
-    .eq("is_maintenance", false);
+    .select(`
+      id, title, start_date, end_date, cost, deposit_amount, receipt_url, status, created_at,
+      external_professionals ( name, phone, email )
+    `)
+    .eq("is_maintenance", false)
+    .order("created_at", { ascending: false });
+
+  const historyRentals = await Promise.all(
+    (rawHistoryRentals as RentalRow[] | null)?.map(async (r) => {
+      let finalUrl = r.receipt_url;
+      if (finalUrl && !finalUrl.startsWith("http")) {
+        const { data: signed } = await supabase.storage
+          .from("comprobantes")
+          .createSignedUrl(finalUrl, 60 * 60 * 24 * 7);
+        if (signed?.signedUrl) {
+          finalUrl = signed.signedUrl;
+        }
+      }
+
+      return {
+        ...r,
+        receipt_url: finalUrl,
+        external_professionals: Array.isArray(r.external_professionals)
+          ? r.external_professionals[0] ?? null
+          : r.external_professionals,
+      };
+    }) ?? []
+  );
 
   const stats = {
-    pendiente: allRentals?.filter((r) => r.status === "pendiente").length ?? 0,
-    reservado: allRentals?.filter((r) => r.status === "reservado").length ?? 0,
-    completado: allRentals?.filter((r) => r.status === "completado").length ?? 0,
-    total: allRentals?.length ?? 0,
+    pendiente: historyRentals.filter((r) => r.status === "pendiente").length,
+    reservado: historyRentals.filter((r) => r.status === "reservado").length,
+    completado: historyRentals.filter((r) => r.status === "completado").length,
+    total: historyRentals.length,
   };
 
   const adminName = profile?.full_name?.split(" ")[0] ?? "Administrador";
@@ -178,6 +205,24 @@ export default async function AdminPage() {
               ))}
             </div>
           </div>
+        </section>
+
+        {/* ── Historial General ── */}
+        <section className="space-y-6">
+          <div className="flex items-end justify-between px-2">
+            <div>
+              <h2 className="font-serif text-3xl font-bold text-stone-900 tracking-tight flex items-center gap-3">
+                <History className="h-8 w-8 text-[#B89B72]" />
+                Historial de Alquileres
+              </h2>
+              <div className="h-1 w-12 bg-[#D4AF37] mt-2 rounded-full" />
+              <p className="text-sm text-stone-400 font-medium mt-3">
+                Explora el registro completo de reservas y filtra por profesional o estado.
+              </p>
+            </div>
+          </div>
+
+          <AdminHistory rentals={historyRentals} />
         </section>
       </div>
     </div>
