@@ -128,12 +128,16 @@ export function NavbarAuth({
     if (isMobileMenu) {
       return (
         <div className="flex flex-col gap-4">
-          <Link href="/alquiler" onClick={onCloseMenu} className="text-stone-800 font-medium py-2 border-b border-stone-100">
-            Alquilar
-          </Link>
-          <Link href="/dashboard" onClick={onCloseMenu} className="text-stone-800 font-medium py-2 border-b border-stone-100">
-            Mis Reservas
-          </Link>
+          {!isAdmin && (
+            <>
+              <Link href="/alquiler" onClick={onCloseMenu} className="text-stone-800 font-medium py-2 border-b border-stone-100">
+                Alquilar
+              </Link>
+              <Link href="/dashboard" onClick={onCloseMenu} className="text-stone-800 font-medium py-2 border-b border-stone-100">
+                Mis Reservas
+              </Link>
+            </>
+          )}
           {isAdmin && (
             <Link
               href="/admin"
@@ -162,12 +166,16 @@ export function NavbarAuth({
           </span>
         </div>
 
-        <Link href="/alquiler" className="transition-colors font-semibold text-slate-800 hover:text-[--seasonal-primary]">
-          Alquilar
-        </Link>
-        <Link href="/dashboard" className="transition-colors hover:text-[--seasonal-primary]">
-          Reservas
-        </Link>
+        {!isAdmin && (
+          <>
+            <Link href="/alquiler" className="transition-colors font-semibold text-slate-800 hover:text-[--seasonal-primary]">
+              Alquilar
+            </Link>
+            <Link href="/dashboard" className="transition-colors hover:text-[--seasonal-primary]">
+              Reservas
+            </Link>
+          </>
+        )}
 
         {/* Admin link — only visible when is_admin === true */}
         {isAdmin && (

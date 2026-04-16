@@ -22,11 +22,10 @@ export default async function AlquilerPage() {
 
   if (!pro) return redirect("/completar-perfil");
 
-  // Obtener todas las reservas existentes (no de mantenimiento) para inhabilitar fechas
+  // Obtener todas las reservas existentes (incluyendo mantenimiento) para inhabilitar fechas
   const { data: rentals } = await supabase
     .from("rentals")
-    .select("start_date, end_date")
-    .eq("is_maintenance", false);
+    .select("start_date, end_date");
 
   // Obtener tarifa diaria
   const { data: priceData } = await supabase

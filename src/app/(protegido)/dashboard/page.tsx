@@ -63,6 +63,12 @@ export default async function DashboardPage() {
 
   if (!user) return redirect("/?error=necesitas-login");
 
+  // Admin Check: Admins go straight to admin panel.
+  const { data: profile } = await supabase.from("profiles").select("is_admin").eq("id", user.id).single();
+  if (profile?.is_admin) {
+    return redirect("/admin");
+  }
+
   const { data: pro } = await supabase
     .from("external_professionals")
     .select("id, name")

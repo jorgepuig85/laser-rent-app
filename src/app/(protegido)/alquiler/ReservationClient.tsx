@@ -84,6 +84,14 @@ export function ReservationClient({
       );
       // Forzar refresco de sesión activa si expiró para evitar error en el Server Action
       await supabase.auth.getSession();
+      
+      // PRE-FLIGHT CHECK: Calentar conexión y asegurar autenticación persistente a DB
+      const { error: preFlightError } = await supabase
+        .from("profiles")
+        .select("id")
+        .limit(1);
+        
+      if (preFlightError) throw new Error("Error de validación previa: " + preFlightError.message);
 
       const gReCaptchaToken = await executeRecaptcha("booking");
 

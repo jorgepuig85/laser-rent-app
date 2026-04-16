@@ -4,6 +4,8 @@ import Link from "next/link";
 import { ShieldCheck, Sparkles, ArrowLeft, History } from "lucide-react";
 import { AdminActions } from "./AdminActions";
 import { AdminHistory } from "./AdminHistory";
+import { AdminMaintenance } from "./AdminMaintenance";
+import { Calendar } from "lucide-react";
 
 export default async function AdminPage() {
   const supabase = await createClient();
@@ -205,6 +207,20 @@ export default async function AdminPage() {
               ))}
             </div>
           </div>
+        </section>
+
+        {/* ── Calendario de Mantenimiento ── */}
+        <section className="space-y-6">
+          <div className="flex items-end justify-between px-2">
+            <div>
+              <h2 className="font-serif text-3xl font-bold text-stone-900 tracking-tight flex items-center gap-3">
+                <Calendar className="h-8 w-8 text-[#B89B72]" />
+                Calendario de Mantenimiento / Bloqueos
+              </h2>
+              <div className="h-1 w-12 bg-[#D4AF37] mt-2 rounded-full" />
+            </div>
+          </div>
+          <AdminMaintenance existingMaintenances={[]} />
         </section>
 
         {/* ── Historial General ── */}
