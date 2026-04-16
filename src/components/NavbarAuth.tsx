@@ -8,7 +8,15 @@ import { createBrowserClient } from "@supabase/ssr";
 import { signOut } from "@/app/auth/actions";
 import { User } from "@supabase/supabase-js";
 
-export function NavbarAuth() {
+export function NavbarAuth({
+  isMobileView,
+  isMobileMenu,
+  onCloseMenu,
+}: {
+  isMobileView?: boolean;
+  isMobileMenu?: boolean;
+  onCloseMenu?: () => void;
+} = {}) {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -71,21 +79,55 @@ export function NavbarAuth() {
     const fullName = user.user_metadata?.full_name || user.email?.split("@")[0] || "Profesional";
     const firstName = fullName.split(" ")[0];
 
+    if (isMobileView) {
+      return (
+        <span className="text-sm font-serif italic text-[--seasonal-primary] whitespace-nowrap mr-2">
+          {firstName}
+        </span>
+      );
+    }
+
+    if (isMobileMenu) {
+      return (
+        <div className="flex flex-col gap-4">
+          <Link href="/alquiler" onClick={onCloseMenu} className="text-stone-800 font-medium py-2 border-b border-stone-100">
+            Alquilar
+          </Link>
+          <Link href="/dashboard" onClick={onCloseMenu} className="text-stone-800 font-medium py-2 border-b border-stone-100">
+            Mis Reservas
+          </Link>
+          {isAdmin && (
+            <Link
+              href="/admin"
+              onClick={onCloseMenu}
+              className="flex items-center gap-2 text-[#D4AF37] font-bold py-2 border-b border-stone-100"
+            >
+              <ShieldCheck className="h-4 w-4" />
+              Panel Admin
+            </Link>
+          )}
+          <form action={signOut} className="mt-2">
+            <Button variant="ghost" size="sm" type="submit" className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50">
+              <LogOut className="h-4 w-4 mr-2" />
+              Cerrar Sesión
+            </Button>
+          </form>
+        </div>
+      );
+    }
+
     return (
       <div className="flex items-center gap-4 border-l pl-4 ml-2">
         <div className="flex flex-col items-end mr-2">
-          <span className="text-sm font-serif italic text-[--seasonal-primary] hidden md:inline whitespace-nowrap">
+          <span className="text-sm font-serif italic text-[--seasonal-primary] whitespace-nowrap">
             Hola, {fullName}
-          </span>
-          <span className="text-sm font-serif italic text-[--seasonal-primary] md:hidden whitespace-nowrap">
-            {firstName}
           </span>
         </div>
 
-        <Link href="/alquiler" className="transition-colors font-semibold text-slate-800 hover:text-[--seasonal-primary] hidden lg:block">
+        <Link href="/alquiler" className="transition-colors font-semibold text-slate-800 hover:text-[--seasonal-primary]">
           Alquilar
         </Link>
-        <Link href="/dashboard" className="transition-colors hover:text-[--seasonal-primary] hidden sm:block">
+        <Link href="/dashboard" className="transition-colors hover:text-[--seasonal-primary]">
           Reservas
         </Link>
 
@@ -96,18 +138,29 @@ export function NavbarAuth() {
             className="flex items-center gap-1.5 rounded-full bg-stone-900 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[#D4AF37] transition-all hover:bg-stone-700 hover:scale-105 active:scale-95 shadow-sm"
           >
             <ShieldCheck className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Panel Admin</span>
-            <span className="sm:hidden font-bold">ADMIN</span>
+            <span className="inline">Panel Admin</span>
           </Link>
         )}
 
         <form action={signOut}>
           <Button variant="ghost" size="sm" type="submit" className="text-slate-600 hover:text-red-600 transition-colors">
-            <LogOut className="h-4 w-4 sm:mr-2" />
-            <span className="hidden sm:inline">Salir</span>
+            <LogOut className="h-4 w-4 mr-2" />
+            <span className="inline">Salir</span>
           </Button>
         </form>
       </div>
+    );
+  }
+
+  // Not logged in
+  if (isMobileView || isMobileMenu) {
+    return (
+      <Link href="/?login=true&next=/alquiler" onClick={() => { setIsLoginLoading(true); onCloseMenu && onCloseMenu(); }}>
+        <Button disabled={isLoginLoading} className="w-full bg-primary text-white rounded-full">
+          {isLoginLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserCircle className="mr-2 h-4 w-4" />}
+          Login
+        </Button>
+      </Link>
     );
   }
 

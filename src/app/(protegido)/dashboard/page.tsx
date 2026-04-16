@@ -223,8 +223,10 @@ export default async function DashboardPage() {
 
           {allRentals.length > 0 ? (
             <div className="bg-white/50 backdrop-blur-md rounded-[2.5rem] shadow-[0_8px_40px_rgba(0,0,0,0.03)] border border-white overflow-hidden transition-all duration-500">
-              <table className="w-full text-sm text-left">
-                <thead className="bg-[#FCFAF5]/50 text-stone-400 font-bold border-b border-[#F3EBE1] uppercase tracking-[0.2em] text-[9px]">
+              {/* --- Desktop View --- */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-[#FCFAF5]/50 text-stone-400 font-bold border-b border-[#F3EBE1] uppercase tracking-[0.2em] text-[9px]">
                   <tr>
                     <th className="px-8 py-6">Equipo</th>
                     <th className="px-8 py-6">Período de Alquiler</th>
@@ -329,6 +331,86 @@ export default async function DashboardPage() {
                   )}
                 </tbody>
               </table>
+              </div>
+
+              {/* --- Mobile View --- */}
+              <div className="md:hidden flex flex-col divide-y divide-[#F3EBE1]/50">
+                {allRentals.map((r: { id: string; title: string; start_date: string; end_date: string; status: string; receipt_url: string | null; deposit_amount: number | null; cost: number | null; }) => {
+                  const isPast = !isFuture(parseISO(r.end_date));
+                  return (
+                    <div key={r.id} className="p-6 flex flex-col gap-4 hover:bg-white/80 transition-all duration-300">
+                      {/* Header row: Image, Title, Status */}
+                      <div className="flex justify-between items-start gap-4">
+                        <div className="flex gap-4 items-center">
+                          <div className="relative h-12 w-12 rounded-xl border border-[#EAE3D5] overflow-hidden bg-white shadow-sm shrink-0">
+                            <Image src={ADSS_IMAGE} alt="ADSS FG2000B" fill className="object-cover" />
+                          </div>
+                          <div>
+                            <p className="font-serif font-bold text-base text-stone-900 leading-none mb-1">ADSS FG2000B</p>
+                            <p className="text-[8px] font-bold tracking-[0.2em] uppercase text-[#B89B72]">Trío Láser · Premium</p>
+                          </div>
+                        </div>
+                        {/* Status Badge */}
+                        <div className="shrink-0 text-right">
+                          {isPast ? (
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-[8px] uppercase tracking-[0.1em] font-bold bg-stone-100 text-stone-400 border border-stone-200">
+                                Completada
+                              </span>
+                            ) : r.status === 'pendiente' ? (
+                              <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[8px] uppercase tracking-[0.1em] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                <span className="h-1 w-1 rounded-full bg-amber-500 animate-pulse" />
+                                Pendiente
+                              </span>
+                            ) : r.status === 'reservado' ? (
+                              <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[8px] uppercase tracking-[0.1em] font-bold bg-[#FCFAF5] text-[#B89B72] border border-[#EAE3D5]">
+                                <span className="h-1 w-1 rounded-full bg-[#B89B72]" />
+                                Confirmada
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-[8px] uppercase tracking-[0.1em] font-bold bg-stone-100 text-stone-400 border border-stone-200">
+                                {r.status}
+                              </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Date & Deposit Action Row */}
+                      <div className="bg-[#FCFAF5] rounded-2xl p-4 border border-[#EAE3D5] flex items-center justify-between gap-2 shadow-inner">
+                        <div className="flex flex-col">
+                          <span className="text-stone-900 font-bold tracking-tight text-sm">
+                            {format(parseISO(r.start_date), "d MMM", { locale: es })}
+                          </span>
+                          <span className="text-[10px] text-stone-500 font-medium">
+                            hasta el {format(parseISO(r.end_date), "d MMM", { locale: es })}
+                          </span>
+                        </div>
+                        <div className="shrink-0">
+                          {(!isPast && r.status === 'pendiente' && !r.receipt_url) ? (
+                            <DepositButton
+                              rentalId={r.id}
+                              depositAmount={r.deposit_amount}
+                              startDate={format(parseISO(r.start_date), "d 'de' MMM", { locale: es })}
+                            />
+                          ) : r.receipt_url ? (
+                            <span className="inline-flex items-center gap-1 px-3 py-2 rounded-xl text-[9px] uppercase tracking-widest font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              ✓ Enviado
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
+
+                      {/* Cancel Action */}
+                      {!isPast && (
+                        <div className="flex justify-end mt-1">
+                          <div className="opacity-80 active:opacity-100">
+                            <CancelButton rentalId={r.id} startDate={r.start_date} />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center gap-6 py-24 bg-white/40 backdrop-blur-sm rounded-[3rem] border-2 border-dashed border-[#EAE3D5] text-center shadow-inner">
