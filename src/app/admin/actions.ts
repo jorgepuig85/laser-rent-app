@@ -28,14 +28,7 @@ export async function createMaintenanceBlock(startDate: string, endDate: string)
       return { success: false, error: "Esta fecha ya se encuentra bloqueada o reservada." };
     }
 
-    // Insert block bypassing RLS because Admin may not exist in external_professionals
-    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js');
-    const adminSupabase = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
-
-    const { error } = await adminSupabase.from("rentals").insert({
+    const { error } = await supabase.from("rentals").insert({
       title: "MANTENIMIENTO / BLOQUEADO",
       start_date: startDate,
       end_date: endDate,
@@ -43,7 +36,6 @@ export async function createMaintenanceBlock(startDate: string, endDate: string)
       status: "confirmado",
       cost: 0,
       deposit_amount: 0,
-      external_professional_id: null,
     });
 
     if (error) {
@@ -74,14 +66,7 @@ export async function deleteMaintenanceBlock(blockId: string) {
       return { success: false, error: "Acceso denegado." };
     }
 
-    // Admins can delete rentals via RLS. If RLS blocks it, we use adminSupabase
-    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js');
-    const adminSupabase = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
-
-    const { error } = await adminSupabase
+    const { error } = await supabase
       .from("rentals")
       .delete()
       .eq("id", blockId)

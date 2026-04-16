@@ -135,18 +135,11 @@ export async function createRental(
       return { success: false, error: "Límite de reservas alcanzado. Máximo 5 reservas pendientes." };
     }
 
-    // 10. Insert bypassing RLS (Fix for first-click auth drop)
-    // We validate `user.id` manually by obtaining `professionalId` previously matching it.
+    // 10. Insert (RLS enforces ownership at DB level)
     const title = `Reserva Web: ADSS FG2000B - ${professionalName.trim().substring(0, 100)}`;
     const depositAmount = cost !== null ? Math.round(cost * 0.2 * 100) / 100 : null;
 
-    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js');
-    const adminSupabase = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
-
-    const { error: insertError } = await adminSupabase.from("rentals").insert({
+    const { error: insertError } = await supabase.from("rentals").insert({
       external_professional_id: professionalId,
       start_date: startDate,
       end_date: endDate,
