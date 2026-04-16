@@ -114,6 +114,11 @@ export default async function AdminPage() {
     total: historyRentals.length,
   };
 
+  const { data: maintenanceBlocksRaw } = await supabase
+    .from("maintenance_blocks")
+    .select("id, start_date, end_date")
+    .order("start_date", { ascending: true });
+
   const adminName = profile?.full_name?.split(" ")[0] ?? "Administrador";
 
   return (
@@ -220,7 +225,7 @@ export default async function AdminPage() {
               <div className="h-1 w-12 bg-[#D4AF37] mt-2 rounded-full" />
             </div>
           </div>
-          <AdminMaintenance existingMaintenances={[]} />
+          <AdminMaintenance existingMaintenances={maintenanceBlocksRaw || []} />
         </section>
 
         {/* ── Historial General ── */}

@@ -7,14 +7,13 @@ import { Calendar as CalendarIcon, Loader2, AlertCircle } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { toast } from "sonner";
 import { Calendar } from "@/components/ui/calendar";
-import { createMaintenanceBlock } from "./actions";
+import { createMaintenanceBlock, deleteMaintenanceBlock } from "./actions";
 
 interface Props {
   existingMaintenances: { id: string; start_date: string; end_date: string }[];
 }
 
-  // existingMaintenances can be used later to show a list of current blocks.
-export function AdminMaintenance({}: Props) {
+export function AdminMaintenance({ existingMaintenances }: Props) {
   const [date, setDate] = useState<DateRange | undefined>(undefined);
   const [loading, setLoading] = useState(false);
 
@@ -43,7 +42,19 @@ export function AdminMaintenance({}: Props) {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    if (!confirm("¿Eliminar este bloqueo?")) return;
+    try {
+      const res = await deleteMaintenanceBlock(id);
+      if (res?.success) toast.success("Bloqueo eliminado.");
+      else toast.error(res?.error || "Error al eliminar");
+    } catch {
+      toast.error("Error inesperado al eliminar.");
+    }
+  };
+
   return (
+    <div className="space-y-6">
     <div className="bg-white rounded-3xl p-8 border border-stone-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col md:flex-row gap-8">
       <div className="flex-1 space-y-6">
         <div>
@@ -102,6 +113,34 @@ export function AdminMaintenance({}: Props) {
           </div>
         </div>
       </div>
+    </div>
+    
+    {existingMaintenances.length > 0 && (
+      <div className="bg-white rounded-3xl p-8 border border-stone-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+        <h4 className="font-serif text-xl font-bold text-stone-900 mb-4">Próximos Mantenimientos</h4>
+        <div className="divide-y divide-stone-100">
+          {existingMaintenances.map((m) => (
+            <div key={m.id} className="py-4 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-bold text-stone-800">
+                  {format(new Date(m.start_date + "T00:00:00"), "dd MMM yyyy", { locale: es })} — {format(new Date(m.end_date + "T00:00:00"), "dd MMM yyyy", { locale: es })}
+                </p>
+                <p className="text-[10px] text-stone-400 uppercase tracking-widest mt-1">Bloqueo Activo</p>
+              </div>
+              <button
+                onClick={() => handleDelete(m.id)}
+                className="p-2 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                title="Eliminar bloqueo"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
     </div>
   );
 }
