@@ -23,16 +23,21 @@ export function NavbarAuth({
   const [isLoginLoading, setIsLoginLoading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
-  const supabase = createBrowserClient(
+  // Singleton Supabase Browser Client
+  const [supabase] = useState(() => createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      auth: {
+        autoRefreshToken: true,
+        detectSessionInUrl: false,
+      }
+    }
+  ));
 
   /** Load user + admin flag from profiles */
   const loadUserAndProfile = async () => {
-    // Refresh session to avoid stale tokens
-    await supabase.auth.refreshSession();
-    
+    // Only getUser(), NO manual refreshSession() to avoid token battling
     const { data: { user: currentUser } } = await supabase.auth.getUser();
     setUser(currentUser);
 
@@ -83,9 +88,30 @@ export function NavbarAuth({
 
     return () => { subscription.unsubscribe(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [supabase]);
 
-  if (!isMounted || loading) return <div className="w-32 h-10 animate-pulse bg-slate-100 rounded-full" />;
+  // Fallback while loading or during hydration (so the UI doesn't look broken or missing)
+  const isPending = !isMounted || loading;
+
+  if (isPending) {
+    if (isMobileView) return null; // Avoid empty flashes in tiny views
+    if (isMobileMenu) {
+      return (
+        <div className="flex flex-col gap-4 opacity-50">
+          <Button disabled className="w-full bg-primary/50 text-white rounded-full">
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Cargando sesión...
+          </Button>
+        </div>
+      );
+    }
+    return (
+      <Button disabled className="opacity-70 bg-primary/80 text-white rounded-full px-6 min-w-[160px]">
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        Validando...
+      </Button>
+    );
+  }
 
   if (user) {
     const fullName = user.user_metadata?.full_name || user.email?.split("@")[0] || "Profesional";
