@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { createBrowserClient } from "@supabase/ssr";
 import { uploadReceipt } from "@/app/(protegido)/alquiler/actions";
+import { toast } from "sonner";
 import {
   X,
   Copy,
@@ -88,29 +89,39 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
       const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
       const path = `${Date.now()}-${safeName}`;
 
-      // 4. Intento de subida con log exhaustivo y MIME type dinámico
-      const { data, error: uploadError } = await authClient.storage
+      // 4. Intento de subida con log exhaustivo, MIME type dinámico, timeout de 10s
+      const uploadPromise = authClient.storage
         .from("comprobantes")
         .upload(path, file, { 
           upsert: true, 
           contentType: file.type || "application/octet-stream"
         });
 
+      const timeoutPromise = new Promise<{ data: any, error: any }>((_, reject) => 
+        setTimeout(() => reject(new Error("La subida tardó más de 10 segundos (Timeout).")), 10000)
+      );
+
+      const { data, error: uploadError } = await Promise.race([uploadPromise, timeoutPromise]);
+
       if (uploadError) {
         console.error('ERROR DETALLADO STORAGE:', uploadError);
         throw new Error(uploadError.message || "Error al subir archivo.");
       }
 
-      const { data: signed } = await authClient.storage
+      console.log('SUBIDA EXITOSA:', data);
+
+      const { data: publicUrlData } = authClient.storage
         .from("comprobantes")
-        .createSignedUrl(path, 60 * 60 * 24 * 7);
+        .getPublicUrl(path);
 
-      if (!signed?.signedUrl) throw new Error("Error al obtener URL del comprobante.");
+      if (!publicUrlData?.publicUrl) throw new Error("Error al obtener URL del comprobante.");
 
-      const result = await uploadReceipt(rentalId, signed.signedUrl);
+      const result = await uploadReceipt(rentalId, publicUrlData.publicUrl);
       if (!result.success) throw new Error(result.error);
 
+      toast.success("Comprobante recibido. En breve confirmaremos tu reserva");
       onSuccess();
+      onClose();
     } catch (e: unknown) {
       console.error('ERROR DETALLADO STORAGE:', e);
       setError(e instanceof Error ? e.message : "Error inesperado. Intentá nuevamente.");
