@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { createBrowserClient } from "@supabase/ssr";
+import { useRouter } from "next/navigation";
 import { uploadReceipt } from "@/app/(protegido)/alquiler/actions";
 import { toast } from "sonner";
 import {
@@ -36,6 +37,7 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
   const [error, setError] = useState<string | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
 
   // Instancia inicial genérica para leer la sesión actual
@@ -116,6 +118,9 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
       toast.success("Comprobante recibido. En breve confirmaremos tu reserva");
       onSuccess();
       onClose();
+      
+      router.refresh();
+      setTimeout(() => window.location.reload(), 1500);
     } catch (e: unknown) {
       console.error('ERROR DETALLADO STORAGE:', e);
       setError(e instanceof Error ? e.message : "Error inesperado. Intentá nuevamente.");

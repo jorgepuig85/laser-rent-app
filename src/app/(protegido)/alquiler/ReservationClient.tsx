@@ -4,6 +4,7 @@ import { useState } from "react";
 import { format, isWithinInterval, parseISO, startOfDay, differenceInDays } from "date-fns";
 import { Loader2 } from "lucide-react";
 import { DateRange } from "react-day-picker";
+import { useRouter } from "next/navigation";
 import { es } from "date-fns/locale";
 
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,7 @@ export function ReservationClient({
 }: ReservationClientProps) {
   const [date, setDate] = useState<DateRange | undefined>(undefined);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const { executeRecaptcha } = useGoogleReCaptcha();
 
   const disabledIntervals = existingRentals.map((rental) => ({
@@ -108,6 +110,10 @@ export function ReservationClient({
         icon: <CheckCircle2 className="h-5 w-5 text-[--seasonal-primary]" />,
         duration: 5000,
       });
+      
+      router.refresh();
+      setTimeout(() => window.location.reload(), 1500);
+
     } catch (err: unknown) {
       // Fallback: network or framework-level error
       console.error("[ReservationClient] unexpected error:", err);

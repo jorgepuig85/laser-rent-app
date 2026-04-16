@@ -82,9 +82,22 @@ export function AdminHistory({ rentals }: { rentals: RentalRow[] }) {
                       <p className="font-serif font-bold text-stone-900 text-base">
                         {r.external_professionals?.name ?? "—"}
                       </p>
-                      <p className="text-[10px] text-stone-400 font-medium mt-0.5">
-                        {r.external_professionals?.phone ?? r.external_professionals?.email ?? ""}
-                      </p>
+                      <div className="mt-0.5">
+                        {r.external_professionals?.phone ? (
+                          <a
+                            href={`https://wa.me/${r.external_professionals.phone.replace(/\D/g, "")}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[10px] text-[#B89B72] hover:text-[#D4AF37] hover:underline font-bold tracking-widest break-all"
+                          >
+                            {r.external_professionals.phone}
+                          </a>
+                        ) : (
+                          <p className="text-[10px] text-stone-400 font-medium">
+                            {r.external_professionals?.email ?? ""}
+                          </p>
+                        )}
+                      </div>
                     </td>
                     <td className="px-8 py-5 text-stone-700 font-medium whitespace-nowrap">
                       <div className="flex flex-col">

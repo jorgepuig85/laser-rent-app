@@ -156,8 +156,7 @@ export async function createRental(
       return { success: false, error: `Error de base de datos: ${insertError.message}` };
     }
 
-    revalidatePath("/alquiler");
-    revalidatePath("/dashboard");
+    revalidatePath("/", "layout");
     return { success: true };
 
   } catch (unexpectedError) {
@@ -199,7 +198,7 @@ export async function uploadReceipt(
       return { success: false, error: `Error al guardar comprobante: ${error.message}` };
     }
 
-    revalidatePath("/dashboard");
+    revalidatePath("/", "layout");
     return { success: true };
   } catch (e) {
     console.error("[uploadReceipt] unexpected:", e);
@@ -240,8 +239,7 @@ export async function confirmPayment(rentalId: string): Promise<ActionResult> {
       return { success: false, error: `Error al confirmar pago: ${error.message}` };
     }
 
-    revalidatePath("/admin");
-    revalidatePath("/dashboard");
+    revalidatePath("/", "layout");
     return { success: true };
   } catch (e) {
     console.error("[confirmPayment] unexpected:", e);
@@ -288,8 +286,7 @@ export async function cancelRental(rentalId: string): Promise<ActionResult> {
       return { success: false, error: `Error al cancelar: ${deleteError.message}` };
     }
 
-    revalidatePath("/dashboard");
-    revalidatePath("/alquiler");
+    revalidatePath("/", "layout");
     return { success: true };
 
   } catch (unexpectedError) {
