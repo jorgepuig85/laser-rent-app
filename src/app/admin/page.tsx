@@ -48,13 +48,29 @@ export default async function AdminPage() {
     .not("receipt_url", "is", null)
     .order("created_at", { ascending: true });
 
-  // Normalize external_professionals from Supabase (may return array for to-one)
-  const rentals = (rawRentals as RentalRow[] | null)?.map((r) => ({
-    ...r,
-    external_professionals: Array.isArray(r.external_professionals)
-      ? r.external_professionals[0] ?? null
-      : r.external_professionals,
-  })) ?? [];
+  // Normalize external_professionals and resolve signed URLs for receipts securely
+  const rentals = await Promise.all(
+    (rawRentals as RentalRow[] | null)?.map(async (r) => {
+      let finalUrl = r.receipt_url;
+      // Si receipt_url es un path plano en lugar de un link (ej. 17132890214-foto.jpg)
+      if (finalUrl && !finalUrl.startsWith("http")) {
+        const { data: signed } = await supabase.storage
+          .from("comprobantes")
+          .createSignedUrl(finalUrl, 60 * 60 * 24 * 7); // 7 dias
+        if (signed?.signedUrl) {
+          finalUrl = signed.signedUrl;
+        }
+      }
+
+      return {
+        ...r,
+        receipt_url: finalUrl,
+        external_professionals: Array.isArray(r.external_professionals)
+          ? r.external_professionals[0] ?? null
+          : r.external_professionals,
+      };
+    }) ?? []
+  );
 
   // 4. Also fetch all rentals for stats
   const { data: allRentals } = await supabase

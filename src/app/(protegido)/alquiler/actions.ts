@@ -182,8 +182,8 @@ export async function uploadReceipt(
     if (authError || !user) return { success: false, error: "No autorizado." };
 
     if (!validateUUID(rentalId)) return { success: false, error: "ID de reserva inválido." };
-    if (typeof receiptUrl !== "string" || !receiptUrl.startsWith("https://")) {
-      return { success: false, error: "URL de comprobante inválida." };
+    if (typeof receiptUrl !== "string" || receiptUrl.trim() === "") {
+      return { success: false, error: "Path de comprobante inválido." };
     }
 
     // RLS ensures only the owner can update their own pending rental

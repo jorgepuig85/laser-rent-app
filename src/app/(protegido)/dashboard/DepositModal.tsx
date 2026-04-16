@@ -110,13 +110,7 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
 
       console.log('SUBIDA EXITOSA:', data);
 
-      const { data: publicUrlData } = authClient.storage
-        .from("comprobantes")
-        .getPublicUrl(path);
-
-      if (!publicUrlData?.publicUrl) throw new Error("Error al obtener URL del comprobante.");
-
-      const result = await uploadReceipt(rentalId, publicUrlData.publicUrl);
+      const result = await uploadReceipt(rentalId, path);
       if (!result.success) throw new Error(result.error);
 
       toast.success("Comprobante recibido. En breve confirmaremos tu reserva");
