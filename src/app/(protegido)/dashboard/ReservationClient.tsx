@@ -7,10 +7,10 @@ import { DateRange } from "react-day-picker";
 import { useRouter } from "next/navigation";
 import { es } from "date-fns/locale";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import { createRental } from "./actions";
-import Link from "next/link";
 import { toast } from "sonner";
 import { CheckCircle2 } from "lucide-react";
 
@@ -69,9 +69,6 @@ export function ReservationClient({
   // 1-2 días: Precio Total Directo
   // 3+ días: WhatsApp (Mensaje personalizado)
   const isConsult = selectedDays >= 3;
-  
-  // Incentivo Semanal (mostrado siempre que sea 3+)
-  const isWeeklyLimit = selectedDays >= 7;
   
   const totalCost = selectedDays > 0 ? selectedDays * dailyRate : 0;
 
@@ -214,20 +211,18 @@ export function ReservationClient({
               </div>
             </div>
 
-            <Button
-              className="w-full h-14 rounded-full font-bold shadow-lg shadow-green-600/20 bg-green-600 hover:bg-green-700 transition-all text-white text-base hover:scale-[1.02] active:scale-95 disabled:opacity-50"
-              disabled={!locationId}
-              asChild
+            <a 
+              href={whatsappLink} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className={cn(
+                buttonVariants({ variant: "default" }),
+                "w-full h-14 rounded-full font-bold shadow-lg shadow-green-600/20 bg-green-600 hover:bg-green-700 transition-all text-white text-base hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2",
+                !locationId && "pointer-events-none opacity-50"
+              )}
             >
-              <a 
-                href={whatsappLink} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2"
-              >
-                {!locationId ? "Selecciona Localidad primero" : "Consultar por WhatsApp"}
-              </a>
-            </Button>
+              {!locationId ? "Selecciona Localidad primero" : "Consultar por WhatsApp"}
+            </a>
           </div>
         ) : (
           <div className="space-y-6">

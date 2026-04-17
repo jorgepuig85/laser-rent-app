@@ -27,7 +27,7 @@ export function BusinessSettings({ initialDailyRate, initialWeeklyRate }: Busine
       } else {
         toast.error("Error al actualizar: " + res.error);
       }
-    } catch (err) {
+    } catch (_) {
       toast.error("Error inesperado al actualizar precios.");
     } finally {
       setLoading(false);

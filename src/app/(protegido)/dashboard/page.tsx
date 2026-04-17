@@ -69,7 +69,7 @@ export default async function DashboardPage() {
   try {
     const { data } = await Promise.race([fetchProfile, timeoutPromise]);
     profile = data;
-  } catch (e) {
+  } catch (_) {
     console.warn("Dashboard profile fetch timed out. Forcing session refresh.");
     return redirect("/auth/refresh?next=/dashboard");
   }

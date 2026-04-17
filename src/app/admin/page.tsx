@@ -131,12 +131,6 @@ export default async function AdminPage() {
     total: historyRentals.length,
   };
 
-  const { data: maintenanceBlocksRaw } = await supabase
-    .from("rentals")
-    .select("id, start_date, end_date")
-    .eq("is_maintenance", true)
-    .order("start_date", { ascending: true });
-
   const adminName = profile?.full_name?.split(" ")[0] ?? "Administrador";
 
   return (
