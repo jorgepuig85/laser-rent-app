@@ -15,11 +15,11 @@ export default async function ProtectedLayout({
   if (!user) {
     try {
       const headersList = await headers();
-      const currentPath = headersList.get("x-url") || "/alquiler";
+      const currentPath = headersList.get("x-url") || "/dashboard";
       redirect("/?login=true&next=" + encodeURIComponent(currentPath));
     } catch (e) {
       console.error("Redirect error in layout:", e);
-      redirect("/?login=true&next=%2Falquiler");
+      redirect("/?login=true&next=%2Fdashboard");
     }
   }
   // v2.1: Force build cache clean

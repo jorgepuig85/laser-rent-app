@@ -40,7 +40,7 @@ export async function middleware(request: NextRequest) {
   response.headers.set("x-url", pathname);
 
   // Protected Routes Logic
-  const protectedRoutes = ["/alquiler", "/dashboard", "/completar-perfil", "/admin"];
+  const protectedRoutes = ["/dashboard", "/dashboard", "/completar-perfil", "/admin"];
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
 
   if (isProtectedRoute && !user) {

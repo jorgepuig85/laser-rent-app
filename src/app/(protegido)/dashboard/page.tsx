@@ -1,13 +1,11 @@
 import { createClient } from "@/lib/supabaseServer";
 import { redirect } from "next/navigation";
-import { format, parseISO, isFuture, differenceInDays } from "date-fns";
+import { format, parseISO, isFuture } from "date-fns";
 import { es } from "date-fns/locale";
 import Image from "next/image";
 import Link from "next/link";
 import {
   CalendarDays,
-  LayoutGrid,
-  MessageCircleHeart,
   Share2,
   FileText,
   ScrollText,
@@ -16,13 +14,10 @@ import {
 
 import { CancelButton } from "./CancelButton";
 import { DepositButton } from "./DepositButton";
+import { ReservationClient } from "./ReservationClient";
 
 const ADSS_IMAGE =
   "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/equipo_depilacion.webp";
-
-const WA_LINK =
-  "https://wa.me/5492954631456?text=" +
-  encodeURIComponent("Hola! Necesito asistencia con mi panel de reservas.");
 
 // ── Resource cards data ──────────────────────────────────────────────────────
 const RESOURCES = [
@@ -77,6 +72,7 @@ export default async function DashboardPage() {
 
   if (!pro) return redirect("/completar-perfil");
 
+  // Mis reservas
   const { data: rentals } = await supabase
     .from("rentals")
     .select("id, title, start_date, end_date, status, receipt_url, deposit_amount, cost")
@@ -85,22 +81,25 @@ export default async function DashboardPage() {
 
   const allRentals = rentals ?? [];
 
-  // Stats
-  const today = new Date();
-  const activeRentals = allRentals.filter((r) => isFuture(parseISO(r.end_date)));
-  const nextRental = activeRentals[0] ?? null;
-  const monthRentals = allRentals.filter((r) => {
-    const d = parseISO(r.start_date);
-    return d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
-  });
+  // Datos para calendario
+  const { data: blockedDatesData } = await supabase.rpc("get_all_booked_dates");
+  const blockedDates = blockedDatesData ?? [];
+
+  // Obtener tarifa diaria
+  const { data: priceData } = await supabase
+    .from("rental_prices")
+    .select("daily_rate")
+    .eq("equipment_name", "ADSS FG2000B")
+    .single();
+
+  const dailyRate = priceData?.daily_rate || 0;
 
   const firstName = pro.name?.split(" ")[0] ?? "Profesional";
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-stone-800">
       {/* ── Hero Header ─────────────────────────────────────────────────── */}
-      <div className="relative overflow-hidden bg-gradient-to-b from-white to-[#FDFBF7] pt-28 pb-20 px-4 border-b border-[#EAE3D5]/50">
-        {/* Decorative subtle orbs */}
+      <div className="relative overflow-hidden bg-gradient-to-b from-white to-[#FDFBF7] pt-28 pb-16 px-4 border-b border-[#EAE3D5]/50">
         <div className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-[#D4AF37]/5 blur-[100px]" />
         <div className="pointer-events-none absolute bottom-0 -left-16 h-64 w-64 rounded-full bg-[#D4AF37]/5 blur-[80px]" />
 
@@ -111,120 +110,47 @@ export default async function DashboardPage() {
               Panel VIP
             </span>
           </div>
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-stone-900 leading-tight mb-4 tracking-tight">
-            ¡Hola, {firstName}! 👋
+          <h1 className="font-serif text-3xl md:text-5xl lg:text-5xl font-bold text-stone-900 leading-tight mb-4 tracking-tight max-w-4xl max-w-[800px] leading-[1.2]">
+            ¡Hola, {firstName}! Qué bueno verte. Aquí puedes gestionar tus jornadas de depilación. 👋
           </h1>
-          <p className="text-lg md:text-xl text-stone-500 max-w-2xl font-light leading-relaxed">
-            Bienvenida/o a tu espacio de gestión. Cada jornada es una nueva oportunidad
-            para transformar vidas a través de la estética.
-          </p>
         </div>
       </div>
 
-      <div className="mx-auto max-w-5xl px-4 -mt-10 pb-24 space-y-16">
+      <div className="mx-auto max-w-5xl px-4 pb-24 space-y-16 -mt-8">
 
-        {/* ── Bento Stats ─────────────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-          {/* Tarjeta 1 — Próxima jornada */}
-          <div className="group relative bg-white/60 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_50px_rgba(212,175,55,0.1)] p-8 flex flex-col gap-5 hover:-translate-y-2 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold tracking-[0.2em] text-stone-400 uppercase">Tu próxima jornada</span>
-              <div className="rounded-2xl bg-[#FCFAF5] border border-[#F3EBE1] p-3 shadow-inner">
-                <CalendarDays className="h-5 w-5 text-[#B89B72]" />
-              </div>
-            </div>
-            {nextRental ? (
-              <div className="space-y-1">
-                <p className="font-serif text-3xl font-bold text-stone-900 leading-tight">
-                  {format(parseISO(nextRental.start_date), "d 'de' MMMM", { locale: es })}
-                </p>
-                <p className="text-sm font-medium text-stone-500 flex items-center gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-[#B89B72] animate-pulse" />
-                  En {differenceInDays(parseISO(nextRental.start_date), today)} días
-                </p>
-              </div>
-            ) : (
-              <p className="font-serif text-xl font-medium text-stone-300 italic">Sin reservas futuras</p>
-            )}
-            <div className="mt-auto pt-5 border-t border-[#F3EBE1]/50">
-              <Link href="/alquiler" className="group/link text-xs font-bold tracking-widest text-[#B89B72] flex items-center gap-2 uppercase transition-all duration-300">
-                <span className="group-hover/link:mr-1 transition-all">Agendar nueva</span>
-                <span className="text-lg">→</span>
-              </Link>
-            </div>
-          </div>
-
-          {/* Tarjeta 2 — Resumen del mes */}
-          <div className="group relative bg-white/60 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_50px_rgba(212,175,55,0.1)] p-8 flex flex-col gap-5 hover:-translate-y-2 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold tracking-[0.2em] text-stone-400 uppercase">Resumen del mes</span>
-              <div className="rounded-2xl bg-[#FCFAF5] border border-[#F3EBE1] p-3 shadow-inner">
-                <LayoutGrid className="h-5 w-5 text-[#B89B72]" />
-              </div>
-            </div>
-            <div className="space-y-1">
-              <p className="font-serif text-6xl font-bold text-stone-900 leading-none tracking-tighter">
-                {monthRentals.length}
-              </p>
-              <p className="text-sm font-semibold text-stone-400 uppercase tracking-widest pl-1">
-                {monthRentals.length === 1 ? "reserva activa" : "reservas activas"}
-              </p>
-            </div>
-            <div className="mt-auto pt-5 border-t border-[#F3EBE1]/50">
-              <div className="flex items-center gap-2 text-[10px] font-bold text-[#B89B72] uppercase tracking-[0.15em]">
-                <Sparkles className="h-3 w-3" />
-                <span>Nivel: Profesional VIP</span>
+        {/* ── Calendario de Reservas (ReservationClient) ──────────────────── */}
+        <section className="reveal-up relative z-20" style={{ animationDelay: '0.1s' }}>
+          <div className="grid md:grid-cols-[1fr_400px] gap-8 items-start">
+            <ReservationClient
+              professionalId={pro.id}
+              professionalName={pro.name}
+              existingRentals={blockedDates}
+              dailyRate={dailyRate}
+            />
+            <div className="hidden md:block relative h-[600px] w-full rounded-[2rem] overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 bg-slate-50 sticky top-24">
+               <Image
+                src={ADSS_IMAGE}
+                alt="ADSS FG2000B"
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-stone-900/80 via-stone-900/20 to-transparent flex items-end p-8">
+                <div className="text-white">
+                  <h3 className="font-serif text-2xl font-bold">ADSS FG2000B</h3>
+                  <p className="text-white/80 text-sm">Plataforma Trío Láser</p>
+                </div>
               </div>
             </div>
           </div>
+        </section>
 
-          {/* Tarjeta 3 — Soporte VIP */}
-          <div className="group relative bg-stone-900 rounded-[2.5rem] shadow-2xl shadow-stone-900/20 p-8 flex flex-col gap-5 hover:-translate-y-2 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-hidden">
-            {/* Glossy overlay */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-white/10 to-transparent rounded-full -mr-16 -mt-16 blur-2xl" />
-            
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold tracking-[0.2em] text-stone-500 uppercase">Asistencia Directa</span>
-              <div className="rounded-2xl bg-white/10 border border-white/10 p-3">
-                <MessageCircleHeart className="h-5 w-5 text-[#D4AF37]" />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <p className="font-serif text-2xl font-bold text-white leading-tight">
-                Asistencia Directa
-              </p>
-              <p className="text-sm font-light text-stone-400 leading-relaxed">
-                Estamos con vos en cada jornada. Contactanos por WhatsApp ante cualquier duda técnica o comercial con el equipo.
-              </p>
-            </div>
-            <div className="mt-auto">
-              <Link
-                href={WA_LINK}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-glint inline-flex items-center justify-center gap-3 w-full rounded-2xl bg-[#D4AF37] hover:bg-[#B89B72] text-stone-900 text-xs font-bold uppercase tracking-widest py-4 transition-all duration-300 hover:scale-[1.02] active:scale-95 shadow-xl shadow-[#D4AF37]/20"
-              >
-                Contactar Ahora
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* ── Mis Reservas ────────────────────────────────────────────────── */}
+        {/* ── Mis Próximas Jornadas ───────────────────────────────────────── */}
         <section className="reveal-up" style={{ animationDelay: '0.2s' }}>
           <div className="flex items-end justify-between mb-8 px-2">
             <div>
-              <h2 className="font-serif text-4xl font-bold text-stone-900 tracking-tight">Mis Reservas</h2>
+              <h2 className="font-serif text-3xl md:text-4xl font-bold text-stone-900 tracking-tight">Mis Próximas Jornadas</h2>
               <div className="h-1 w-12 bg-[#D4AF37] mt-2 rounded-full" />
             </div>
-            <Link
-              href="/alquiler"
-              className="inline-flex items-center gap-2.5 rounded-full bg-white border border-[#EAE3D5] text-[#B89B72] hover:bg-[#FCFAF5] text-[10px] font-bold uppercase tracking-[0.2em] px-6 py-3 transition-all duration-300 hover:shadow-lg active:scale-95"
-            >
-              <CalendarDays className="h-4 w-4" />
-              Nueva Reserva
-            </Link>
           </div>
 
           {allRentals.length > 0 ? (
@@ -255,7 +181,7 @@ export default async function DashboardPage() {
                     }) => {
                       const isPast = !isFuture(parseISO(r.end_date));
                       return (
-                        <tr
+                         <tr
                           key={r.id}
                           className="hover:bg-white/80 transition-all duration-300 group"
                         >
@@ -419,21 +345,14 @@ export default async function DashboardPage() {
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center gap-6 py-24 bg-white/40 backdrop-blur-sm rounded-[3rem] border-2 border-dashed border-[#EAE3D5] text-center shadow-inner">
+            <div className="flex flex-col items-center justify-center gap-6 py-24 bg-white/40 backdrop-blur-sm rounded-[3rem] border border-dashed border-[#EAE3D5] text-center shadow-inner">
               <div className="rounded-3xl bg-white p-6 shadow-xl shadow-stone-200/50">
                 <CalendarDays className="h-10 w-10 text-[#B89B72]/40" />
               </div>
               <div className="max-w-xs">
-                <p className="font-serif text-2xl font-bold text-stone-800">Comienza tu jornada</p>
-                <p className="text-sm font-medium text-stone-400 mt-2 leading-relaxed">Reserva el equipamiento premium para tu centro de estética hoy mismo.</p>
+                <p className="font-serif text-2xl font-bold text-stone-800">No hay alquileres registrados</p>
+                <p className="text-sm font-medium text-stone-400 mt-2 leading-relaxed">Las jornadas que solicites aparecerán aquí mismo.</p>
               </div>
-              <Link
-                href="/alquiler"
-                className="btn-glint mt-4 inline-flex items-center gap-3 rounded-2xl bg-stone-900 text-[#D4AF37] text-xs font-bold uppercase tracking-[0.2em] px-8 py-4 transition-all duration-300 hover:scale-[1.05] hover:shadow-2xl active:scale-95"
-              >
-                <CalendarDays className="h-4 w-4" />
-                Agendar Mi Primera Jornada
-              </Link>
             </div>
           )}
         </section>
@@ -441,7 +360,7 @@ export default async function DashboardPage() {
         {/* ── Recursos para tu Centro ─────────────────────────────────────── */}
         <section className="reveal-up" style={{ animationDelay: '0.4s' }}>
           <div className="mb-10 px-2">
-            <h2 className="font-serif text-4xl font-bold text-stone-900 tracking-tight">
+            <h2 className="font-serif text-3xl font-bold text-stone-900 tracking-tight">
               Recursos para tu Centro
             </h2>
             <div className="h-1 w-12 bg-[#D4AF37] mt-2 rounded-full" />
@@ -465,7 +384,7 @@ export default async function DashboardPage() {
                     <Icon className={`h-6 w-6 ${res.iconColor}`} />
                   </div>
                   <div className="space-y-2">
-                    <p className="font-serif font-bold text-stone-900 text-2xl tracking-tight leading-none">{res.label}</p>
+                    <p className="font-serif font-bold text-stone-900 text-xl tracking-tight leading-none">{res.label}</p>
                     <p className="text-xs font-medium text-stone-400 leading-relaxed pr-4">{res.desc}</p>
                   </div>
                   <span className={`mt-auto pt-4 text-[10px] font-bold uppercase tracking-[0.2em] ${res.iconColor} group-hover:text-stone-900 transition-colors flex items-center gap-2`}>
@@ -477,9 +396,7 @@ export default async function DashboardPage() {
           </div>
         </section>
 
-
       </div>
     </div>
   );
 }
-

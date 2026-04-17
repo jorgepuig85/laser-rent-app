@@ -10,7 +10,7 @@ export function AutoLoginTrigger() {
 
   useEffect(() => {
     const shouldLogin = searchParams.get("login") === "true";
-    const next = searchParams.get("next") || "/alquiler";
+    const next = searchParams.get("next") || "/dashboard";
 
     if (shouldLogin && !hasTriggered.current) {
       hasTriggered.current = true;

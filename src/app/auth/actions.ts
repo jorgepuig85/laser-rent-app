@@ -6,7 +6,7 @@ import { headers } from "next/headers";
 
 export async function signIn(formData: FormData) {
   const supabase = await createClient();
-  const nextDestination = formData.get("next") as string || "/alquiler";
+  const nextDestination = formData.get("next") as string || "/dashboard";
   
   const headersList = await headers();
   const host = headersList.get("host") || "centrodebelleza.com.ar";

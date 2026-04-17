@@ -36,7 +36,7 @@ export default async function CompletarPerfil() {
 
     if (!error) {
       revalidatePath("/", "layout");
-      redirect("/alquiler");
+      redirect("/dashboard");
     } else {
       console.error(error);
       throw new Error("Hubo un error al guardar tu perfil.");

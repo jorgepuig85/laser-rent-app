@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { confirmPayment } from "@/app/(protegido)/alquiler/actions";
+import { confirmPayment } from "@/app/(protegido)/dashboard/actions";
 import { CheckCircle2, Loader2, ExternalLink } from "lucide-react";
 
 interface Rental {

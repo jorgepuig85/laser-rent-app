@@ -130,12 +130,6 @@ export function NavbarAuth({
         <div className="flex flex-col gap-4">
           {!isAdmin && (
             <>
-              <Link href="/alquiler" onClick={onCloseMenu} className="text-stone-800 font-medium py-2 border-b border-stone-100">
-                Alquilar
-              </Link>
-              <Link href="/dashboard" onClick={onCloseMenu} className="text-stone-800 font-medium py-2 border-b border-stone-100">
-                Mis Reservas
-              </Link>
             </>
           )}
           {isAdmin && (
@@ -166,16 +160,8 @@ export function NavbarAuth({
           </span>
         </div>
 
-        {!isAdmin && (
           <>
-            <Link href="/alquiler" className="transition-colors font-semibold text-slate-800 hover:text-[--seasonal-primary]">
-              Alquilar
-            </Link>
-            <Link href="/dashboard" className="transition-colors hover:text-[--seasonal-primary]">
-              Reservas
-            </Link>
           </>
-        )}
 
         {/* Admin link — only visible when is_admin === true */}
         {isAdmin && (
@@ -201,7 +187,7 @@ export function NavbarAuth({
   // Not logged in
   if (isMobileView || isMobileMenu) {
     return (
-      <Link href="/?login=true&next=/alquiler" onClick={() => { setIsLoginLoading(true); if (onCloseMenu) onCloseMenu(); }}>
+      <Link href="/?login=true&next=/dashboard" onClick={() => { setIsLoginLoading(true); if (onCloseMenu) onCloseMenu(); }}>
         <Button disabled={isLoginLoading} className="w-full bg-primary text-white rounded-full">
           {isLoginLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserCircle className="mr-2 h-4 w-4" />}
           Login
@@ -211,7 +197,7 @@ export function NavbarAuth({
   }
 
   return (
-    <Link href="/?login=true&next=/alquiler" onClick={() => setIsLoginLoading(true)}>
+    <Link href="/?login=true&next=/dashboard" onClick={() => setIsLoginLoading(true)}>
       <Button disabled={isLoginLoading} className="bg-primary text-white rounded-full px-6 min-w-[160px]">
         {isLoginLoading ? (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />

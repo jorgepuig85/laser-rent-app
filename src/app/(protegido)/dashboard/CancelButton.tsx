@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { cancelRental } from "../alquiler/actions";
+import { cancelRental } from "../dashboard/actions";
 import { Loader2, XCircle, Info } from "lucide-react";
 import { differenceInHours, parseISO } from "date-fns";
 

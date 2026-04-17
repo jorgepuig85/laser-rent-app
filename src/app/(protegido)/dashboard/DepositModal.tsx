@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { createBrowserClient } from "@supabase/ssr";
 import { useRouter } from "next/navigation";
-import { uploadReceipt } from "@/app/(protegido)/alquiler/actions";
+import { uploadReceipt } from "@/app/(protegido)/dashboard/actions";
 import { toast } from "sonner";
 import {
   X,

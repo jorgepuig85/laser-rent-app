@@ -139,7 +139,7 @@ export default async function PreciosPage() {
                   </Button>
                 </Link>
               ) : (
-                <Link href="/alquiler" className="w-full">
+                <Link href="/dashboard" className="w-full">
                   <Button 
                     size="lg" 
                     className={`w-full h-12 rounded-xl font-bold transition-all hover:scale-[1.02] ${plan.popular ? 'btn-glint' : ''}`}
