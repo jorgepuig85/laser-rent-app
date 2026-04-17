@@ -132,11 +132,12 @@ export default async function DashboardPage() {
                 src={ADSS_IMAGE}
                 alt="ADSS FG2000B"
                 fill
+                priority
                 className="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-stone-900/80 via-stone-900/20 to-transparent flex items-end p-8">
                 <div className="text-white">
-                  <h3 className="font-serif text-2xl font-bold">ADSS FG2000B</h3>
+                  <h2 className="font-serif text-2xl font-bold">ADSS FG2000B</h2>
                   <p className="text-white/80 text-sm">Plataforma Trío Láser</p>
                 </div>
               </div>
@@ -192,6 +193,7 @@ export default async function DashboardPage() {
                                   src={ADSS_IMAGE}
                                   alt="ADSS FG2000B"
                                   fill
+                                  priority
                                   className="object-cover"
                                 />
                               </div>
@@ -275,7 +277,7 @@ export default async function DashboardPage() {
                       <div className="flex justify-between items-start gap-4">
                         <div className="flex gap-4 items-center">
                           <div className="relative h-12 w-12 rounded-xl border border-[#EAE3D5] overflow-hidden bg-white shadow-sm shrink-0">
-                            <Image src={ADSS_IMAGE} alt="ADSS FG2000B" fill className="object-cover" />
+                            <Image src={ADSS_IMAGE} alt="ADSS FG2000B" fill priority className="object-cover" />
                           </div>
                           <div>
                             <p className="font-serif font-bold text-base text-stone-900 leading-none mb-1">ADSS FG2000B</p>
