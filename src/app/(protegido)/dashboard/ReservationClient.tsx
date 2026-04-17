@@ -22,6 +22,8 @@ interface ReservationClientProps {
   professionalName: string;
   existingRentals: { start_date: string; end_date: string }[];
   dailyRate: number;
+  weeklyRate: number;
+  locations: { id: string; name: string }[];
 }
 
 export function ReservationClient({
@@ -29,8 +31,11 @@ export function ReservationClient({
   professionalName,
   existingRentals,
   dailyRate,
+  weeklyRate,
+  locations,
 }: ReservationClientProps) {
   const [date, setDate] = useState<DateRange | undefined>(undefined);
+  const [locationId, setLocationId] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { executeRecaptcha } = useGoogleReCaptcha();
@@ -59,11 +64,20 @@ export function ReservationClient({
   };
 
   const selectedDays = date?.from && date?.to ? differenceInDays(date.to, date.from) + 1 : (date?.from ? 1 : 0);
-  const isPromo = selectedDays >= 3;
-  const totalCost = selectedDays > 0 ? selectedDays * dailyRate : 0;
+  
+  // Lógica de Precios:
+  // <4 días: Precio Diario
+  // 4-6 días: Consultar WhatsApp (Bloqueado reserva automática)
+  // >=7 días: Precio Semanal Automático
+  const isPromo = selectedDays >= 4 && selectedDays < 7;
+  const isWeekly = selectedDays >= 7;
+  
+  const totalCost = selectedDays > 0 
+    ? (isWeekly ? weeklyRate : selectedDays * dailyRate) 
+    : 0;
 
   const handleBooking = async () => {
-    if (!date?.from || isPromo) return;
+    if (!date?.from || !locationId || isPromo) return;
     setLoading(true);
 
     // For single-day selection, from === to
@@ -101,7 +115,8 @@ export function ReservationClient({
         professionalId,
         professionalName,
         totalCost,
-        gReCaptchaToken
+        gReCaptchaToken,
+        locationId
       );
 
       if (!result.success) {
@@ -137,7 +152,7 @@ export function ReservationClient({
     <div className="space-y-8 bg-white p-6 md:p-8 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 flex flex-col items-center sm:items-start text-center sm:text-left">
       <div className="w-full grid gap-3">
         <label className="text-sm font-medium text-slate-700">
-          Selecciona los días de alquiler en el calendario
+          1. Selecciona los días de alquiler en el calendario
         </label>
         <div className="border border-slate-200 rounded-2xl overflow-hidden bg-slate-50 flex justify-center p-4">
           <Calendar
@@ -154,13 +169,36 @@ export function ReservationClient({
         </div>
       </div>
 
+      <div className="w-full grid gap-3">
+        <label className="text-sm font-medium text-slate-700">
+          2. Selecciona la Localidad
+        </label>
+        <div className="relative">
+          <select
+            value={locationId}
+            onChange={(e) => setLocationId(e.target.value)}
+            className="w-full h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-medium text-slate-900 outline-none focus:border-primary transition-all appearance-none"
+          >
+            <option value="" disabled>Seleccionar localidad...</option>
+            {locations.map((loc) => (
+              <option key={loc.id} value={loc.id}>
+                {loc.name}
+              </option>
+            ))}
+          </select>
+          <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+          </div>
+        </div>
+      </div>
+
       <div className="w-full bg-slate-50 p-6 rounded-2xl border border-slate-100 flex flex-col gap-4">
         {selectedDays === 0 ? (
           <p className="text-slate-500 text-center">Selecciona fechas para ver el presupuesto.</p>
         ) : isPromo ? (
           <div className="space-y-4">
             <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl text-amber-800 text-sm">
-              Contamos con bonificaciones especiales para jornadas de 3 o más días. Consultanos por la promoción vigente.
+              Para jornadas de entre 4 y 6 días, ofrecemos descuentos especiales. Consúltanos por WhatsApp para obtener tu cotización personalizada.
             </div>
             <Button
               className="w-full h-12 rounded-full font-medium shadow-lg shadow-green-600/20 bg-green-600 hover:bg-green-700 transition-all text-white"
@@ -177,15 +215,24 @@ export function ReservationClient({
             </div>
             <div className="flex justify-between items-center">
               <span className="text-slate-600">Total estimado:</span>
-              <span className="text-2xl font-bold text-slate-900">${totalCost.toLocaleString('es-AR')}</span>
+              <div className="flex flex-col items-end">
+                 <span className="text-2xl font-bold text-slate-900">
+                  ${totalCost.toLocaleString('es-AR')}
+                </span>
+                {isWeekly && (
+                  <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">
+                    ¡Tarifa Semanal Aplicada!
+                  </span>
+                )}
+              </div>
             </div>
             <Button
               onClick={handleBooking}
-              disabled={loading}
-              className="w-full h-12 rounded-full font-medium shadow-lg shadow-primary/20 bg-primary hover:opacity-100 hover:scale-[1.02] transition-all text-white font-bold"
+              disabled={loading || !locationId}
+              className="w-full h-12 rounded-full font-medium shadow-lg shadow-primary/20 bg-primary hover:opacity-100 hover:scale-[1.02] transition-all text-white font-bold disabled:bg-slate-300 disabled:shadow-none"
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Quiero Reservar
+              {!locationId ? "Selecciona Localidad" : "Quiero Reservar"}
             </Button>
           </div>
         )}

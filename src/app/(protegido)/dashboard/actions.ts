@@ -53,7 +53,8 @@ export async function createRental(
   professionalId: string,
   professionalName: string,
   cost: number | null,
-  captchaToken: string
+  captchaToken: string,
+  locationId: string
 ): Promise<ActionResult> {
   try {
     const supabase = await createClient();
@@ -86,6 +87,11 @@ export async function createRental(
     // 4. Validate professionalId
     if (!validateUUID(professionalId)) {
       return { success: false, error: "ID de profesional inválido." };
+    }
+
+    // 4.5 Validate locationId
+    if (!locationId || !validateUUID(locationId)) {
+      return { success: false, error: "Por favor, selecciona una localidad válida." };
     }
 
     // 5. Validate professionalName
@@ -141,6 +147,7 @@ export async function createRental(
 
     const { error: insertError } = await supabase.from("rentals").insert({
       external_professional_id: professionalId,
+      location_id: locationId,
       start_date: startDate,
       end_date: endDate,
       title,

@@ -1,10 +1,11 @@
 import { createClient } from "@/lib/supabaseServer";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ShieldCheck, Sparkles, ArrowLeft, History } from "lucide-react";
+import { ShieldCheck, Sparkles, ArrowLeft, History, Settings2 } from "lucide-react";
 import { AdminActions } from "./AdminActions";
 import { AdminHistory } from "./AdminHistory";
 import { AdminMaintenance } from "./AdminMaintenance";
+import { BusinessSettings } from "./BusinessSettings";
 import { Calendar } from "lucide-react";
 
 export default async function AdminPage() {
@@ -27,7 +28,14 @@ export default async function AdminPage() {
   const isAdmin = isAdminResult === true || profile?.is_admin === true;
   if (!isAdmin) return redirect("/dashboard");
 
-  // 3. Fetch pending rentals with uploaded receipts
+  // 3. Fetch price data
+  const { data: priceData } = await supabase
+    .from("rental_prices")
+    .select("daily_rate, weekly_rate")
+    .eq("equipment_name", "ADSS FG2000B")
+    .single();
+
+  // 4. Fetch pending rentals with uploaded receipts
   // Supabase returns an array for relations — we normalize to single object
   type RentalRow = {
     id: string;
@@ -40,13 +48,15 @@ export default async function AdminPage() {
     status: string;
     is_maintenance?: boolean;
     external_professionals: { name: string; phone: string | null; email: string | null } | { name: string; phone: string | null; email: string | null }[] | null;
+    locations: { name: string } | { name: string }[] | null;
   };
 
   const { data: rawRentals } = await supabase
     .from("rentals")
     .select(`
       id, title, start_date, end_date, cost, deposit_amount, receipt_url, status,
-      external_professionals ( name, phone, email )
+      external_professionals ( name, phone, email ),
+      locations ( name )
     `)
     .eq("status", "pendiente")
     .not("receipt_url", "is", null)
@@ -72,6 +82,9 @@ export default async function AdminPage() {
         external_professionals: Array.isArray(r.external_professionals)
           ? r.external_professionals[0] ?? null
           : r.external_professionals,
+        locations: Array.isArray(r.locations)
+          ? r.locations[0] ?? null
+          : r.locations,
       };
     }) ?? []
   );
@@ -81,7 +94,8 @@ export default async function AdminPage() {
     .from("rentals")
     .select(`
       id, title, start_date, end_date, cost, deposit_amount, receipt_url, status, created_at, is_maintenance,
-      external_professionals ( name, phone, email )
+      external_professionals ( name, phone, email ),
+      locations ( name )
     `)
     .order("created_at", { ascending: false });
 
@@ -103,6 +117,9 @@ export default async function AdminPage() {
         external_professionals: Array.isArray(r.external_professionals)
           ? r.external_professionals[0] ?? null
           : r.external_professionals,
+        locations: Array.isArray(r.locations)
+          ? r.locations[0] ?? null
+          : r.locations,
       };
     }) ?? []
   );
@@ -187,6 +204,23 @@ export default async function AdminPage() {
           </div>
 
           <AdminActions rentals={rentals ?? []} />
+        </section>
+
+        {/* ── Ajustes de Negocio (Precios) ── */}
+        <section className="space-y-6">
+          <div className="flex items-end justify-between px-2">
+            <div>
+              <h2 className="font-serif text-3xl font-bold text-stone-900 tracking-tight flex items-center gap-3">
+                <Settings2 className="h-8 w-8 text-[#B89B72]" />
+                Gestión de Tarifas
+              </h2>
+              <div className="h-1 w-12 bg-[#D4AF37] mt-2 rounded-full" />
+            </div>
+          </div>
+          <BusinessSettings 
+            initialDailyRate={Number(priceData?.daily_rate || 0)} 
+            initialWeeklyRate={Number(priceData?.weekly_rate || 0)} 
+          />
         </section>
 
         {/* ── All active rentals summary ── */}

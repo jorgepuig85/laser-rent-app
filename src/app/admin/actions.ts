@@ -83,3 +83,37 @@ export async function deleteMaintenanceBlock(blockId: string) {
     return { success: false, error: "Error inesperado al eliminar bloqueo." };
   }
 }
+
+export async function updateRentalPrices(dailyRate: number, weeklyRate: number) {
+  try {
+    const supabase = await createClient();
+
+    // Verify Admin Access
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) return { success: false, error: "No autorizado." };
+
+    const { data: isAdminResult } = await supabase.rpc("get_my_is_admin");
+    const { data: profile } = await supabase.from("profiles").select("is_admin").eq("id", user.id).single();
+    const isAdmin = isAdminResult === true || profile?.is_admin === true;
+
+    if (!isAdmin) {
+      return { success: false, error: "Acceso denegado." };
+    }
+
+    const { error } = await supabase
+      .from("rental_prices")
+      .update({ daily_rate: dailyRate, weekly_rate: weeklyRate })
+      .eq("equipment_name", "ADSS FG2000B");
+
+    if (error) {
+      console.error("[updateRentalPrices] error:", error);
+      return { success: false, error: `Error al actualizar precios: ${error.message}` };
+    }
+
+    revalidatePath("/", "layout");
+    return { success: true };
+  } catch (e) {
+    console.error("[updateRentalPrices] unexpected:", e);
+    return { success: false, error: "Error inesperado al actualizar precios." };
+  }
+}

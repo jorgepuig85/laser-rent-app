@@ -85,14 +85,22 @@ export default async function DashboardPage() {
   const { data: blockedDatesData } = await supabase.rpc("get_all_booked_dates");
   const blockedDates = blockedDatesData ?? [];
 
-  // Obtener tarifa diaria
+  // Obtener tarifas
   const { data: priceData } = await supabase
     .from("rental_prices")
-    .select("daily_rate")
+    .select("daily_rate, weekly_rate")
     .eq("equipment_name", "ADSS FG2000B")
     .single();
 
-  const dailyRate = priceData?.daily_rate || 0;
+  const dailyRate = Number(priceData?.daily_rate || 0);
+  const weeklyRate = Number(priceData?.weekly_rate || 0);
+
+  // Obtener localidades
+  const { data: locationsData } = await supabase
+    .from("locations")
+    .select("id, name")
+    .order("name", { ascending: true });
+  const locations = locationsData ?? [];
 
   const firstName = pro.name?.split(" ")[0] ?? "Profesional";
 
@@ -126,6 +134,8 @@ export default async function DashboardPage() {
               professionalName={pro.name}
               existingRentals={blockedDates}
               dailyRate={dailyRate}
+              weeklyRate={weeklyRate}
+              locations={locations}
             />
             <div className="hidden md:block relative h-[600px] w-full rounded-[2rem] overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 bg-slate-50 sticky top-24">
                <Image

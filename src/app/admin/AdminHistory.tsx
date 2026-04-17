@@ -15,6 +15,7 @@ interface RentalRow {
   created_at?: string;
   is_maintenance?: boolean;
   external_professionals: { name: string; phone: string | null; email: string | null } | null;
+  locations: { name: string } | null;
 }
 
 import { toast } from "sonner";
@@ -67,6 +68,7 @@ export function AdminHistory({ rentals }: { rentals: RentalRow[] }) {
             <thead className="bg-[#FCFAF5]/50 text-stone-400 font-bold border-b border-[#F3EBE1] uppercase tracking-[0.18em] text-[9px]">
               <tr>
                 <th className="px-8 py-5">Profesional</th>
+                <th className="px-8 py-5">Localidad</th>
                 <th className="px-8 py-5">Período</th>
                 <th className="px-8 py-5">Estado</th>
                 <th className="px-8 py-5">Comprobante</th>
@@ -75,7 +77,7 @@ export function AdminHistory({ rentals }: { rentals: RentalRow[] }) {
             <tbody className="divide-y divide-[#F3EBE1]/50">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-8 py-12 text-center text-stone-400 font-medium">
+                  <td colSpan={5} className="px-8 py-12 text-center text-stone-400 font-medium">
                     No se encontraron reservas con esos filtros.
                   </td>
                 </tr>
@@ -128,6 +130,11 @@ export function AdminHistory({ rentals }: { rentals: RentalRow[] }) {
                           </div>
                         </>
                       )}
+                    </td>
+                    <td className="px-8 py-5">
+                      <p className="text-sm font-bold text-stone-900 leading-none">
+                        {r.locations?.name ?? (r.is_maintenance ? "N/A" : "—")}
+                      </p>
                     </td>
                     <td className="px-8 py-5 text-stone-700 font-medium whitespace-nowrap">
                       <div className="flex flex-col">

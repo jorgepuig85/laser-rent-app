@@ -14,6 +14,7 @@ interface Rental {
   receipt_url: string | null;
   status: string;
   external_professionals: { name: string; phone: string | null; email: string | null } | null;
+  locations: { name: string } | null;
 }
 
 export function AdminActions({ rentals }: { rentals: Rental[] }) {
@@ -59,6 +60,7 @@ export function AdminActions({ rentals }: { rentals: Rental[] }) {
         <thead className="bg-[#FCFAF5]/50 text-stone-400 font-bold border-b border-[#F3EBE1] uppercase tracking-[0.18em] text-[9px]">
           <tr>
             <th className="px-8 py-5">Profesional</th>
+            <th className="px-8 py-5">Localidad</th>
             <th className="px-8 py-5">Período</th>
             <th className="px-8 py-5">Monto Total</th>
             <th className="px-8 py-5">Seña (20%)</th>
@@ -80,6 +82,11 @@ export function AdminActions({ rentals }: { rentals: Rental[] }) {
                   </p>
                   <p className="text-[10px] text-stone-400 font-medium mt-0.5">
                     {r.external_professionals?.phone ?? r.external_professionals?.email ?? ""}
+                  </p>
+                </td>
+                <td className="px-8 py-5">
+                  <p className="text-stone-900 font-bold">
+                    {r.locations?.name ?? "—"}
                   </p>
                 </td>
                 <td className="px-8 py-5 text-stone-700 font-medium whitespace-nowrap">
