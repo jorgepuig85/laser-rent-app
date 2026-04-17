@@ -37,22 +37,30 @@ export function NavbarAuth({
 
   /** Load user + admin flag from profiles */
   const loadUserAndProfile = async () => {
-    // Only getUser(), NO manual refreshSession() to avoid token battling
-    const { data: { user: currentUser } } = await supabase.auth.getUser();
-    setUser(currentUser);
+    try {
+      // 2.5s Timeout for the initial load to prevent infinite "Validando..."
+      const { data: { user: currentUser } } = await Promise.race([
+        supabase.auth.getUser(),
+        new Promise<{data: {user: null}}>(resolve => setTimeout(() => resolve({data: {user: null}}), 2500))
+      ]);
+      
+      setUser(currentUser);
 
-    if (currentUser) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("is_admin")
-        .eq("id", currentUser.id)
-        .maybeSingle();
-      setIsAdmin(profile?.is_admin === true);
-    } else {
-      setIsAdmin(false);
+      if (currentUser) {
+        const { data: profile } = await Promise.race([
+          supabase.from("profiles").select("is_admin").eq("id", currentUser.id).maybeSingle(),
+          new Promise<{data: null}>(resolve => setTimeout(() => resolve({data: null}), 2000))
+        ]).catch(() => ({ data: null }));
+
+        setIsAdmin(profile?.is_admin === true);
+      } else {
+        setIsAdmin(false);
+      }
+    } catch (e) {
+      console.error("NavbarAuth load error:", e);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   useEffect(() => {

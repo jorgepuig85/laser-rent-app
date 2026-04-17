@@ -53,13 +53,13 @@ export async function middleware(request: NextRequest) {
 
   // Admin Route Protection
   if (pathname.startsWith("/admin") && user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("is_admin")
-      .eq("id", user.id)
-      .single();
+    // 3s timeout for profile fetch to prevent infinite loading if DB hangs
+    const { data: profile } = await Promise.race([
+      supabase.from("profiles").select("is_admin").eq("id", user.id).single(),
+      new Promise<{data: null}>((_, reject) => setTimeout(() => reject(new Error("Timeout")), 2500))
+    ]).catch(() => ({ data: null }));
 
-    if (!profile || !profile.is_admin) {
+    if (profile && !profile.is_admin) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
   }

@@ -65,19 +65,23 @@ export function ReservationClient({
 
   const selectedDays = date?.from && date?.to ? differenceInDays(date.to, date.from) + 1 : (date?.from ? 1 : 0);
   
-  // Lógica de Precios:
-  // <4 días: Precio Diario
-  // 4-6 días: Consultar WhatsApp (Bloqueado reserva automática)
-  // >=7 días: Precio Semanal Automático
-  const isPromo = selectedDays >= 4 && selectedDays < 7;
-  const isWeekly = selectedDays >= 7;
+  // Nueva Lógica Comercial:
+  // 1-2 días: Precio Total Directo
+  // 3+ días: WhatsApp (Mensaje personalizado)
+  const isConsult = selectedDays >= 3;
   
-  const totalCost = selectedDays > 0 
-    ? (isWeekly ? weeklyRate : selectedDays * dailyRate) 
-    : 0;
+  // Incentivo Semanal (mostrado siempre que sea 3+)
+  const isWeeklyLimit = selectedDays >= 7;
+  
+  const totalCost = selectedDays > 0 ? selectedDays * dailyRate : 0;
+
+  const selectedLocation = locations.find(l => l.id === locationId);
+  const locationName = selectedLocation?.name || "mi localidad";
+
+  const whatsappLink = `https://wa.me/5492954631456?text=${encodeURIComponent(`Hola Jorge, soy ${professionalName}, quiero cotizar un alquiler de la ADSS FG2000B por ${selectedDays} días en ${locationName}`)}`;
 
   const handleBooking = async () => {
-    if (!date?.from || !locationId || isPromo) return;
+    if (!date?.from || !locationId || isConsult) return;
     setLoading(true);
 
     // For single-day selection, from === to
@@ -195,23 +199,41 @@ export function ReservationClient({
       <div className="w-full bg-slate-50 p-6 rounded-2xl border border-slate-100 flex flex-col gap-4">
         {selectedDays === 0 ? (
           <p className="text-slate-500 text-center">Selecciona fechas para ver el presupuesto.</p>
-        ) : isPromo ? (
-          <div className="space-y-4">
-            <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl text-amber-800 text-sm">
-              Para jornadas de entre 4 y 6 días, ofrecemos descuentos especiales. Consúltanos por WhatsApp para obtener tu cotización personalizada.
+        ) : isConsult ? (
+          <div className="space-y-6">
+            <div className="bg-white border-2 border-[#D4AF37]/30 p-6 rounded-2xl shadow-sm">
+              <p className="text-stone-800 text-sm font-medium leading-relaxed">
+                Para jornadas de <span className="font-bold text-[#B89B72]">3 o más días</span>, ofrecemos descuentos especiales. Consúltanos por WhatsApp para obtener tu cotización personalizada.
+              </p>
+              
+              <div className="mt-4 pt-4 border-t border-stone-100">
+                <p className="text-[11px] text-stone-500 uppercase tracking-widest font-bold mb-1">Incentivo Premium</p>
+                <p className="text-stone-900 font-serif font-bold text-lg">
+                  Semana completa: <span className="text-[#B89B72] text-xl">${weeklyRate.toLocaleString('es-AR')}</span>
+                </p>
+              </div>
             </div>
+
             <Button
-              className="w-full h-12 rounded-full font-medium shadow-lg shadow-green-600/20 bg-green-600 hover:bg-green-700 transition-all text-white"
-              render={<Link href={`https://wa.me/5492954631456?text=${encodeURIComponent(`Hola! Quiero consultar por la promoción de alquiler del ADSS FG2000B por ${selectedDays} días.`)}`} target="_blank" />}
+              className="w-full h-14 rounded-full font-bold shadow-lg shadow-green-600/20 bg-green-600 hover:bg-green-700 transition-all text-white text-base hover:scale-[1.02] active:scale-95 disabled:opacity-50"
+              disabled={!locationId}
+              asChild
             >
-              Consultar Promoción
+              <a 
+                href={whatsappLink} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2"
+              >
+                {!locationId ? "Selecciona Localidad primero" : "Consultar por WhatsApp"}
+              </a>
             </Button>
           </div>
         ) : (
           <div className="space-y-6">
             <div className="flex justify-between items-center pb-4 border-b border-slate-200">
               <span className="text-slate-600">Días seleccionados:</span>
-              <span className="font-bold text-slate-900">{selectedDays} {selectedDays === 1 ? 'días' : 'días'}</span>
+              <span className="font-bold text-slate-900">{selectedDays} {selectedDays === 1 ? 'día' : 'días'}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-slate-600">Total estimado:</span>
@@ -219,11 +241,6 @@ export function ReservationClient({
                  <span className="text-2xl font-bold text-slate-900">
                   ${totalCost.toLocaleString('es-AR')}
                 </span>
-                {isWeekly && (
-                  <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">
-                    ¡Tarifa Semanal Aplicada!
-                  </span>
-                )}
               </div>
             </div>
             <Button

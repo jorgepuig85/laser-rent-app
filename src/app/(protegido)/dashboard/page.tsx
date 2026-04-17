@@ -59,7 +59,21 @@ export default async function DashboardPage() {
   if (!user) return redirect("/?error=necesitas-login");
 
   // Admin Check: Admins go straight to admin panel.
-  const { data: profile } = await supabase.from("profiles").select("is_admin").eq("id", user.id).single();
+  // v2.2: Implement 3s Timeout to avoid Infinite Loading
+  const fetchProfile = supabase.from("profiles").select("is_admin").eq("id", user.id).single();
+  const timeoutPromise = new Promise<never>((_, reject) => 
+    setTimeout(() => reject(new Error("Timeout")), 3000)
+  );
+
+  let profile;
+  try {
+    const { data } = await Promise.race([fetchProfile, timeoutPromise]);
+    profile = data;
+  } catch (e) {
+    console.warn("Dashboard profile fetch timed out. Forcing session refresh.");
+    return redirect("/auth/refresh?next=/dashboard");
+  }
+
   if (profile?.is_admin) {
     return redirect("/admin");
   }
