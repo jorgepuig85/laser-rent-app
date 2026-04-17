@@ -33,7 +33,7 @@ export async function createMaintenanceBlock(startDate: string, endDate: string)
       start_date: startDate,
       end_date: endDate,
       is_maintenance: true,
-      status: "confirmado",
+      status: "reservado",
       cost: 0,
       deposit_amount: 0,
     });
