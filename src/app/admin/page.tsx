@@ -38,6 +38,7 @@ export default async function AdminPage() {
     deposit_amount: number | null;
     receipt_url: string | null;
     status: string;
+    is_maintenance?: boolean;
     external_professionals: { name: string; phone: string | null; email: string | null } | { name: string; phone: string | null; email: string | null }[] | null;
   };
 
@@ -225,7 +226,7 @@ export default async function AdminPage() {
               <div className="h-1 w-12 bg-[#D4AF37] mt-2 rounded-full" />
             </div>
           </div>
-          <AdminMaintenance existingMaintenances={maintenanceBlocksRaw || []} />
+          <AdminMaintenance allRentals={historyRentals} />
         </section>
 
         {/* ── Historial General ── */}

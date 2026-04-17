@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { format, differenceInDays } from "date-fns";
+import { format, differenceInDays, startOfDay, parseISO, isWithinInterval, isBefore } from "date-fns";
 import { es } from "date-fns/locale";
 import { Calendar as CalendarIcon, Loader2, AlertCircle } from "lucide-react";
 import { DateRange } from "react-day-picker";
@@ -10,14 +10,38 @@ import { Calendar } from "@/components/ui/calendar";
 import { createMaintenanceBlock, deleteMaintenanceBlock } from "./actions";
 
 interface Props {
-  existingMaintenances: { id: string; start_date: string; end_date: string }[];
+  // We now receive all rentals so we can disable dates that are already booked
+  allRentals: { id: string; start_date: string; end_date: string; is_maintenance?: boolean }[];
 }
 
-export function AdminMaintenance({ existingMaintenances }: Props) {
+export function AdminMaintenance({ allRentals }: Props) {
   const [date, setDate] = useState<DateRange | undefined>(undefined);
   const [loading, setLoading] = useState(false);
 
   const selectedDays = date?.from && date?.to ? differenceInDays(date.to, date.from) + 1 : (date?.from ? 1 : 0);
+
+  // Maintenance blocks to display in the list below
+  const existingMaintenances = allRentals.filter((r) => r.is_maintenance);
+
+  const disabledIntervals = allRentals.map((rental) => ({
+    start: startOfDay(parseISO(rental.start_date)),
+    end: startOfDay(parseISO(rental.end_date)),
+  }));
+
+  const isDateDisabled = (checkDate: Date) => {
+    const today = startOfDay(new Date());
+
+    // Block past dates for maintenance
+    if (isBefore(startOfDay(checkDate), today)) return true;
+
+    // Block any dates that already have a rental or maintenance
+    return disabledIntervals.some((interval) =>
+      isWithinInterval(startOfDay(checkDate), {
+        start: interval.start,
+        end: interval.end,
+      })
+    );
+  };
 
   const handleBlock = async () => {
     if (!date?.from) return;
@@ -60,7 +84,7 @@ export function AdminMaintenance({ existingMaintenances }: Props) {
         <div>
           <h3 className="font-serif text-2xl font-bold text-stone-900">Bloqueo por Mantenimiento</h3>
           <p className="text-sm text-stone-500 mt-2 leading-relaxed">
-            Selecciona un rango de fechas en el calendario para marcarlas como no disponibles. Estas fechas se mostrarán en gris en el calendario de los clientes, impidiendo cualquier nueva reserva.
+            Selecciona un rango de fechas en el calendario para marcarlas como no disponibles. Las fechas ya alquiladas o anteriores a hoy están bloqueadas automáticamente.
           </p>
         </div>
 
@@ -73,6 +97,7 @@ export function AdminMaintenance({ existingMaintenances }: Props) {
             onSelect={setDate}
             numberOfMonths={1}
             locale={es}
+            disabled={isDateDisabled}
             className="w-full flex justify-center"
           />
         </div>
@@ -82,34 +107,34 @@ export function AdminMaintenance({ existingMaintenances }: Props) {
         <div className="relative z-10 flex flex-col h-full justify-between">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-[10px] font-bold uppercase tracking-widest text-[#D4AF37] border border-white/10">
-                <AlertCircle className="h-3 w-3 mr-1" /> Configurar service
-              </span>
+               <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-[10px] font-bold uppercase tracking-widest text-[#D4AF37] border border-white/10">
+                 <AlertCircle className="h-3 w-3 mr-1" /> Configurar service
+               </span>
             </div>
             
-            {selectedDays > 0 ? (
-              <div className="space-y-1">
-                <p className="font-serif text-4xl font-bold">{selectedDays} {selectedDays === 1 ? "día" : "días"}</p>
-                <p className="text-sm text-stone-400 font-medium">Marcados para inhabilitar</p>
-              </div>
-            ) : (
-              <p className="font-serif text-xl font-medium text-stone-400 italic">No hay fechas seleccionadas</p>
-            )}
+             {selectedDays > 0 ? (
+               <div className="space-y-1">
+                 <p className="font-serif text-4xl font-bold">{selectedDays} {selectedDays === 1 ? "día" : "días"}</p>
+                 <p className="text-sm text-stone-400 font-medium">Marcados para inhabilitar</p>
+               </div>
+             ) : (
+               <p className="font-serif text-xl font-medium text-stone-400 italic">No hay fechas seleccionadas</p>
+             )}
           </div>
 
           <div className="mt-8">
             <button
-              onClick={handleBlock}
-              disabled={loading || selectedDays === 0}
-              className="w-full flex items-center justify-center gap-2 bg-[#D4AF37] hover:bg-[#B89B72] text-stone-900 disabled:bg-stone-800 disabled:text-stone-500 rounded-xl py-4 font-bold uppercase tracking-widest text-xs transition-all duration-300 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <><Loader2 className="h-4 w-4 animate-spin" /> Procesando</>
-              ) : (
-                <><CalendarIcon className="h-4 w-4" /> Bloquear Disponibilidad</>
-              )}
+               onClick={handleBlock}
+               disabled={loading || selectedDays === 0}
+               className="w-full flex items-center justify-center gap-2 bg-[#D4AF37] hover:bg-[#B89B72] text-stone-900 disabled:bg-stone-800 disabled:text-stone-500 rounded-xl py-4 font-bold uppercase tracking-widest text-xs transition-all duration-300 disabled:cursor-not-allowed"
+             >
+               {loading ? (
+                 <><Loader2 className="h-4 w-4 animate-spin" /> Procesando</>
+               ) : (
+                 <><CalendarIcon className="h-4 w-4" /> Bloquear Disponibilidad</>
+               )}
             </button>
-            <p className="text-[10px] text-stone-500 mt-4 text-center">Al confirmar, el sistema de alquiler rechazará instantáneamente consultas solapadas.</p>
+            <p className="text-[10px] text-stone-500 mt-4 text-center">Al confirmar, el calendario del cliente rechazará selecciones en estos días.</p>
           </div>
         </div>
       </div>
