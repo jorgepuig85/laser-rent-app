@@ -119,9 +119,12 @@ export function NavbarAuth({
 
     if (isMobileView) {
       return (
-        <span className="text-sm font-serif italic text-[--seasonal-primary] whitespace-nowrap mr-2">
+        <Link 
+          href="/dashboard"
+          className="text-sm font-serif italic text-[--seasonal-primary] whitespace-nowrap mr-2 hover:underline decoration-[--seasonal-primary]/30 underline-offset-4 transition-all"
+        >
           {firstName}
-        </span>
+        </Link>
       );
     }
 
@@ -129,8 +132,9 @@ export function NavbarAuth({
       return (
         <div className="flex flex-col gap-4">
           {!isAdmin && (
-            <>
-            </>
+            <Link href="/dashboard" onClick={onCloseMenu} className="text-stone-800 font-medium py-2 border-b border-stone-100">
+              Mi Dashboard
+            </Link>
           )}
           {isAdmin && (
             <Link
@@ -155,9 +159,12 @@ export function NavbarAuth({
     return (
       <div className="flex items-center gap-4 border-l pl-4 ml-2">
         <div className="flex flex-col items-end mr-2">
-          <span className="text-sm font-serif italic text-[--seasonal-primary] whitespace-nowrap">
+          <Link 
+            href="/dashboard"
+            className="text-sm font-serif italic text-[--seasonal-primary] whitespace-nowrap hover:underline decoration-[--seasonal-primary]/30 underline-offset-4 transition-all hover:text-stone-900 cursor-pointer"
+          >
             Hola, {fullName}
-          </span>
+          </Link>
         </div>
 
           <>
