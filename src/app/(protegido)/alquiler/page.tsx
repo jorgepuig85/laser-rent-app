@@ -22,10 +22,8 @@ export default async function AlquilerPage() {
 
   if (!pro) return redirect("/completar-perfil");
 
-  // Obtener reservas (is_maintenance = false o true) para inhabilitar fechas en el calendario
-  const { data: rentals } = await supabase
-    .from("rentals")
-    .select("start_date, end_date");
+  // Obtener reservas de todos los clientes y mantenimientos usando RPC con SECURITY DEFINER
+  const { data: rentals } = await supabase.rpc("get_all_booked_dates");
 
   // Obtener tarifa diaria
   const { data: priceData } = await supabase
