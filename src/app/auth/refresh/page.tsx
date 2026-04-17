@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
 import { Loader2 } from "lucide-react";
 
-export default function RefreshSessionPage() {
+function RefreshContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") || "/dashboard";
@@ -22,7 +22,6 @@ export default function RefreshSessionPage() {
         const { error } = await supabase.auth.refreshSession();
         if (error) {
           console.error("Refresh session error:", error);
-          // If refresh fails, we might need to re-login
           router.push("/?login=true&error=session-expired");
         } else {
           router.push(next);
@@ -46,5 +45,13 @@ export default function RefreshSessionPage() {
         <p className="text-sm text-stone-400 font-medium">Estamos optimizando tu acceso al panel.</p>
       </div>
     </div>
+  );
+}
+
+export default function RefreshSessionPage() {
+  return (
+    <Suspense fallback={null}>
+      <RefreshContent />
+    </Suspense>
   );
 }
