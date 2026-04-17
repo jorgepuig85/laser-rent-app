@@ -200,7 +200,7 @@ export function ReservationClient({
           <div className="space-y-6">
             <div className="bg-white border-2 border-[#D4AF37]/30 p-6 rounded-2xl shadow-sm">
               <p className="text-stone-800 text-sm font-medium leading-relaxed">
-                Para jornadas de <span className="font-bold text-[#B89B72]">3 o más días</span>, ofrecemos descuentos especiales. Consúltanos por WhatsApp para obtener tu cotización personalizada.
+                Para jornadas de <span className="font-bold text-[#B89B72]">3 o más días</span>, ofrecemos descuentos especiales. Consúltanos por WhatsApp para obtener tu cotización personalizada. El costo de traslado se acordará por ese medio.
               </p>
               
               <div className="mt-4 pt-4 border-t border-stone-100">
@@ -230,13 +230,17 @@ export function ReservationClient({
               <span className="text-slate-600">Días seleccionados:</span>
               <span className="font-bold text-slate-900">{selectedDays} {selectedDays === 1 ? 'día' : 'días'}</span>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-slate-600">Total estimado:</span>
-              <div className="flex flex-col items-end">
-                 <span className="text-2xl font-bold text-slate-900">
+            <div className="flex flex-col gap-3">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-600">Costo de Alquiler:</span>
+                <span className="text-2xl font-bold text-slate-900">
                   ${totalCost.toLocaleString('es-AR')}
                 </span>
               </div>
+              <p className="text-[11px] text-slate-400 leading-relaxed flex items-start gap-2 pt-2 border-t border-slate-100">
+                <span className="text-sm shrink-0 opacity-70">🚚</span>
+                <span className="opacity-80">El valor indicado corresponde únicamente al alquiler del equipo. Se podrá adicionar un costo de envío/traslado según la localidad seleccionada.</span>
+              </p>
             </div>
             <Button
               onClick={handleBooking}
