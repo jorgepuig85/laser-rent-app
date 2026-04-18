@@ -32,6 +32,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
+      <head>
+        <link rel="preconnect" href="https://pbvxslvihypfblbfyqle.supabase.co" />
+      </head>
       <body
         className={`${inter.variable} ${playfair.variable} font-sans antialiased flex min-h-screen flex-col bg-white overflow-x-hidden`}
       >

@@ -20,6 +20,7 @@ export function Navbar() {
             height={40}
             className="h-10 w-auto"
             priority
+            sizes="150px"
           />
         </Link>
         <nav className="hidden md:flex items-center gap-4 sm:gap-6 text-sm font-medium">
