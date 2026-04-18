@@ -8,10 +8,16 @@ const HERO_IMAGE = "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/p
 const BENEFITS_IMAGE = "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/beneficios-tech.webp";
 const CTA_IMAGE = "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/clinica-interior.webp";
 
+import { createClient } from "@/lib/supabaseServer";
 import { AutoLoginTrigger } from "@/components/AutoLoginTrigger";
 import { Suspense } from "react";
+import { Calendar } from "lucide-react";
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+  const { data: { session } } = await supabase.auth.getSession();
+  const ctaHref = session ? "/dashboard" : "/login?next=/dashboard";
+
   return (
     <div className="flex flex-col min-h-[calc(100vh-4rem)]">
       <Suspense fallback={null}>
@@ -35,13 +41,25 @@ export default function Home() {
                   Potencia tus ingresos sin inversión de capital. Alquilamos los equipos de depilación láser más avanzados del mercado con mantenimiento y soporte técnico incluido.
                 </p>
               </div>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="h-14 px-10 text-base shadow-xl transition-all hover:scale-105 btn-glint rounded-2xl" render={<Link href="/equipos" />}>
-                  Ver Equipos <ArrowRight className="ml-2 h-5 w-5" />
+              <div className="flex flex-col gap-8 items-center sm:items-start">
+                <Button 
+                  size="lg" 
+                  className="h-16 px-14 text-xl shadow-2xl transition-all hover:scale-105 btn-glint rounded-full bg-[#8F754F] text-white font-bold border-none" 
+                  render={<Link href={ctaHref} />}
+                >
+                  Quiero Alquilar <Calendar className="ml-3 h-6 w-6" />
                 </Button>
-                <Button variant="outline" size="lg" className="h-14 px-10 text-base border-primary/20 hover:bg-primary/5 rounded-2xl transition-all" render={<Link href="/precios" />}>
-                  Consultar Planes
-                </Button>
+
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4">
+                  <Link href="/equipos" className="group flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-slate-900 transition-colors px-4 py-2">
+                    Ver Equipos
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                  <div className="h-4 w-[1px] bg-slate-200 hidden sm:block"></div>
+                  <Link href="/precios" className="text-sm font-bold text-slate-400 hover:text-slate-900 transition-colors px-4 py-2">
+                    Consultar Planes
+                  </Link>
+                </div>
               </div>
             </div>
             <div className="relative mx-auto w-full max-w-[500px] lg:max-w-none lg:h-[600px] rounded-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-1000 delay-150">

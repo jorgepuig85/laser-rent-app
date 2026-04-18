@@ -202,9 +202,9 @@ export function NavbarAuth({
   // Not logged in
   if (isMobileView || isMobileMenu) {
     return (
-      <Link href="/?login=true&next=/dashboard" onClick={() => { setIsLoginLoading(true); if (onCloseMenu) onCloseMenu(); }}>
-        <Button disabled={isLoginLoading} className="w-full bg-primary text-white rounded-full">
-          {isLoginLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserCircle className="mr-2 h-4 w-4" />}
+      <Link href="/login?next=/dashboard" onClick={() => { if (onCloseMenu) onCloseMenu(); }}>
+        <Button className="w-full bg-primary text-white rounded-full">
+          <UserCircle className="mr-2 h-4 w-4" />
           Login
         </Button>
       </Link>
@@ -212,14 +212,10 @@ export function NavbarAuth({
   }
 
   return (
-    <Link href="/?login=true&next=/dashboard" onClick={() => setIsLoginLoading(true)}>
-      <Button disabled={isLoginLoading} className="bg-primary text-white rounded-full px-6 min-w-[160px]">
-        {isLoginLoading ? (
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-        ) : (
-          <UserCircle className="mr-2 h-4 w-4" />
-        )}
-        {isLoginLoading ? "Cargando..." : "Login Profesional"}
+    <Link href="/login?next=/dashboard">
+      <Button className="bg-primary text-white rounded-full px-6 min-w-[160px]">
+        <UserCircle className="mr-2 h-4 w-4" />
+        Login Profesional
       </Button>
     </Link>
   );
