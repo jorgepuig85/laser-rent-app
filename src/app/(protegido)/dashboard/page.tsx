@@ -17,7 +17,6 @@ import { CancelButton } from "./CancelButton";
 import { DepositButton } from "./DepositButton";
 
 const ReservationClient = dynamic(() => import("./ReservationClient").then((mod) => mod.ReservationClient), {
-  ssr: false,
   loading: () => <div className="h-[600px] w-full animate-pulse bg-slate-50 rounded-[2rem] border border-slate-100 flex items-center justify-center text-slate-400 font-medium">Cargando reserva...</div>
 });
 
