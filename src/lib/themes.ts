@@ -11,10 +11,10 @@ export interface ThemeConfig {
 
 export const THEMES: Record<Season, ThemeConfig> = {
   autumn: {
-    primary: "#D4AF37", // Gold
-    accent: "#92400E",  // Amber
+    primary: "#8E735B", // Woody Ocre
+    accent: "#5D4037",  // Dark Wood
     background: "#FFFAF0", // Warm White
-    glow: "rgba(212, 175, 55, 0.3)",
+    glow: "rgba(142, 115, 91, 0.3)",
     animation: "leaves",
     label: "Otoño",
   },

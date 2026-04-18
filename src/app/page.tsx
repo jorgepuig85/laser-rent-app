@@ -182,13 +182,13 @@ export default async function Home() {
           fill
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-primary/80 backdrop-blur-[2px]"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/70 backdrop-blur-[1px]"></div>
         <div className="mx-auto w-full max-w-4xl px-4 md:px-6 relative text-center space-y-10 animate-in fade-in zoom-in duration-700">
           <h2 className="text-4xl md:text-6xl font-serif font-bold tracking-tight leading-tight">Lleva tu centro de estética al siguiente nivel</h2>
           <p className="text-xl text-white/90 font-medium">
             Reserva tu equipo hoy y comienza a ofrecer tratamientos de depilación definitiva de alta eficacia.
           </p>
-          <Button size="lg" className="h-16 px-10 text-lg rounded-full shadow-2xl bg-white text-primary hover:bg-white/90 hover:scale-105 transition-transform" render={<Link href="https://wa.me/5492954631456?text=Hola!%20Me%20interesa%20alquilar%20un%20equipo%20de%20depilaci%C3%B3n%20en%20La%20Pampa.%20Me%20poudr%C3%ADas%20dar%20m%C3%A1s%20informaci%C3%B3n%3F" target="_blank" rel="noopener noreferrer" />}>
+          <Button size="lg" className="h-16 px-10 text-lg rounded-full shadow-2xl bg-[#8F754F] text-white hover:bg-[#8F754F]/90 hover:scale-105 transition-all btn-glint border-none font-bold" render={<Link href="https://wa.me/5492954631456?text=Hola!%20Me%20interesa%20alquilar%20un%20equipo%20de%20depilaci%C3%B3n%20en%20La%20Pampa.%20Me%20poudr%C3%ADas%20dar%20m%C3%A1s%20informaci%C3%B3n%3F" target="_blank" rel="noopener noreferrer" />}>
             Chatea con un Asesor
           </Button>
         </div>
