@@ -214,11 +214,16 @@ export default async function DashboardPage() {
                       receipt_url: string | null;
                       deposit_amount: number | null;
                       cost: number | null;
-                      location_id: string | null;
-                      locations: { name: string } | null;
+                      locations: { name: string } | { name: string }[] | null;
                     }) => {
                       const isPast = !isFuture(parseISO(r.end_date));
-                      const locationName = (r.locations as { name: string } | null)?.name ?? "";
+                      const rawLoc = r.locations;
+                      let locationName = "";
+                      if (Array.isArray(rawLoc)) {
+                        locationName = rawLoc[0]?.name ?? "";
+                      } else {
+                        locationName = rawLoc?.name ?? "";
+                      }
                       const isFreeShipping = FREE_SHIPPING_LOCATIONS.includes(locationName);
                       return (
                          <tr
@@ -318,9 +323,15 @@ export default async function DashboardPage() {
 
               {/* --- Mobile View --- */}
               <div className="md:hidden flex flex-col divide-y divide-[#F3EBE1]/50">
-                  {allRentals.map((r: { id: string; title: string; start_date: string; end_date: string; status: string; receipt_url: string | null; deposit_amount: number | null; cost: number | null; location_id: string | null; locations: { name: string } | null; }) => {
+                {allRentals.map((r: { id: string; title: string; start_date: string; end_date: string; status: string; receipt_url: string | null; deposit_amount: number | null; cost: number | null; location_id: string | null; locations: { name: string } | { name: string }[] | null; }) => {
                   const isPast = !isFuture(parseISO(r.end_date));
-                  const locationName = (r.locations as { name: string } | null)?.name ?? "";
+                  const rawLoc = r.locations;
+                  let locationName = "";
+                  if (Array.isArray(rawLoc)) {
+                    locationName = rawLoc[0]?.name ?? "";
+                  } else {
+                    locationName = rawLoc?.name ?? "";
+                  }
                   const isFreeShipping = FREE_SHIPPING_LOCATIONS.includes(locationName);
                   return (
                     <div key={r.id} className="p-6 flex flex-col gap-4 hover:bg-white/80 transition-all duration-300">
