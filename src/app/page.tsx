@@ -123,7 +123,7 @@ export default async function Home() {
       <section className="py-24 md:py-32 bg-white">
         <div className="mx-auto w-full max-w-7xl px-4 md:px-6">
           <div className="text-center space-y-4 mb-20 reveal-up">
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold tracking-tight text-slate-900">¿Por qué elegir Centro de Belleza?</h2>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold tracking-tight text-slate-900">¿Por qué elegir Laser Rent?</h2>
             <p className="text-slate-500 text-lg max-w-[700px] mx-auto tracking-wide">
               Maximizamos tu rentabilidad eliminando los costos operativos de mantenimiento y reparaciones con tecnología certificada.
             </p>

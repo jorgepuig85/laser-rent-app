@@ -196,7 +196,11 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
       setTimeout(() => window.location.reload(), 1500);
     } catch (e: unknown) {
       const errMsg = e instanceof Error ? e.message : "Error inesperado. Intentá nuevamente.";
-      console.error('[STORAGE] Caught error:', errMsg, e);
+      console.error('[STORAGE] Caught error:', errMsg, {
+        error: e,
+        stack: e instanceof Error ? e.stack : 'no stack',
+        context: 'handleUpload catch block'
+      });
       setError(errMsg);
     } finally {
       setUploading(false);

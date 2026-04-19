@@ -240,7 +240,7 @@ export default function ConsentimientoPacientePage() {
             uno para el paciente y otro para el profesional actuante.
           </p>
           <p className="text-[#B89B72] font-bold uppercase tracking-widest">
-            MPA Alquiler · Centro de Belleza · centrodebelleza.com.ar
+            MPA Alquiler · Laser Rent · laserrent.com.ar
           </p>
         </footer>
       </div>

@@ -49,11 +49,11 @@ export function Footer() {
                 <span className="text-sm font-semibold text-slate-600">+54 9 2954 631456</span>
               </Link>
               <Link 
-                href="mailto:notificaciones@centrodebelleza.com.ar"
+                href="mailto:notificaciones@laserrent.com.ar"
                 className="flex items-center gap-3 text-slate-500 hover:text-[--seasonal-primary] transition-colors w-fit"
               >
                 <Mail className="h-4 w-4 text-[--seasonal-primary]" />
-                <span className="text-sm text-slate-600">notificaciones@centrodebelleza.com.ar</span>
+                <span className="text-sm text-slate-600">notificaciones@laserrent.com.ar</span>
               </Link>
               <div className="flex items-start gap-3 text-slate-500">
                 <MapPin className="h-4 w-4 text-[--seasonal-primary] shrink-0" />
@@ -65,7 +65,7 @@ export function Footer() {
 
         <div className="mt-16 pt-8 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-slate-400 text-xs font-medium">
-            © 2026 Centro de Belleza. Todos los derechos reservados.
+            © 2026 Laser Rent. Todos los derechos reservados.
           </p>
           <div className="flex gap-6">
             <Link href="/terminos" className="text-slate-400 hover:text-[--seasonal-primary] text-xs transition-colors">Términos</Link>

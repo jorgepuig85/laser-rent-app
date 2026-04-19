@@ -25,7 +25,7 @@ export default async function CompletarPerfil() {
     // Higienizar CUIT: dejar solo números
     cuit = cuit.replace(/\D/g, "");
 
-    // Validar longitud CUIT
+    // Validar longitud CUIT exacta
     if (cuit.length !== 11) {
       throw new Error("El CUIT debe tener exactamente 11 dígitos.");
     }
@@ -53,10 +53,11 @@ export default async function CompletarPerfil() {
       .eq("auth_id", sessionUser.id);
 
     if (!error) {
+      // Revalidate to update layouts and middleware checks
       revalidatePath("/", "layout");
       redirect("/dashboard");
     } else {
-      console.error(error);
+      console.error("[saveProfile] update error:", error);
       throw new Error("Hubo un error al guardar tu perfil.");
     }
   }

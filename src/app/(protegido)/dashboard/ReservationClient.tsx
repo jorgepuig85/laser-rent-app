@@ -129,16 +129,16 @@ export function ReservationClient({
       }
 
       setDate(undefined);
-      setLocationId("");
+      setLocationId(""); // Reset location select
       toast.success("¡Reserva confirmada con éxito!", {
         description: "Ya puedes revisar los detalles en tu dashboard profesional.",
         icon: <CheckCircle2 className="h-5 w-5 text-[--seasonal-primary]" />,
         duration: 3000,
       });
       
-      // Reload immediately to unfreeze the UI and show updated state
+      // Reload is the most robust way to ensure all server data is fresh and UI is unfrozen
       router.refresh();
-      setTimeout(() => window.location.reload(), 800);
+      setTimeout(() => window.location.reload(), 1000);
 
     } catch (err: unknown) {
       // Fallback: network or framework-level error
