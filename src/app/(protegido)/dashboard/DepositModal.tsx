@@ -64,6 +64,60 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
     setTimeout(() => setCopiedField(null), 2000);
   };
 
+  const compressImage = (file: File): Promise<Blob | File> => {
+    return new Promise((resolve) => {
+      if (!file.type.startsWith('image/')) {
+        resolve(file);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          // Max dimensions for compression (e.g., 1200px)
+          const MAX_WIDTH = 1200;
+          const MAX_HEIGHT = 1200;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+
+          canvas.toBlob(
+            (blob) => {
+              if (blob && blob.size < file.size) {
+                resolve(blob);
+              } else {
+                resolve(file);
+              }
+            },
+            'image/jpeg',
+            0.8 // Quality
+          );
+        };
+      };
+    });
+  };
+
   const handleUpload = async () => {
     if (!file) { setError("Seleccioná un archivo para continuar."); return; }
     setUploading(true);
@@ -87,20 +141,23 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
         }
       );
 
-      // 3. Ruta simplificada pedida (raíz + Date + name)
+      // 3. Compresión opcional para móviles
+      const fileToUpload = await compressImage(file);
+      
+      // 4. Ruta simplificada pedida (raíz + Date + name)
       const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
       const path = `${Date.now()}-${safeName}`;
 
-      // 4. Intento de subida con log exhaustivo, MIME type dinámico, timeout de 10s
+      // 5. Intento de subida con log exhaustivo, MIME type dinámico, timeout extendido
       const uploadPromise = authClient.storage
         .from("comprobantes")
-        .upload(path, file, { 
+        .upload(path, fileToUpload, { 
           upsert: true, 
           contentType: file.type || "application/octet-stream"
         });
 
       const timeoutPromise = new Promise<{ data: { path: string } | null, error: Error | null }>((_, reject) => 
-        setTimeout(() => reject(new Error("La subida tardó más de 10 segundos (Timeout).")), 10000)
+        setTimeout(() => reject(new Error("La subida tardó demasiado. Comprobá tu conexión.")), 30000)
       );
 
       const { data, error: uploadError } = await Promise.race([uploadPromise, timeoutPromise]);
@@ -263,6 +320,7 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
                 ref={fileRef}
                 type="file"
                 accept="image/jpeg,image/png,image/webp,application/pdf"
+                capture="environment"
                 className="hidden"
                 onChange={(e) => {
                   const f = e.target.files?.[0];

@@ -1,15 +1,21 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { signIn } from "@/app/auth/actions";
-import { Calendar, UserCircle, ArrowRight } from "lucide-react";
+import { Calendar, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 
 function LoginContent() {
   const searchParams = useSearchParams();
   const next = searchParams.get("next") || "/dashboard";
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleLogin = async () => {
+    setIsLoading(true);
+  };
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
@@ -27,14 +33,22 @@ function LoginContent() {
         </div>
 
         <div className="space-y-4">
-          <form action={signIn}>
+          <form action={signIn} onSubmit={handleLogin}>
             <input type="hidden" name="next" value={next} />
             <Button 
               type="submit"
               size="lg" 
-              className="w-full h-16 rounded-full bg-[#8F754F] text-white font-bold text-lg shadow-xl shadow-[#8F754F]/20 hover:bg-[#8F754F]/90 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 btn-glint"
+              disabled={isLoading}
+              className="w-full h-16 rounded-full bg-[#8F754F] text-white font-bold text-lg shadow-xl shadow-[#8F754F]/20 hover:bg-[#8F754F]/90 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 btn-glint disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              <svg className="h-6 w-6" viewBox="0 0 24 24">
+              {isLoading ? (
+                <>
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                  Procesando...
+                </>
+              ) : (
+                <>
+                  <svg className="h-6 w-6" viewBox="0 0 24 24">
                 <path
                   fill="currentColor"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -51,8 +65,10 @@ function LoginContent() {
                   fill="currentColor"
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 12-4.53z"
                 />
-              </svg>
-              Continuar con Google
+                  </svg>
+                  Continuar con Google
+                </>
+              )}
             </Button>
           </form>
 

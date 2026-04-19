@@ -10,6 +10,7 @@ import {
   FileText,
   ScrollText,
   Sparkles,
+  CheckCircle2,
 } from "lucide-react";
 
 import dynamic from "next/dynamic";
@@ -272,9 +273,10 @@ export default async function DashboardPage() {
                                 startDate={format(parseISO(r.start_date), "d 'de' MMM", { locale: es })}
                               />
                             ) : r.receipt_url ? (
-                              <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[9px] uppercase tracking-widest font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                ✓ Enviado
-                              </span>
+                              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] uppercase tracking-widest font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                                <span>Enviado</span>
+                              </div>
                             ) : (
                               <span className="text-[10px] text-stone-300">—</span>
                             )}
@@ -355,9 +357,10 @@ export default async function DashboardPage() {
                               startDate={format(parseISO(r.start_date), "d 'de' MMM", { locale: es })}
                             />
                           ) : r.receipt_url ? (
-                            <span className="inline-flex items-center gap-1 px-3 py-2 rounded-xl text-[9px] uppercase tracking-widest font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                              ✓ Enviado
-                            </span>
+                            <div className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[9px] uppercase tracking-widest font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                              <span>Enviado</span>
+                            </div>
                           ) : null}
                         </div>
                       </div>
