@@ -9,9 +9,16 @@ export async function signIn(formData: FormData) {
   const nextDestination = formData.get("next") as string || "/dashboard";
   
   const headersList = await headers();
-  const host = headersList.get("host") || "centrodebelleza.com.ar";
-  const protocol = host.includes("localhost") ? "http" : "https";
-  const origin = `${protocol}://${host}`;
+  // Priority: explicit env var → request host header → safe empty string (Supabase handles redirect)
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  let origin: string;
+  if (siteUrl) {
+    origin = siteUrl.replace(/\/$/, ""); // strip trailing slash
+  } else {
+    const host = headersList.get("host") || "";
+    const protocol = host.startsWith("localhost") ? "http" : "https";
+    origin = host ? `${protocol}://${host}` : "";
+  }
   
   const { data } = await supabase.auth.signInWithOAuth({
     provider: "google",

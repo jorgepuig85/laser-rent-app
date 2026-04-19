@@ -163,11 +163,27 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
       const { data, error: uploadError } = await Promise.race([uploadPromise, timeoutPromise]);
 
       if (uploadError) {
-        console.error('ERROR DETALLADO STORAGE:', uploadError);
+        // ── Verbose diagnostic log ────────────────────────────────────────
+        console.error('[STORAGE ERROR] Full details:', {
+          message: uploadError.message,
+          rawError: uploadError,
+          fileInfo: {
+            name: file.name,
+            size: `${(file.size / 1024).toFixed(1)} KB`,
+            type: file.type || 'UNKNOWN MIME',
+          },
+          compressedSize: fileToUpload instanceof Blob ? `${(fileToUpload.size / 1024).toFixed(1)} KB` : 'no compress',
+          path,
+          bucket: 'comprobantes',
+          sessionPresent: !!session,
+        });
         throw new Error(uploadError.message || "Error al subir archivo.");
       }
 
-      console.log('SUBIDA EXITOSA:', data);
+      console.log('[STORAGE] Upload successful:', {
+        path: data?.path,
+        fileSize: `${(file.size / 1024).toFixed(1)} KB`,
+      });
 
       const result = await uploadReceipt(rentalId, path);
       if (!result.success) throw new Error(result.error);
@@ -179,8 +195,9 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
       router.refresh();
       setTimeout(() => window.location.reload(), 1500);
     } catch (e: unknown) {
-      console.error('ERROR DETALLADO STORAGE:', e);
-      setError(e instanceof Error ? e.message : "Error inesperado. Intentá nuevamente.");
+      const errMsg = e instanceof Error ? e.message : "Error inesperado. Intentá nuevamente.";
+      console.error('[STORAGE] Caught error:', errMsg, e);
+      setError(errMsg);
     } finally {
       setUploading(false);
     }

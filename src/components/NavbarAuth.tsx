@@ -20,7 +20,6 @@ export function NavbarAuth({
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [isLoginLoading, setIsLoginLoading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   // Singleton Supabase Browser Client

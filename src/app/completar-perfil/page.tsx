@@ -19,14 +19,32 @@ export default async function CompletarPerfil() {
 
     if (!sessionUser) return;
 
-    let cuit = formData.get("cuit") as string;
-    const phone = formData.get("phone") as string;
+    let cuit = (formData.get("cuit") as string) ?? "";
+    const phone = ((formData.get("phone") as string) ?? "").trim();
 
-    // Higienizar cuit: dejar solo numeros
+    // Higienizar CUIT: dejar solo números
     cuit = cuit.replace(/\D/g, "");
 
+    // Validar longitud CUIT
     if (cuit.length !== 11) {
-      throw new Error("El CUIT debe tener exactamente 11 números válidos.");
+      throw new Error("El CUIT debe tener exactamente 11 dígitos.");
+    }
+
+    // Validar longitud celular
+    if (phone.length === 0 || phone.length > 15) {
+      throw new Error("El teléfono debe tener entre 1 y 15 caracteres.");
+    }
+
+    // ── Verificar unicidad del CUIT (evitar duplicados) ──────────────
+    const { data: existing } = await supabaseServer
+      .from("external_professionals")
+      .select("id")
+      .eq("cuit", cuit)
+      .neq("auth_id", sessionUser.id) // excluir al propio usuario
+      .maybeSingle();
+
+    if (existing) {
+      throw new Error("Este CUIT ya está registrado en la plataforma.");
     }
 
     const { error } = await supabaseServer
@@ -67,9 +85,14 @@ export default async function CompletarPerfil() {
               inputMode="numeric"
               pattern="[0-9]*"
               required
+              maxLength={11}
               placeholder="Ej: 20123456789"
-              className="flex h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors hover:bg-slate-100 hover:border-slate-300 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              className="flex h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm ring-offset-background placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors hover:bg-slate-100 hover:border-slate-300 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              onInput="if(this.value.length > 11) this.value = this.value.slice(0, 11)"
             />
+            <p className="text-[11px] text-slate-400 font-medium">
+              Solo números · Exactamente 11 dígitos (sin guiones ni puntos)
+            </p>
           </div>
           <div className="space-y-2">
             <label htmlFor="phone" className="text-sm font-medium leading-none">
@@ -80,9 +103,13 @@ export default async function CompletarPerfil() {
               name="phone"
               type="tel"
               required
-              placeholder="Ej: 11 5000 0000"
-              className="flex h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors hover:bg-slate-100 hover:border-slate-300"
+              maxLength={15}
+              placeholder="Ej: 2954631456"
+              className="flex h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm ring-offset-background placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors hover:bg-slate-100 hover:border-slate-300"
             />
+            <p className="text-[11px] text-slate-400 font-medium">
+              Máximo 15 dígitos
+            </p>
           </div>
           <button
             type="submit"

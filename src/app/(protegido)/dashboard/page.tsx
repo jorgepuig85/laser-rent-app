@@ -16,6 +16,7 @@ import {
 import dynamic from "next/dynamic";
 import { CancelButton } from "./CancelButton";
 import { DepositButton } from "./DepositButton";
+import { MisDatosButton } from "./MisDatosButton";
 
 const ReservationClient = dynamic(() => import("./ReservationClient").then((mod) => mod.ReservationClient), {
   loading: () => <div className="h-[600px] w-full animate-pulse bg-slate-50 rounded-[2rem] border border-slate-100 flex items-center justify-center text-slate-400 font-medium">Cargando reserva...</div>
@@ -85,16 +86,19 @@ export default async function DashboardPage() {
 
   const { data: pro } = await supabase
     .from("external_professionals")
-    .select("id, name")
+    .select("id, name, cuit, phone")
     .eq("auth_id", user.id)
     .single();
 
   if (!pro) return redirect("/completar-perfil");
 
-  // Mis reservas
+  // Localidades con envío gratuito
+  const FREE_SHIPPING_LOCATIONS = ["Santa Rosa", "Toay"];
+
+  // Mis reservas (incluir location para lógica de envío)
   const { data: rentals } = await supabase
     .from("rentals")
-    .select("id, title, start_date, end_date, status, receipt_url, deposit_amount, cost")
+    .select("id, title, start_date, end_date, status, receipt_url, deposit_amount, cost, location_id, locations(name)")
     .eq("external_professional_id", pro.id)
     .order("start_date", { ascending: true });
 
@@ -136,6 +140,7 @@ export default async function DashboardPage() {
               <Sparkles className="h-3.5 w-3.5" />
               Panel VIP
             </span>
+            <MisDatosButton currentCuit={pro.cuit ?? null} currentPhone={pro.phone ?? null} />
           </div>
           <h1 className="font-serif text-3xl md:text-5xl lg:text-5xl font-bold text-stone-900 leading-tight mb-4 tracking-tight max-w-4xl max-w-[800px] leading-[1.2]">
             ¡Hola, {firstName}! Qué bueno verte. Aquí puedes gestionar tus jornadas de depilación. 👋
@@ -209,8 +214,12 @@ export default async function DashboardPage() {
                       receipt_url: string | null;
                       deposit_amount: number | null;
                       cost: number | null;
+                      location_id: string | null;
+                      locations: { name: string } | null;
                     }) => {
                       const isPast = !isFuture(parseISO(r.end_date));
+                      const locationName = (r.locations as { name: string } | null)?.name ?? "";
+                      const isFreeShipping = FREE_SHIPPING_LOCATIONS.includes(locationName);
                       return (
                          <tr
                           key={r.id}
@@ -267,11 +276,20 @@ export default async function DashboardPage() {
                           {/* Seña column */}
                           <td className="px-8 py-6">
                             {!isPast && r.status === 'pendiente' && !r.receipt_url ? (
-                              <DepositButton
-                                rentalId={r.id}
-                                depositAmount={r.deposit_amount}
-                                startDate={format(parseISO(r.start_date), "d 'de' MMM", { locale: es })}
-                              />
+                              <>
+                                <DepositButton
+                                  rentalId={r.id}
+                                  depositAmount={r.deposit_amount}
+                                  startDate={format(parseISO(r.start_date), "d 'de' MMM", { locale: es })}
+                                />
+                                <p className="text-[10px] mt-2 font-medium">
+                                  {isFreeShipping ? (
+                                    <span className="text-emerald-600 flex items-center gap-1">🚚 Envío sin costo</span>
+                                  ) : (
+                                    <span className="text-stone-400">🚚 Costo de envío a convenír</span>
+                                  )}
+                                </p>
+                              </>
                             ) : r.receipt_url ? (
                               <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] uppercase tracking-widest font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
                                 <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
@@ -300,8 +318,10 @@ export default async function DashboardPage() {
 
               {/* --- Mobile View --- */}
               <div className="md:hidden flex flex-col divide-y divide-[#F3EBE1]/50">
-                {allRentals.map((r: { id: string; title: string; start_date: string; end_date: string; status: string; receipt_url: string | null; deposit_amount: number | null; cost: number | null; }) => {
+                  {allRentals.map((r: { id: string; title: string; start_date: string; end_date: string; status: string; receipt_url: string | null; deposit_amount: number | null; cost: number | null; location_id: string | null; locations: { name: string } | null; }) => {
                   const isPast = !isFuture(parseISO(r.end_date));
+                  const locationName = (r.locations as { name: string } | null)?.name ?? "";
+                  const isFreeShipping = FREE_SHIPPING_LOCATIONS.includes(locationName);
                   return (
                     <div key={r.id} className="p-6 flex flex-col gap-4 hover:bg-white/80 transition-all duration-300">
                       {/* Header row: Image, Title, Status */}
@@ -340,29 +360,41 @@ export default async function DashboardPage() {
                       </div>
 
                       {/* Date & Deposit Action Row */}
-                      <div className="bg-[#FCFAF5] rounded-2xl p-4 border border-[#EAE3D5] flex items-center justify-between gap-2 shadow-inner">
-                        <div className="flex flex-col">
-                          <span className="text-stone-900 font-bold tracking-tight text-sm">
-                            {format(parseISO(r.start_date), "d MMM", { locale: es })}
-                          </span>
-                          <span className="text-[10px] text-stone-500 font-medium">
-                            hasta el {format(parseISO(r.end_date), "d MMM", { locale: es })}
-                          </span>
+                      <div className="bg-[#FCFAF5] rounded-2xl p-4 border border-[#EAE3D5] flex flex-col gap-3 shadow-inner">
+                        <div className="flex items-center justify-between">
+                          <div className="flex flex-col">
+                            <span className="text-stone-900 font-bold tracking-tight text-sm">
+                              {format(parseISO(r.start_date), "d MMM", { locale: es })}
+                            </span>
+                            <span className="text-[10px] text-stone-500 font-medium">
+                              hasta el {format(parseISO(r.end_date), "d MMM", { locale: es })}
+                            </span>
+                          </div>
+                          <div className="shrink-0">
+                            {(!isPast && r.status === 'pendiente' && !r.receipt_url) ? (
+                              <DepositButton
+                                rentalId={r.id}
+                                depositAmount={r.deposit_amount}
+                                startDate={format(parseISO(r.start_date), "d 'de' MMM", { locale: es })}
+                              />
+                            ) : r.receipt_url ? (
+                              <div className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[9px] uppercase tracking-widest font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                                <span>Enviado</span>
+                              </div>
+                            ) : null}
+                          </div>
                         </div>
-                        <div className="shrink-0">
-                          {(!isPast && r.status === 'pendiente' && !r.receipt_url) ? (
-                            <DepositButton
-                              rentalId={r.id}
-                              depositAmount={r.deposit_amount}
-                              startDate={format(parseISO(r.start_date), "d 'de' MMM", { locale: es })}
-                            />
-                          ) : r.receipt_url ? (
-                            <div className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[9px] uppercase tracking-widest font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-                              <span>Enviado</span>
-                            </div>
-                          ) : null}
-                        </div>
+                        {/* Shipping cost note */}
+                        {!isPast && r.status === 'pendiente' && (
+                          <p className="text-[10px] font-medium">
+                            {isFreeShipping ? (
+                              <span className="text-emerald-600">🚚 Envío sin costo</span>
+                            ) : (
+                              <span className="text-stone-400">🚚 Costo de envío/traslado a convenir según localidad</span>
+                            )}
+                          </p>
+                        )}
                       </div>
 
                       {/* Cancel Action */}

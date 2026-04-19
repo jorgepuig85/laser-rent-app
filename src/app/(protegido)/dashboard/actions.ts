@@ -315,3 +315,57 @@ export async function cancelRental(rentalId: string): Promise<ActionResult> {
     };
   }
 }
+
+// ─── updateProfessionalData ─────────────────────────────────────────────────
+// Allows the logged-in professional to update their CUIT and phone number.
+export async function updateProfessionalData(
+  cuit: string,
+  phone: string
+): Promise<ActionResult> {
+  try {
+    const supabase = await createClient();
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) return { success: false, error: "No autorizado." };
+
+    // Validate CUIT format (digits only, 11 chars)
+    const cleanCuit = cuit.replace(/\D/g, "");
+    if (cleanCuit.length !== 11) {
+      return { success: false, error: "El CUIT debe tener exactamente 11 dígitos." };
+    }
+
+    // Validate phone length
+    const cleanPhone = phone.trim();
+    if (!cleanPhone || cleanPhone.length > 15) {
+      return { success: false, error: "El teléfono debe tener entre 1 y 15 caracteres." };
+    }
+
+    // Check CUIT uniqueness — skip the user's own record
+    const { data: existing } = await supabase
+      .from("external_professionals")
+      .select("id")
+      .eq("cuit", cleanCuit)
+      .neq("auth_id", user.id)
+      .maybeSingle();
+
+    if (existing) {
+      return { success: false, error: "Este CUIT ya está registrado en la plataforma." };
+    }
+
+    const { error: updateError } = await supabase
+      .from("external_professionals")
+      .update({ cuit: cleanCuit, phone: cleanPhone })
+      .eq("auth_id", user.id);
+
+    if (updateError) {
+      console.error("[updateProfessionalData] error:", updateError);
+      return { success: false, error: `Error al actualizar: ${updateError.message}` };
+    }
+
+    revalidatePath("/", "layout");
+    return { success: true };
+  } catch (e) {
+    console.error("[updateProfessionalData] unexpected:", e);
+    return { success: false, error: "Error inesperado al actualizar los datos." };
+  }
+}
