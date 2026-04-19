@@ -89,7 +89,6 @@ export default async function CompletarPerfil() {
               maxLength={11}
               placeholder="Ej: 20123456789"
               className="flex h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm ring-offset-background placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors hover:bg-slate-100 hover:border-slate-300 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-              onInput="if(this.value.length > 11) this.value = this.value.slice(0, 11)"
             />
             <p className="text-[11px] text-slate-400 font-medium">
               Solo números · Exactamente 11 dígitos (sin guiones ni puntos)
