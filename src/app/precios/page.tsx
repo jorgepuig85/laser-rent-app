@@ -125,7 +125,7 @@ export default async function PreciosPage() {
             <CardFooter className="pt-8">
               {plan.name === "Mensual" ? (
                 <Link 
-                  href={`https://wa.me/5492954631456?text=${encodeURIComponent("Hola! Me interesa consultar por el alquiler mensual del ADSS FG2000B.")}`} 
+                  href={`https://wa.me/5492954631456?text=${encodeURIComponent("Hola! Me interesa el alquiler mensual del ADSS FG2000B. ¿Me podrías dar más información?")}`} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="w-full"

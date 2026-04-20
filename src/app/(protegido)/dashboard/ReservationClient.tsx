@@ -75,7 +75,7 @@ export function ReservationClient({
   const selectedLocation = locations.find(l => l.id === locationId);
   const locationName = selectedLocation?.name || "mi localidad";
 
-  const whatsappLink = `https://wa.me/5492954631456?text=${encodeURIComponent(`Hola Jorge, soy ${professionalName}, quiero cotizar un alquiler de la ADSS FG2000B por ${selectedDays} días en ${locationName}`)}`;
+  const whatsappLink = `https://wa.me/5492954631456?text=${encodeURIComponent(`Hola Jorge, soy ${professionalName}, quiero cotizar un alquiler de la ADSS FG2000B por ${selectedDays} días en ${locationName}. ¿Me podrías pasar el presupuesto?`)}`;
 
   const handleBooking = async () => {
     if (!date?.from || !locationId || isConsult) return;
@@ -128,17 +128,18 @@ export function ReservationClient({
         return;
       }
 
+      router.refresh();
       setDate(undefined);
       setLocationId(""); // Reset location select
-      toast.success("¡Reserva confirmada con éxito!", {
+      
+      toast.success("¡Reserva enviada con éxito!", {
         description: "Ya puedes revisar los detalles en tu dashboard profesional.",
         icon: <CheckCircle2 className="h-5 w-5 text-[--seasonal-primary]" />,
         duration: 3000,
       });
       
-      // Reload is the most robust way to ensure all server data is fresh and UI is unfrozen
-      router.refresh();
-      setTimeout(() => window.location.reload(), 1000);
+      // Force reload slightly later to ensure full data consistency and clear any possible local state lag
+      setTimeout(() => window.location.reload(), 800);
 
     } catch (err: unknown) {
       // Fallback: network or framework-level error
@@ -241,7 +242,12 @@ export function ReservationClient({
               </div>
               <p className="text-[11px] text-slate-600 font-medium leading-relaxed flex items-start gap-2 pt-2 border-t border-slate-100">
                 <span className="text-sm shrink-0">🚚</span>
-                <span>El valor indicado corresponde únicamente al alquiler del equipo. Se podrá adicionar un costo de envío/traslado según la localidad seleccionada.</span>
+                <span>
+                  {["Santa Rosa", "Toay"].includes(selectedLocation?.name || "") 
+                    ? "Envío sin costo (Santa Rosa y Toay)." 
+                    : "El valor indicado corresponde únicamente al alquiler del equipo. Se podrá adicionar un costo de envío/traslado según la localidad seleccionada."
+                  }
+                </span>
               </p>
             </div>
             <Button

@@ -65,7 +65,7 @@ export function Footer() {
 
         <div className="mt-16 pt-8 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-slate-400 text-xs font-medium">
-            © 2026 Laser Rent. Todos los derechos reservados.
+            © 2026 Centro de Belleza. Todos los derechos reservados.
           </p>
           <div className="flex gap-6">
             <Link href="/terminos" className="text-slate-400 hover:text-[--seasonal-primary] text-xs transition-colors">Términos</Link>

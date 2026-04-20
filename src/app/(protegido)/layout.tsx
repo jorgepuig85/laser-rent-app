@@ -25,13 +25,15 @@ export default async function ProtectedLayout({
   // v2.1: Force build cache clean
 
 
-  const { data: pro } = await supabase
-    .from("external_professionals")
-    .select("cuit, phone")
-    .eq("auth_id", user.id)
-    .single();
+  // v2.2: Consolidar chequeo en external_professionals (Fuente de Verdad única)
+  const [profileResult, proResult] = await Promise.all([
+    supabase.from("profiles").select("is_admin").eq("id", user.id).single(),
+    supabase.from("external_professionals").select("cuit, phone").eq("auth_id", user.id).single()
+  ]);
 
-  if (!pro || !pro.cuit || !pro.phone) {
+  if (profileResult.data?.is_admin) return <>{children}</>;
+
+  if (!proResult.data?.cuit || !proResult.data?.phone) {
     redirect("/completar-perfil");
   }
 

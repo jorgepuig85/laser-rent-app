@@ -44,21 +44,22 @@ export default async function CompletarPerfil() {
       .maybeSingle();
 
     if (existing) {
-      throw new Error("Este CUIT ya está registrado en la plataforma.");
+      throw new Error("Este CUIT ya se encuentra registrado. Si crees que es un error, contacta al soporte.");
     }
 
-    const { error } = await supabaseServer
+    // Actualizar datos del profesional (CUIT y teléfono)
+    const { error: proError } = await supabaseServer
       .from("external_professionals")
       .update({ cuit, phone })
       .eq("auth_id", sessionUser.id);
 
-    if (!error) {
+    if (!proError) {
       // Revalidate to update layouts and middleware checks
       revalidatePath("/", "layout");
       redirect("/dashboard");
     } else {
-      console.error("[saveProfile] update error:", error);
-      throw new Error("Hubo un error al guardar tu perfil.");
+      console.error("[saveProfile] external_professionals update error:", proError);
+      throw new Error("Hubo un error al guardar tu perfil profesional.");
     }
   }
 

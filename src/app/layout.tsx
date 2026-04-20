@@ -20,8 +20,31 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: "Centro de Belleza | Depilación Láser en Santa Rosa y Miguel Riglos",
   description: "Expertos en depilación láser Soprano y ADSS en La Pampa. Tecnología de punta, soporte técnico y capacitación profesional en Santa Rosa y Miguel Riglos.",
+  metadataBase: new URL("https://centro-de-belleza.vercel.app"), // Fallback base URL for metadata
   icons: {
     icon: "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/favicon.png",
+  },
+  openGraph: {
+    title: "Centro de Belleza | Depilación Láser",
+    description: "Expertos en depilación láser Soprano y ADSS en La Pampa. Tecnología de punta y soporte profesional.",
+    url: "https://centro-de-belleza.vercel.app",
+    siteName: "Centro de Belleza",
+    images: [
+      {
+        url: "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/hero-clinica.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Centro de Belleza - Depilación Láser",
+      },
+    ],
+    locale: "es_AR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Centro de Belleza | Depilación Láser",
+    description: "Tecnología de punta Soprano y ADSS en La Pampa.",
+    images: ["https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/hero-clinica.jpg"],
   },
 };
 

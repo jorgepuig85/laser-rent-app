@@ -207,7 +207,7 @@ export default function FichaTecnicaPage() {
             Este documento es de uso exclusivo para profesionales habilitados que alquilan el equipo a través de MPA Alquiler.
           </p>
           <p className="text-[#B89B72] font-bold uppercase tracking-widest">
-            Laser Rent · laserrent.com.ar
+            Centro de Belleza — MPA Alquiler
           </p>
         </footer>
       </div>

@@ -157,7 +157,7 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
         });
 
       const timeoutPromise = new Promise<{ data: { path: string } | null, error: Error | null }>((_, reject) => 
-        setTimeout(() => reject(new Error("La subida tardó demasiado. Comprobá tu conexión.")), 30000)
+        setTimeout(() => reject(new Error("La subida tardó demasiado. Comprobá tu conexión.")), 60000)
       );
 
       const { data, error: uploadError } = await Promise.race([uploadPromise, timeoutPromise]);
