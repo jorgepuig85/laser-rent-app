@@ -187,40 +187,62 @@ export async function createRental(
   }
 }
 
-// ─── uploadReceipt ─────────────────────────────────────────────────────────
+// ─── uploadReceipt (NUCLEAR REWRITE) ──────────────────────────────────────────
+// Handles file upload to Storage AND DB record update on the server for stability.
 export async function uploadReceipt(
-  rentalId: string,
-  receiptUrl: string
+  formData: FormData
 ): Promise<ActionResult> {
   try {
     const supabase = await createClient();
 
+    // 1. Auth check
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) return { success: false, error: "No autorizado." };
 
+    // 2. Extract and validate data
+    const rentalId = formData.get("rentalId") as string;
+    const file = formData.get("file") as File;
+
     if (!validateUUID(rentalId)) return { success: false, error: "ID de reserva inválido." };
-    if (typeof receiptUrl !== "string" || receiptUrl.trim() === "") {
-      return { success: false, error: "Path de comprobante inválido." };
+    if (!file || file.size === 0) return { success: false, error: "No se seleccionó ningún archivo." };
+
+    // 3. Server-side upload to Supabase Storage
+    const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+    const path = `${Date.now()}-${safeName}`;
+
+    console.log(`[SERVER UPLOAD] Starting upload for user ${user.id} - ${path}`);
+
+    const { data: uploadData, error: storageError } = await supabase.storage
+      .from("comprobantes")
+      .upload(path, file, {
+        upsert: true,
+        contentType: file.type || "application/octet-stream",
+      });
+
+    if (storageError || !uploadData) {
+      console.error("[SERVER UPLOAD] Storage Error:", storageError);
+      return { success: false, error: `Fallo al subir archivo al servidor: ${storageError?.message}` };
     }
 
-    // RLS ensures only the owner can update their own pending rental
-    const { error } = await supabase
+    // 4. Update DB record (RLS protects the update)
+    const { error: updateError } = await supabase
       .from("rentals")
-      .update({ receipt_url: receiptUrl })
+      .update({ receipt_url: path })
       .eq("id", rentalId)
       .eq("status", "pendiente");
 
-    if (error) {
-      console.error("[uploadReceipt] error:", error);
-      if (error.code === "42501") return { success: false, error: "Sin permiso para actualizar esta reserva." };
-      return { success: false, error: `Error al guardar comprobante: ${error.message}` };
+    if (updateError) {
+      console.error("[SERVER UPLOAD] DB Error:", updateError);
+      // Intentamos borrar el archivo huérfano (opcional, best effort)
+      await supabase.storage.from("comprobantes").remove([path]);
+      return { success: false, error: "Error al registrar el comprobante en la base de datos." };
     }
 
     revalidatePath("/", "layout");
     return { success: true };
   } catch (e) {
-    console.error("[uploadReceipt] unexpected:", e);
-    return { success: false, error: "Error inesperado al subir comprobante." };
+    console.error("[SERVER UPLOAD] Unexpected Error:", e);
+    return { success: false, error: "Ocurrió un error inesperado durante la subida." };
   }
 }
 
