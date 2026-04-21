@@ -137,7 +137,8 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
     });
   };
 
-  const [processingState, setProcessingState] = useState<"idle" | "compressing" | "checking" | "uploading">("idle");
+  const [processingState, setProcessingState] = useState<"idle" | "processing" | "uploading">("idle");
+  const [diagnosticData, setDiagnosticData] = useState<string | null>(null);
 
   const handleUpload = async () => {
     if (!file) { setError("Seleccioná un archivo para continuar."); return; }
@@ -152,23 +153,18 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
     setUploading(true);
     setError(null);
     setIsSlowConnection(false);
-    setProcessingState("compressing");
+    setDiagnosticData(null);
+    setProcessingState("processing");
 
-    // Timers para feedback de usuario
-    const slowTimer = setTimeout(() => setIsSlowConnection(true), 30000); // 30s aviso
+    // Timer para aviso de lentitud (30s)
+    const slowTimer = setTimeout(() => setIsSlowConnection(true), 30000);
 
     try {
-      // 1. Logs de Vuelo: Estado Inicial
+      // 1. Sesión
       const { data: { session }, error: sessionError } = await baseClient.auth.getSession();
-      console.log('[UPLOAD FLIGHT LOG] Session Check:', { 
-        active: !!session, 
-        userId: session?.user?.id,
-        error: sessionError?.message 
-      });
-
       if (sessionError || !session) throw new Error("Sesión expirada. Por favor, volvé a ingresar.");
 
-      // 2. Cliente con Header Explícito y Pre-check de Conexión
+      // 2. Cliente de subida
       const authClient = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -181,34 +177,25 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
         }
       );
 
-      // --- DIAGNÓSTICO ESTRUCTURAL: Pre-check de Conexión ---
-      setProcessingState("checking");
-      console.log('[UPLOAD FLIGHT LOG] Pre-checking connectivity...');
-      const { error: connError } = await authClient.from('rentals').select('id').limit(1);
-      if (connError) {
-        console.error('[UPLOAD FLIGHT LOG] Connectivity check FAILED:', connError);
-        throw new Error(`Fallo de conexión previo: ${connError.message}. Revisá tu señal de internet.`);
-      }
-      console.log('[UPLOAD FLIGHT LOG] Connectivity check: SUCCESS');
+      // 3. Compresión CON ELIMINACIÓN DE PASO PARA ARCHIVOS PEQUEÑOS (< 1MB)
+      const isBigFile = file.size > 1024 * 1024; // > 1MB
+      let fileToUpload: Blob | File = file;
 
-      // 3. Compresión optimizada
-      setProcessingState("compressing");
-      const fileToUpload = await compressImage(file);
+      if (isBigFile && file.type.startsWith('image/')) {
+        console.log('[BRUTE FORCE 3.0] Large image detected, compressing...');
+        fileToUpload = await compressImage(file);
+      } else {
+        console.log('[BRUTE FORCE 3.0] Small file or non-image, skipping compression.');
+      }
+
       const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
-      const timestamp = Date.now();
-      const path = `${timestamp}-${safeName}`;
+      const path = `${Date.now()}-${safeName}`;
       const bucket = 'comprobantes';
 
-      console.log('[UPLOAD FLIGHT LOG] Target Info:', {
-        bucket,
-        path,
-        originalName: file.name,
-        contentType: file.type,
-        size: `${(fileToUpload instanceof Blob ? fileToUpload.size : (fileToUpload as File).size / 1024).toFixed(1)} KB`
-      });
-
-      // 4. Subida con Timeout Extendido (120s para móviles)
+      // 4. Subida
       setProcessingState("uploading");
+      console.log('[BRUTE FORCE 3.0] Starting upload to bucket:', bucket);
+      
       const uploadPromise = authClient.storage
         .from(bucket)
         .upload(path, fileToUpload, { 
@@ -216,14 +203,13 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
           contentType: file.type.startsWith('image/') ? 'image/jpeg' : (file.type || "application/octet-stream")
         });
 
-      // Definimos interfaces específicas para evitar 'any'
       interface UploadResponse {
         data: { path: string } | null;
         error: { status?: number; code?: string; message: string; name?: string } | null;
       }
 
       const timeoutPromise = new Promise<UploadResponse>((_, reject) => 
-        setTimeout(() => reject(new Error("TIMEOUT: La subida tardó más de 120 segundos. Comprobá tu señal de internet.")), 120000)
+        setTimeout(() => reject(new Error("TIMEOUT: La subida tardó más de 120 segundos. Comprobá tu señal.")), 120000)
       );
 
       const response = await Promise.race([uploadPromise, timeoutPromise]);
@@ -232,20 +218,22 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
       if (uploadError) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const errorDetails = uploadError as any;
-        const diagnosticInfo = {
+        const diag = {
           code: errorDetails.status || errorDetails.code || 'N/A',
           message: errorDetails.message || 'Error desconocido',
-          type: errorDetails.name || 'StorageError'
+          bucket,
+          size: file.size
         };
-        console.error('[UPLOAD CRASH]', diagnosticInfo);
-        throw new Error(`Error ${diagnosticInfo.code}: ${diagnosticInfo.message}`);
+        setDiagnosticData(JSON.stringify(diag, null, 2));
+        throw new Error(`Fallo del servidor (${diag.code}): ${diag.message}`);
       }
 
+      // 5. Registrar en DB
       const result = await uploadReceipt(rentalId, path);
       if (!result.success) throw new Error(result.error);
 
       clearTimeout(slowTimer);
-      toast.success("Comprobante recibido exitosamente.");
+      toast.success("¡Comprobante enviado!");
       onSuccess();
       onClose();
       
@@ -253,12 +241,12 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
       setTimeout(() => window.location.reload(), 1500);
     } catch (e: unknown) {
       clearTimeout(slowTimer);
-      const errMsg = e instanceof Error ? e.message : "Error inesperado en la subida.";
+      const errMsg = e instanceof Error ? e.message : "Error inesperado.";
       setError(errMsg);
-      console.error('[STORAGE] Brute force catch:', e);
+      console.error('[CRITICAL UPLOAD ERROR]', e);
       
-      if (errMsg.includes("TIMEOUT")) {
-        toast.error("La conexión es demasiado lenta.");
+      if (!diagnosticData) {
+        setDiagnosticData(e instanceof Error ? e.stack || e.message : String(e));
       }
     } finally {
       setUploading(false);
@@ -413,9 +401,23 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
 
           {/* Error */}
           {error && (
-            <div className="flex items-center gap-2 rounded-xl bg-red-50 border border-red-100 px-4 py-3">
-              <AlertCircle className="h-4 w-4 text-red-400 shrink-0" />
-              <p className="text-sm text-red-600 font-medium">{error}</p>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 rounded-xl bg-red-50 border border-red-100 px-4 py-3">
+                <AlertCircle className="h-4 w-4 text-red-400 shrink-0" />
+                <p className="text-sm text-red-600 font-medium">{error}</p>
+              </div>
+              {diagnosticData && (
+                <button
+                  onClick={() => copy(diagnosticData, "logs")}
+                  className="w-full flex items-center justify-center gap-2 text-[10px] text-stone-400 hover:text-stone-600 transition-colors py-1 py-1 px-3 border border-stone-100 rounded-lg bg-stone-50/50"
+                >
+                  {copiedField === "logs" ? (
+                    <><CheckCircle2 className="h-3 w-3 text-emerald-500" /> Logs copiados</>
+                  ) : (
+                    <><Copy className="h-3 w-3" /> Copiar detalles técnicos para soporte</>
+                  )}
+                </button>
+              )}
             </div>
           )}
 
@@ -429,9 +431,7 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
               {uploading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  {processingState === "compressing" ? "Optimizando foto..." : 
-                   processingState === "checking" ? "Verificando señal..." : 
-                   "Subiendo comprobante..."}
+                  {processingState === "processing" ? "Procesando..." : "Subiendo..."}
                 </>
               ) : (
                 "Confirmar envío de seña"
@@ -444,7 +444,7 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
                 <p className="text-[11px] text-amber-700 font-medium leading-tight">
                   {processingState === "uploading" 
                     ? "La subida está tardando. Tu señal es débil pero seguimos intentando..." 
-                    : "Procesando un archivo pesado. Esperá unos segundos..."}
+                    : "La app está trabajando en el archivo. No cierres esta ventana."}
                 </p>
               </div>
             )}
