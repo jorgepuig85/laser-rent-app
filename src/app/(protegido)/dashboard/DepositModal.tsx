@@ -152,11 +152,17 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
     const slowTimer = setTimeout(() => setIsSlowConnection(true), 30000); // 30s aviso
 
     try {
-      // 1. Verificación de Sesión de Fuerza Bruta
+      // 1. Logs de Vuelo: Estado Inicial
       const { data: { session }, error: sessionError } = await baseClient.auth.getSession();
+      console.log('[UPLOAD FLIGHT LOG] Session Check:', { 
+        active: !!session, 
+        userId: session?.user?.id,
+        error: sessionError?.message 
+      });
+
       if (sessionError || !session) throw new Error("Sesión expirada. Por favor, volvé a ingresar.");
 
-      // 2. Cliente con Header Explícito (Redundancia de seguridad)
+      // 2. Cliente con Header Explícito y Pre-check de Conexión
       const authClient = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -169,18 +175,37 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
         }
       );
 
-      // 3. Compresión (Límite 1200px)
-      const fileToUpload = await compressImage(file);
-      
-      const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
-      const path = `${Date.now()}-${safeName}`;
+      // --- DIAGNÓSTICO ESTRUCTURAL: Pre-check de Conexión ---
+      console.log('[UPLOAD FLIGHT LOG] Pre-checking connectivity...');
+      const { error: connError } = await authClient.from('rentals').select('id').limit(1);
+      if (connError) {
+        console.error('[UPLOAD FLIGHT LOG] Connectivity check FAILED:', connError);
+        throw new Error(`Fallo de conexión previo: ${connError.message}. Revisá tu señal de internet.`);
+      }
+      console.log('[UPLOAD FLIGHT LOG] Connectivity check: SUCCESS');
 
-      // 4. Subida con Timeout Estricto (60s)
+      // 3. Compresión y Preparación de Ruta
+      const fileToUpload = await compressImage(file);
+      const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+      const timestamp = Date.now();
+      const path = `${timestamp}-${safeName}`;
+      const bucket = 'comprobantes';
+
+      console.log('[UPLOAD FLIGHT LOG] Target Info:', {
+        bucket,
+        path,
+        originalName: file.name,
+        contentType: file.type,
+        size: `${(fileToUpload instanceof Blob ? fileToUpload.size : (fileToUpload as File).size / 1024).toFixed(1)} KB`
+      });
+
+      // 4. Subida con Timeout Estricto (60s) y MIME Forzado
       const uploadPromise = authClient.storage
-        .from("comprobantes")
+        .from(bucket)
         .upload(path, fileToUpload, { 
           upsert: true, 
-          contentType: file.type || "application/octet-stream"
+          // Forzamos image/jpeg para imágenes, de lo contrario usamos el detectado
+          contentType: file.type.startsWith('image/') ? 'image/jpeg' : (file.type || "application/octet-stream")
         });
 
       // Definimos interfaces específicas para evitar 'any'
