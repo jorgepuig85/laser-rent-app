@@ -75,69 +75,74 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
 
       console.info(`[COMPRESS] Starting: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`);
 
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = (event) => {
-        const img = new Image();
-        img.src = event.target?.result as string;
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
+      // Usar createObjectURL para mayor eficiencia de memoria en móviles
+      const objectUrl = URL.createObjectURL(file);
+      const img = new Image();
+      img.src = objectUrl;
 
-          // Fuerza Bruta: Límite estricto de 1200px para móviles
-          const MAX_SIZE = 1200;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
 
-          if (width > height) {
-            if (width > MAX_SIZE) {
-              height *= MAX_SIZE / width;
-              width = MAX_SIZE;
-            }
-          } else {
-            if (height > MAX_SIZE) {
-              width *= MAX_SIZE / height;
-              height = MAX_SIZE;
-            }
+        // Fuerza Bruta: Límite estricto de 1200px para móviles
+        const MAX_SIZE = 1200;
+
+        if (width > height) {
+          if (width > MAX_SIZE) {
+            height *= MAX_SIZE / width;
+            width = MAX_SIZE;
           }
-
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          
-          if (!ctx) {
-            console.warn('[COMPRESS] Failed to get canvas context, uploading original.');
-            resolve(file);
-            return;
+        } else {
+          if (height > MAX_SIZE) {
+            width *= MAX_SIZE / height;
+            height = MAX_SIZE;
           }
+        }
 
-          ctx.drawImage(img, 0, 0, width, height);
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        
+        if (!ctx) {
+          console.warn('[COMPRESS] Failed to get canvas context, uploading original.');
+          URL.revokeObjectURL(objectUrl);
+          resolve(file);
+          return;
+        }
 
-          canvas.toBlob(
-            (blob) => {
-              if (blob) {
-                console.info(`[COMPRESS] Success: ${(blob.size / 1024).toFixed(1)} KB (Ratio: ${((blob.size / file.size) * 100).toFixed(1)}%)`);
-                resolve(blob);
-              } else {
-                console.warn('[COMPRESS] Blob creation failed, using original.');
-                resolve(file);
-              }
-            },
-            'image/jpeg',
-            0.8 // Calidad agresiva pero legible
-          );
-        };
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            URL.revokeObjectURL(objectUrl); // Siempre liberar memoria
+            if (blob) {
+              console.info(`[COMPRESS] Success: ${(blob.size / 1024).toFixed(1)} KB (Ratio: ${((blob.size / file.size) * 100).toFixed(1)}%)`);
+              resolve(blob);
+            } else {
+              console.warn('[COMPRESS] Blob creation failed, using original.');
+              resolve(file);
+            }
+          },
+          'image/jpeg',
+          0.8 // Calidad balanceada
+        );
       };
-      reader.onerror = () => {
-        console.error('[COMPRESS] FileReader error');
+
+      img.onerror = () => {
+        console.error('[COMPRESS] Image loading error');
+        URL.revokeObjectURL(objectUrl);
         resolve(file);
       };
     });
   };
 
+  const [processingState, setProcessingState] = useState<"idle" | "compressing" | "checking" | "uploading">("idle");
+
   const handleUpload = async () => {
     if (!file) { setError("Seleccioná un archivo para continuar."); return; }
     
-    // Detección de HEIC: Los navegadores fuera de Safari no lo renderizan bien en Canvas
+    // Detección de HEIC
     const isHEIC = file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
     if (isHEIC) {
       setError("Formato iPhone (.heic) no compatible. Por favor, subí una captura de pantalla (.jpg o .png).");
@@ -147,6 +152,7 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
     setUploading(true);
     setError(null);
     setIsSlowConnection(false);
+    setProcessingState("compressing");
 
     // Timers para feedback de usuario
     const slowTimer = setTimeout(() => setIsSlowConnection(true), 30000); // 30s aviso
@@ -176,6 +182,7 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
       );
 
       // --- DIAGNÓSTICO ESTRUCTURAL: Pre-check de Conexión ---
+      setProcessingState("checking");
       console.log('[UPLOAD FLIGHT LOG] Pre-checking connectivity...');
       const { error: connError } = await authClient.from('rentals').select('id').limit(1);
       if (connError) {
@@ -184,7 +191,8 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
       }
       console.log('[UPLOAD FLIGHT LOG] Connectivity check: SUCCESS');
 
-      // 3. Compresión y Preparación de Ruta
+      // 3. Compresión optimizada
+      setProcessingState("compressing");
       const fileToUpload = await compressImage(file);
       const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
       const timestamp = Date.now();
@@ -199,12 +207,12 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
         size: `${(fileToUpload instanceof Blob ? fileToUpload.size : (fileToUpload as File).size / 1024).toFixed(1)} KB`
       });
 
-      // 4. Subida con Timeout Estricto (60s) y MIME Forzado
+      // 4. Subida con Timeout Extendido (120s para móviles)
+      setProcessingState("uploading");
       const uploadPromise = authClient.storage
         .from(bucket)
         .upload(path, fileToUpload, { 
           upsert: true, 
-          // Forzamos image/jpeg para imágenes, de lo contrario usamos el detectado
           contentType: file.type.startsWith('image/') ? 'image/jpeg' : (file.type || "application/octet-stream")
         });
 
@@ -215,14 +223,13 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
       }
 
       const timeoutPromise = new Promise<UploadResponse>((_, reject) => 
-        setTimeout(() => reject(new Error("TIMEOUT: La subida tardó más de 60 segundos. Comprobá tu conexión.")), 60000)
+        setTimeout(() => reject(new Error("TIMEOUT: La subida tardó más de 120 segundos. Comprobá tu señal de internet.")), 120000)
       );
 
       const response = await Promise.race([uploadPromise, timeoutPromise]);
       const uploadError = response.error;
 
       if (uploadError) {
-        // Diagnóstico detallado solicitado por el usuario — Casteo forzado para pasar build de Vercel
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const errorDetails = uploadError as any;
         const diagnosticInfo = {
@@ -250,13 +257,13 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
       setError(errMsg);
       console.error('[STORAGE] Brute force catch:', e);
       
-      // Si falló por red/timeout, alertamos explícitamente si es necesario
       if (errMsg.includes("TIMEOUT")) {
-        toast.error("Conexión inestable detectada.");
+        toast.error("La conexión es demasiado lenta.");
       }
     } finally {
       setUploading(false);
       setIsSlowConnection(false);
+      setProcessingState("idle");
     }
   };
 
@@ -422,7 +429,9 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
               {uploading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Subiendo comprobante...
+                  {processingState === "compressing" ? "Optimizando foto..." : 
+                   processingState === "checking" ? "Verificando señal..." : 
+                   "Subiendo comprobante..."}
                 </>
               ) : (
                 "Confirmar envío de seña"
@@ -433,7 +442,9 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
               <div className="flex items-center gap-2 justify-center py-2 px-4 bg-amber-50 rounded-xl border border-amber-100 animate-in fade-in slide-in-from-top-2 duration-300">
                 <AlertCircle className="h-4 w-4 text-amber-500 shrink-0" />
                 <p className="text-[11px] text-amber-700 font-medium leading-tight">
-                  La subida está tardando más de lo normal. Revisa tu conexión o intenta con una foto de menor resolución.
+                  {processingState === "uploading" 
+                    ? "La subida está tardando. Tu señal es débil pero seguimos intentando..." 
+                    : "Procesando un archivo pesado. Esperá unos segundos..."}
                 </p>
               </div>
             )}
