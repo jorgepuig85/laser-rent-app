@@ -197,11 +197,12 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
       const uploadError = response.error;
 
       if (uploadError) {
-        // Diagnóstico detallado solicitado por el usuario
+        // Diagnóstico detallado solicitado por el usuario — Casteo forzado para pasar build de Vercel
+        const errorDetails = uploadError as any;
         const diagnosticInfo = {
-          code: uploadError.status || uploadError.code || 'N/A',
-          message: uploadError.message,
-          type: uploadError.name || 'StorageError'
+          code: errorDetails.status || errorDetails.code || 'N/A',
+          message: errorDetails.message || 'Error desconocido',
+          type: errorDetails.name || 'StorageError'
         };
         console.error('[UPLOAD CRASH]', diagnosticInfo);
         throw new Error(`Error ${diagnosticInfo.code}: ${diagnosticInfo.message}`);
