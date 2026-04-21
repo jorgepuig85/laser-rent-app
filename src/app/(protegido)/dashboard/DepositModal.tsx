@@ -198,6 +198,7 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
 
       if (uploadError) {
         // Diagnóstico detallado solicitado por el usuario — Casteo forzado para pasar build de Vercel
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const errorDetails = uploadError as any;
         const diagnosticInfo = {
           code: errorDetails.status || errorDetails.code || 'N/A',
