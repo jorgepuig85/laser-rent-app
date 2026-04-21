@@ -1,7 +1,7 @@
 "use client";
 
 import { useFormState, useFormStatus } from "react-dom";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { saveProfile, type ProfileState } from "./actions";
 import { AlertCircle, Loader2, CheckCircle2 } from "lucide-react";
@@ -12,7 +12,19 @@ const initialState: ProfileState = {
 
 export function ProfileForm() {
   const [state, formAction] = useFormState(saveProfile, initialState);
+  const [cuit, setCuit] = useState("");
+  const [phone, setPhone] = useState("");
   const router = useRouter();
+
+  const handleCuitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/\D/g, "");
+    if (val.length <= 11) setCuit(val);
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/\D/g, "");
+    if (val.length <= 15) setPhone(val);
+  };
 
   useEffect(() => {
     if (state.success) {
@@ -50,16 +62,16 @@ export function ProfileForm() {
             <input
               id="cuit"
               name="cuit"
-              type="number"
+              type="text"
               inputMode="numeric"
-              pattern="[0-9]*"
               required
-              maxLength={11}
               placeholder="Ej: 20123456789"
-              className="flex h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-2 text-base ring-offset-background placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/20 focus-visible:border-blue-500/50 disabled:cursor-not-allowed disabled:opacity-50 transition-all hover:bg-slate-100/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none shadow-sm"
+              value={cuit}
+              onChange={handleCuitChange}
+              className="flex h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-2 text-base ring-offset-background placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/20 focus-visible:border-blue-500/50 disabled:cursor-not-allowed disabled:opacity-50 transition-all hover:bg-slate-100/50 shadow-sm"
             />
             <p className="text-[11px] text-slate-400 font-medium ml-1">
-              Solo números · Exactamente 11 dígitos (sin guiones ni puntos)
+              Solo números · Exactamente 11 dígitos
             </p>
           </div>
 
@@ -71,13 +83,15 @@ export function ProfileForm() {
               id="phone"
               name="phone"
               type="tel"
+              inputMode="numeric"
               required
-              maxLength={15}
               placeholder="Ej: 2954631456"
+              value={phone}
+              onChange={handlePhoneChange}
               className="flex h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-2 text-base ring-offset-background placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/20 focus-visible:border-blue-500/50 disabled:cursor-not-allowed disabled:opacity-50 transition-all hover:bg-slate-100/50 shadow-sm"
             />
             <p className="text-[11px] text-slate-400 font-medium ml-1">
-              Máximo 15 dígitos
+              Sólo números · Máximo 15 dígitos
             </p>
           </div>
         </div>

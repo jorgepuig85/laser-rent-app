@@ -21,22 +21,24 @@ export async function saveProfile(prevState: ProfileState, formData: FormData): 
     }
 
     let cuit = (formData.get("cuit") as string) ?? "";
-    const phone = ((formData.get("phone") as string) ?? "").trim();
+    let phone = (formData.get("phone") as string) ?? "";
 
-    // Higienizar CUIT: dejar solo números
-    cuit = cuit.replace(/\D/g, "");
-
-    // Validar longitud CUIT exacta
-    if (cuit.length !== 11) {
-      return { success: false, message: "El CUIT debe tener exactamente 11 dígitos." };
+    // 1. Validación de Celular (Solo números)
+    phone = phone.trim();
+    if (!phone || !/^\d+$/.test(phone)) {
+      return { success: false, message: "Por favor, ingresa un número de teléfono válido (solo números)." };
+    }
+    if (phone.length > 15) {
+      return { success: false, message: "El teléfono no puede superar los 15 dígitos." };
     }
 
-    // Validar longitud celular
-    if (phone.length === 0 || phone.length > 15) {
-      return { success: false, message: "El teléfono debe tener entre 1 y 15 caracteres." };
+    // 2. Validación de CUIT (Exactamente 11 números)
+    cuit = cuit.trim();
+    if (!/^\d{11}$/.test(cuit)) {
+      return { success: false, message: "El CUIT debe contener exactamente 11 números." };
     }
 
-    // 1. Validación Preventiva: SELECT rápido
+    // ── Verificar unicidad del CUIT (evitar duplicados) ──────────────
     const { data: existing } = await supabaseServer
       .from("external_professionals")
       .select("id")
