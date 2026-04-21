@@ -150,7 +150,6 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
 
     // Timers para feedback de usuario
     const slowTimer = setTimeout(() => setIsSlowConnection(true), 30000); // 30s aviso
-    const abortController = new AbortController();
 
     try {
       // 1. Verificación de Sesión de Fuerza Bruta
@@ -184,11 +183,18 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
           contentType: file.type || "application/octet-stream"
         });
 
-      const timeoutPromise = new Promise<{ data: any, error: any }>((_, reject) => 
+      // Definimos interfaces específicas para evitar 'any'
+      interface UploadResponse {
+        data: { path: string } | null;
+        error: { status?: number; code?: string; message: string; name?: string } | null;
+      }
+
+      const timeoutPromise = new Promise<UploadResponse>((_, reject) => 
         setTimeout(() => reject(new Error("TIMEOUT: La subida tardó más de 60 segundos. Comprobá tu conexión.")), 60000)
       );
 
-      const { data, error: uploadError } = await Promise.race([uploadPromise, timeoutPromise]);
+      const response = await Promise.race([uploadPromise, timeoutPromise]);
+      const uploadError = response.error;
 
       if (uploadError) {
         // Diagnóstico detallado solicitado por el usuario
@@ -211,7 +217,7 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
       
       router.refresh();
       setTimeout(() => window.location.reload(), 1500);
-    } catch (e: any) {
+    } catch (e: unknown) {
       clearTimeout(slowTimer);
       const errMsg = e instanceof Error ? e.message : "Error inesperado en la subida.";
       setError(errMsg);
