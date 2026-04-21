@@ -29,7 +29,7 @@ export default function PrivacidadPage() {
 
           <section className="pt-8 border-t border-slate-100">
             <p className="text-sm text-slate-400">
-              Para consultas sobre sus datos, puede contactarnos a: <a href="mailto:notificaciones@laserrent.com.ar" className="text-[--seasonal-primary] hover:underline">notificaciones@laserrent.com.ar</a>
+              Para consultas sobre sus datos, puede contactarnos a: <a href="mailto:consultas@centrodebelleza.com.ar" className="text-[--seasonal-primary] hover:underline">consultas@centrodebelleza.com.ar</a>
             </p>
             <p className="text-sm text-slate-400 mt-2">
               Última actualización: Abril 2026.

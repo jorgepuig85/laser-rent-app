@@ -49,11 +49,11 @@ export function Footer() {
                 <span className="text-sm font-semibold text-slate-600">+54 9 2954 631456</span>
               </Link>
               <Link 
-                href="mailto:notificaciones@laserrent.com.ar"
+                href="mailto:consultas@centrodebelleza.com.ar"
                 className="flex items-center gap-3 text-slate-500 hover:text-[--seasonal-primary] transition-colors w-fit"
               >
                 <Mail className="h-4 w-4 text-[--seasonal-primary]" />
-                <span className="text-sm text-slate-600">notificaciones@laserrent.com.ar</span>
+                <span className="text-sm text-slate-600">consultas@centrodebelleza.com.ar</span>
               </Link>
               <div className="flex items-start gap-3 text-slate-500">
                 <MapPin className="h-4 w-4 text-[--seasonal-primary] shrink-0" />
