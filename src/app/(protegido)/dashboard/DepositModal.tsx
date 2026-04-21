@@ -35,6 +35,7 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isSlowConnection, setIsSlowConnection] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
@@ -66,10 +67,13 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
 
   const compressImage = (file: File): Promise<Blob | File> => {
     return new Promise((resolve) => {
+      // Ignorar no-imágenes (PDFs)
       if (!file.type.startsWith('image/')) {
         resolve(file);
         return;
       }
+
+      console.info(`[COMPRESS] Starting: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`);
 
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -81,54 +85,79 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
           let width = img.width;
           let height = img.height;
 
-          // Max dimensions for compression (e.g., 1200px)
-          const MAX_WIDTH = 1200;
-          const MAX_HEIGHT = 1200;
+          // Fuerza Bruta: Límite estricto de 1200px para móviles
+          const MAX_SIZE = 1200;
 
           if (width > height) {
-            if (width > MAX_WIDTH) {
-              height *= MAX_WIDTH / width;
-              width = MAX_WIDTH;
+            if (width > MAX_SIZE) {
+              height *= MAX_SIZE / width;
+              width = MAX_SIZE;
             }
           } else {
-            if (height > MAX_HEIGHT) {
-              width *= MAX_HEIGHT / height;
-              height = MAX_HEIGHT;
+            if (height > MAX_SIZE) {
+              width *= MAX_SIZE / height;
+              height = MAX_SIZE;
             }
           }
 
           canvas.width = width;
           canvas.height = height;
           const ctx = canvas.getContext('2d');
-          ctx?.drawImage(img, 0, 0, width, height);
+          
+          if (!ctx) {
+            console.warn('[COMPRESS] Failed to get canvas context, uploading original.');
+            resolve(file);
+            return;
+          }
+
+          ctx.drawImage(img, 0, 0, width, height);
 
           canvas.toBlob(
             (blob) => {
-              if (blob && blob.size < file.size) {
+              if (blob) {
+                console.info(`[COMPRESS] Success: ${(blob.size / 1024).toFixed(1)} KB (Ratio: ${((blob.size / file.size) * 100).toFixed(1)}%)`);
                 resolve(blob);
               } else {
+                console.warn('[COMPRESS] Blob creation failed, using original.');
                 resolve(file);
               }
             },
             'image/jpeg',
-            0.8 // Quality
+            0.8 // Calidad agresiva pero legible
           );
         };
+      };
+      reader.onerror = () => {
+        console.error('[COMPRESS] FileReader error');
+        resolve(file);
       };
     });
   };
 
   const handleUpload = async () => {
     if (!file) { setError("Seleccioná un archivo para continuar."); return; }
+    
+    // Detección de HEIC: Los navegadores fuera de Safari no lo renderizan bien en Canvas
+    const isHEIC = file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
+    if (isHEIC) {
+      setError("Formato iPhone (.heic) no compatible. Por favor, subí una captura de pantalla (.jpg o .png).");
+      return;
+    }
+
     setUploading(true);
     setError(null);
+    setIsSlowConnection(false);
+
+    // Timers para feedback de usuario
+    const slowTimer = setTimeout(() => setIsSlowConnection(true), 30000); // 30s aviso
+    const abortController = new AbortController();
 
     try {
-      // 1. Recuperamos la sesión activa antes de cada intento usando getSession()
-      const { data: { session } } = await baseClient.auth.getSession();
-      if (!session) throw new Error("No autorizado. Inicia sesión nuevamente.");
+      // 1. Verificación de Sesión de Fuerza Bruta
+      const { data: { session }, error: sessionError } = await baseClient.auth.getSession();
+      if (sessionError || !session) throw new Error("Sesión expirada. Por favor, volvé a ingresar.");
 
-      // 2. Cliente dedicado con Header Implícito forzado
+      // 2. Cliente con Header Explícito (Redundancia de seguridad)
       const authClient = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -141,14 +170,13 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
         }
       );
 
-      // 3. Compresión opcional para móviles
+      // 3. Compresión (Límite 1200px)
       const fileToUpload = await compressImage(file);
       
-      // 4. Ruta simplificada pedida (raíz + Date + name)
       const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
       const path = `${Date.now()}-${safeName}`;
 
-      // 5. Intento de subida con log exhaustivo, MIME type dinámico, timeout extendido
+      // 4. Subida con Timeout Estricto (60s)
       const uploadPromise = authClient.storage
         .from("comprobantes")
         .upload(path, fileToUpload, { 
@@ -156,54 +184,46 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
           contentType: file.type || "application/octet-stream"
         });
 
-      const timeoutPromise = new Promise<{ data: { path: string } | null, error: Error | null }>((_, reject) => 
-        setTimeout(() => reject(new Error("La subida tardó demasiado. Comprobá tu conexión.")), 60000)
+      const timeoutPromise = new Promise<{ data: any, error: any }>((_, reject) => 
+        setTimeout(() => reject(new Error("TIMEOUT: La subida tardó más de 60 segundos. Comprobá tu conexión.")), 60000)
       );
 
       const { data, error: uploadError } = await Promise.race([uploadPromise, timeoutPromise]);
 
       if (uploadError) {
-        // ── Verbose diagnostic log ────────────────────────────────────────
-        console.error('[STORAGE ERROR] Full details:', {
+        // Diagnóstico detallado solicitado por el usuario
+        const diagnosticInfo = {
+          code: uploadError.status || uploadError.code || 'N/A',
           message: uploadError.message,
-          rawError: uploadError,
-          fileInfo: {
-            name: file.name,
-            size: `${(file.size / 1024).toFixed(1)} KB`,
-            type: file.type || 'UNKNOWN MIME',
-          },
-          compressedSize: fileToUpload instanceof Blob ? `${(fileToUpload.size / 1024).toFixed(1)} KB` : 'no compress',
-          path,
-          bucket: 'comprobantes',
-          sessionPresent: !!session,
-        });
-        throw new Error(uploadError.message || "Error al subir archivo.");
+          type: uploadError.name || 'StorageError'
+        };
+        console.error('[UPLOAD CRASH]', diagnosticInfo);
+        throw new Error(`Error ${diagnosticInfo.code}: ${diagnosticInfo.message}`);
       }
-
-      console.log('[STORAGE] Upload successful:', {
-        path: data?.path,
-        fileSize: `${(file.size / 1024).toFixed(1)} KB`,
-      });
 
       const result = await uploadReceipt(rentalId, path);
       if (!result.success) throw new Error(result.error);
 
-      toast.success("Comprobante recibido. En breve confirmaremos tu reserva");
+      clearTimeout(slowTimer);
+      toast.success("Comprobante recibido exitosamente.");
       onSuccess();
       onClose();
       
       router.refresh();
       setTimeout(() => window.location.reload(), 1500);
-    } catch (e: unknown) {
-      const errMsg = e instanceof Error ? e.message : "Error inesperado. Intentá nuevamente.";
-      console.error('[STORAGE] Caught error:', errMsg, {
-        error: e,
-        stack: e instanceof Error ? e.stack : 'no stack',
-        context: 'handleUpload catch block'
-      });
+    } catch (e: any) {
+      clearTimeout(slowTimer);
+      const errMsg = e instanceof Error ? e.message : "Error inesperado en la subida.";
       setError(errMsg);
+      console.error('[STORAGE] Brute force catch:', e);
+      
+      // Si falló por red/timeout, alertamos explícitamente si es necesario
+      if (errMsg.includes("TIMEOUT")) {
+        toast.error("Conexión inestable detectada.");
+      }
     } finally {
       setUploading(false);
+      setIsSlowConnection(false);
     }
   };
 
@@ -360,20 +380,31 @@ export function DepositModal({ rentalId, depositAmount, startDate, onClose, onSu
           )}
 
           {/* CTA */}
-          <button
-            onClick={handleUpload}
-            disabled={uploading || !file}
-            className="w-full flex items-center justify-center gap-3 rounded-2xl bg-[#D4AF37] hover:bg-[#B89B72] disabled:bg-stone-200 disabled:text-stone-400 text-stone-900 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-[0.2em] py-4 transition-all duration-300 hover:scale-[1.01] active:scale-95 shadow-lg shadow-[#D4AF37]/20 disabled:shadow-none"
-          >
-            {uploading ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Subiendo comprobante...
-              </>
-            ) : (
-              "Confirmar envío de seña"
+          <div className="space-y-3">
+            <button
+              onClick={handleUpload}
+              disabled={uploading || !file}
+              className="w-full flex items-center justify-center gap-3 rounded-2xl bg-[#D4AF37] hover:bg-[#B89B72] disabled:bg-stone-200 disabled:text-stone-400 text-stone-900 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-[0.2em] py-4 transition-all duration-300 hover:scale-[1.01] active:scale-95 shadow-lg shadow-[#D4AF37]/20 disabled:shadow-none"
+            >
+              {uploading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Subiendo comprobante...
+                </>
+              ) : (
+                "Confirmar envío de seña"
+              )}
+            </button>
+
+            {uploading && isSlowConnection && (
+              <div className="flex items-center gap-2 justify-center py-2 px-4 bg-amber-50 rounded-xl border border-amber-100 animate-in fade-in slide-in-from-top-2 duration-300">
+                <AlertCircle className="h-4 w-4 text-amber-500 shrink-0" />
+                <p className="text-[11px] text-amber-700 font-medium leading-tight">
+                  La subida está tardando más de lo normal. Revisa tu conexión o intenta con una foto de menor resolución.
+                </p>
+              </div>
             )}
-          </button>
+          </div>
 
           <p className="text-center text-[10px] text-stone-400 leading-relaxed">
             Tenés <strong className="text-stone-600">24 horas</strong> para subir el comprobante.
