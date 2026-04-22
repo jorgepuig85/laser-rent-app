@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, startTransition } from "react";
 import { format, isWithinInterval, parseISO, startOfDay, differenceInDays } from "date-fns";
 import { Loader2 } from "lucide-react";
 import { DateRange } from "react-day-picker";
@@ -125,21 +125,22 @@ export function ReservationClient({
         toast.error("Error al procesar la reserva", {
           description: result.error,
         });
+        setLoading(false);
         return;
       }
 
-      router.refresh();
-      setDate(undefined);
-      setLocationId(""); // Reset location select
+      startTransition(() => {
+        router.refresh();
+        setDate(undefined);
+        setLocationId(""); // Reset location select
+        setLoading(false);
+      });
       
       toast.success("¡Reserva enviada con éxito!", {
         description: "Ya puedes revisar los detalles en tu dashboard profesional.",
         icon: <CheckCircle2 className="h-5 w-5 text-[--seasonal-primary]" />,
         duration: 3000,
       });
-      
-      // Force reload slightly later to ensure full data consistency and clear any possible local state lag
-      setTimeout(() => window.location.reload(), 800);
 
     } catch (err: unknown) {
       // Fallback: network or framework-level error
@@ -147,7 +148,6 @@ export function ReservationClient({
       toast.error("Error al procesar la reserva", {
         description: "Ocurrió un problema de red. Intentá nuevamente.",
       });
-    } finally {
       setLoading(false);
     }
   };
