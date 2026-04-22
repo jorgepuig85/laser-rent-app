@@ -97,7 +97,7 @@ export default function EquiposPage() {
           </div>
 
           <div className="pt-4">
-            <Button size="lg" className="w-full sm:w-auto h-14 px-10 rounded-full bg-primary hover:bg-primary/90 text-white font-medium text-lg shadow-lg shadow-primary/20 transition-all hover:scale-[1.02]" render={<Link href="/dashboard" />}>
+            <Button size="lg" className="w-full sm:w-auto h-14 px-10 rounded-full bg-primary hover:bg-primary/90 text-white font-medium text-lg shadow-lg shadow-primary/20 transition-all hover:scale-[1.02]" render={<Link href="/login?next=/dashboard" />}>
               Agendar Alquiler
             </Button>
           </div>

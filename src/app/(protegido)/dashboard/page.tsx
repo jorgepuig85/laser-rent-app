@@ -11,6 +11,7 @@ import {
   ScrollText,
   Sparkles,
   CheckCircle2,
+  AlertTriangle,
 } from "lucide-react";
 
 import dynamic from "next/dynamic";
@@ -190,6 +191,40 @@ export default async function DashboardPage() {
           </div>
 
           {allRentals.length > 0 ? (
+            <div className="space-y-6">
+              {/* Payment Reminder Banner */}
+              {(() => {
+                const pendingRental = allRentals.find(
+                  (r: any) => isFuture(parseISO(r.end_date)) && r.status === 'pendiente' && !r.receipt_url
+                );
+                
+                if (!pendingRental) return null;
+                
+                return (
+                  <div className="p-6 bg-amber-50 border border-amber-200 rounded-[2rem] flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm relative overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="absolute top-0 left-0 w-2 h-full bg-amber-400"></div>
+                    <div className="flex items-center gap-4 relative z-10">
+                      <div className="bg-amber-100 p-3 rounded-full shrink-0">
+                        <AlertTriangle className="h-6 w-6 text-amber-600" />
+                      </div>
+                      <div>
+                        <h3 className="text-amber-900 font-bold text-lg mb-1">Seña pendiente de pago</h3>
+                        <p className="text-amber-800 text-sm font-medium leading-relaxed max-w-xl">
+                          ⚠️ Para confirmar tu reserva del <span className="font-bold">{format(parseISO(pendingRental.start_date), "d 'de' MMMM", { locale: es })}</span>, es necesario realizar el pago de la seña. Por favor, sube el comprobante para que podamos procesarla.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="shrink-0 relative z-10 w-full md:w-auto">
+                      <DepositButton
+                        rentalId={pendingRental.id}
+                        depositAmount={pendingRental.deposit_amount}
+                        startDate={format(parseISO(pendingRental.start_date), "d 'de' MMM", { locale: es })}
+                      />
+                    </div>
+                  </div>
+                );
+              })()}
+
             <div className="bg-white/50 backdrop-blur-md rounded-[2.5rem] shadow-[0_8px_40px_rgba(0,0,0,0.03)] border border-white overflow-hidden transition-all duration-500">
               {/* --- Desktop View --- */}
               <div className="hidden md:block overflow-x-auto">
@@ -420,6 +455,7 @@ export default async function DashboardPage() {
                   );
                 })}
               </div>
+            </div>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center gap-6 py-24 bg-white/40 backdrop-blur-sm rounded-[3rem] border border-dashed border-[#EAE3D5] text-center shadow-inner">
