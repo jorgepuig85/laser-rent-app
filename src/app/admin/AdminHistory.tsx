@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { ExternalLink, Search, Filter } from "lucide-react";
+import { ExternalLink, Search, Filter, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { deleteMaintenanceBlock, deleteReservation } from "./actions";
+import { ConfirmModal } from "./ConfirmModal";
 
 interface RentalRow {
   id: string;
@@ -16,10 +19,7 @@ interface RentalRow {
   is_maintenance?: boolean;
   external_professionals: { name: string; phone: string | null; email: string | null } | null;
   locations: { name: string } | null;
-import { toast } from "sonner";
-import { deleteMaintenanceBlock, deleteReservation } from "./actions";
-import { Trash2 } from "lucide-react";
-import { ConfirmModal } from "./ConfirmModal";
+}
 
 export function AdminHistory({ rentals }: { rentals: RentalRow[] }) {
   const [filterProf, setFilterProf] = useState("");
