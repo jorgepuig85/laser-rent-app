@@ -2,7 +2,9 @@
 
 import { useState, useTransition } from "react";
 import { confirmPayment } from "@/app/(protegido)/dashboard/actions";
-import { CheckCircle2, Loader2, ExternalLink } from "lucide-react";
+import { CheckCircle2, Loader2, ExternalLink, Trash2 } from "lucide-react";
+import { deleteReservation } from "./actions";
+import { toast } from "sonner";
 
 interface Rental {
   id: string;
@@ -131,19 +133,39 @@ export function AdminActions({ rentals }: { rentals: Rental[] }) {
                       Confirmado
                     </span>
                   ) : (
-                    <div className="flex flex-col items-end gap-1.5">
-                      <button
-                        onClick={() => handleConfirm(r.id)}
-                        disabled={!!isLoading}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-stone-200 disabled:text-stone-400 text-white text-[9px] font-bold uppercase tracking-widest transition-all hover:scale-[1.03] active:scale-95 disabled:cursor-not-allowed"
-                      >
-                        {isLoading ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        ) : (
-                          <CheckCircle2 className="h-3.5 w-3.5" />
-                        )}
-                        {isLoading ? "Confirmando..." : "Confirmar Pago"}
-                      </button>
+                    <div className="flex flex-col items-end gap-2">
+                       <div className="flex items-center gap-2">
+                          <button
+                            onClick={async () => {
+                              if (!confirm("¿Estás seguro de que deseas eliminar esta reserva? Esta acción liberará el equipo para la fecha seleccionada y no se puede deshacer.")) return;
+                              try {
+                                const res = await deleteReservation(r.id);
+                                if (res?.success) toast.success("Reserva eliminada con éxito.");
+                                else toast.error(res?.error || "Error al eliminar la reserva");
+                              } catch {
+                                toast.error("Error inesperado al eliminar la reserva.");
+                              }
+                            }}
+                            disabled={!!isLoading}
+                            className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 disabled:bg-stone-100 disabled:text-stone-400 text-red-600 text-[9px] font-bold uppercase tracking-widest transition-all hover:scale-[1.03] active:scale-95 disabled:cursor-not-allowed border border-red-200"
+                            title="Eliminar Reserva"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                          
+                          <button
+                            onClick={() => handleConfirm(r.id)}
+                            disabled={!!isLoading}
+                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-stone-200 disabled:text-stone-400 text-white text-[9px] font-bold uppercase tracking-widest transition-all hover:scale-[1.03] active:scale-95 disabled:cursor-not-allowed"
+                          >
+                            {isLoading ? (
+                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                              <CheckCircle2 className="h-3.5 w-3.5" />
+                            )}
+                            {isLoading ? "Confirmando..." : "Confirmar Pago"}
+                          </button>
+                       </div>
                       {errMsg && (
                         <p className="text-[9px] text-red-500 font-medium">{errMsg}</p>
                       )}

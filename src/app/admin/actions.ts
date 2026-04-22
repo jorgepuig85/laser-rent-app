@@ -51,6 +51,40 @@ export async function createMaintenanceBlock(startDate: string, endDate: string)
   }
 }
 
+export async function deleteReservation(reservationId: string) {
+  try {
+    const supabase = await createClient();
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) return { success: false, error: "No autorizado." };
+
+    const { data: isAdminResult } = await supabase.rpc("get_my_is_admin");
+    const { data: profile } = await supabase.from("profiles").select("is_admin").eq("id", user.id).single();
+    const isAdmin = isAdminResult === true || profile?.is_admin === true;
+
+    if (!isAdmin) {
+      return { success: false, error: "Acceso denegado." };
+    }
+
+    const { error } = await supabase
+      .from("rentals")
+      .delete()
+      .eq("id", reservationId);
+
+    if (error) {
+      console.error("[deleteReservation] error:", error);
+      return { success: false, error: `Error al eliminar reserva: ${error.message}` };
+    }
+
+    revalidatePath("/admin", "page");
+    revalidatePath("/dashboard", "page");
+    return { success: true };
+  } catch (e) {
+    console.error("[deleteReservation] unexpected:", e);
+    return { success: false, error: "Error inesperado al eliminar reserva." };
+  }
+}
+
 export async function deleteMaintenanceBlock(blockId: string) {
   try {
     const supabase = await createClient();

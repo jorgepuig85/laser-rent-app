@@ -19,7 +19,8 @@ interface RentalRow {
 }
 
 import { toast } from "sonner";
-import { deleteMaintenanceBlock } from "./actions";
+import { deleteMaintenanceBlock, deleteReservation } from "./actions";
+import { Trash2 } from "lucide-react";
 
 export function AdminHistory({ rentals }: { rentals: RentalRow[] }) {
   const [filterProf, setFilterProf] = useState("");
@@ -72,6 +73,7 @@ export function AdminHistory({ rentals }: { rentals: RentalRow[] }) {
                 <th className="px-8 py-5">Período</th>
                 <th className="px-8 py-5">Estado</th>
                 <th className="px-8 py-5">Comprobante</th>
+                <th className="px-8 py-5 text-right w-32">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F3EBE1]/50">
@@ -157,26 +159,9 @@ export function AdminHistory({ rentals }: { rentals: RentalRow[] }) {
                         </span>
                       )}
                     </td>
-                    <td className="px-8 py-5 flex items-center justify-between">
+                    <td className="px-8 py-5">
                       {r.is_maintenance ? (
-                        <button
-                          onClick={async () => {
-                            if (!confirm("¿Eliminar este bloqueo de mantenimiento?")) return;
-                            try {
-                              const res = await deleteMaintenanceBlock(r.id);
-                              if (res?.success) toast.success("Bloqueo eliminado.");
-                              else toast.error(res?.error || "Error al eliminar");
-                            } catch {
-                              toast.error("Error inesperado al eliminar.");
-                            }
-                          }}
-                          className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded flex items-center gap-2 text-xs font-bold transition-colors"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                          Eliminar
-                        </button>
+                        <span className="text-[10px] text-stone-300">—</span>
                       ) : (
                         r.receipt_url ? (
                           <a
@@ -191,6 +176,43 @@ export function AdminHistory({ rentals }: { rentals: RentalRow[] }) {
                         ) : (
                           <span className="text-[10px] text-stone-300">—</span>
                         )
+                      )}
+                    </td>
+                    <td className="px-8 py-5 text-right">
+                      {r.is_maintenance ? (
+                        <button
+                          onClick={async () => {
+                            if (!confirm("¿Eliminar este bloqueo de mantenimiento?")) return;
+                            try {
+                              const res = await deleteMaintenanceBlock(r.id);
+                              if (res?.success) toast.success("Bloqueo eliminado.");
+                              else toast.error(res?.error || "Error al eliminar");
+                            } catch {
+                              toast.error("Error inesperado al eliminar.");
+                            }
+                          }}
+                          className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded inline-flex items-center justify-center gap-2 text-xs font-bold transition-colors w-full sm:w-auto border border-red-100"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          Eliminar
+                        </button>
+                      ) : (
+                        <button
+                          onClick={async () => {
+                            if (!confirm("¿Estás seguro de que deseas eliminar esta reserva? Esta acción liberará el equipo para la fecha seleccionada y no se puede deshacer.")) return;
+                            try {
+                              const res = await deleteReservation(r.id);
+                              if (res?.success) toast.success("Reserva eliminada con éxito.");
+                              else toast.error(res?.error || "Error al eliminar la reserva");
+                            } catch {
+                              toast.error("Error inesperado al eliminar la reserva.");
+                            }
+                          }}
+                          className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded inline-flex items-center justify-center gap-2 text-xs font-bold transition-colors w-full sm:w-auto border border-red-100"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          Eliminar
+                        </button>
                       )}
                     </td>
                   </tr>
