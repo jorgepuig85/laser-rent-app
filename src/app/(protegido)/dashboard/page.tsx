@@ -195,7 +195,7 @@ export default async function DashboardPage() {
               {/* Payment Reminder Banner */}
               {(() => {
                 const pendingRental = allRentals.find(
-                  (r: any) => isFuture(parseISO(r.end_date)) && r.status === 'pendiente' && !r.receipt_url
+                  (r: { id: string; start_date: string; end_date: string; status: string; receipt_url: string | null; deposit_amount: number | null }) => isFuture(parseISO(r.end_date)) && r.status === 'pendiente' && !r.receipt_url
                 );
                 
                 if (!pendingRental) return null;
@@ -210,7 +210,7 @@ export default async function DashboardPage() {
                       <div>
                         <h3 className="text-amber-900 font-bold text-lg mb-1">Seña pendiente de pago</h3>
                         <p className="text-amber-800 text-sm font-medium leading-relaxed max-w-xl">
-                          ⚠️ Para confirmar tu reserva del <span className="font-bold">{format(parseISO(pendingRental.start_date), "d 'de' MMMM", { locale: es })}</span>, es necesario realizar el pago de la seña. Por favor, sube el comprobante para que podamos procesarla.
+                          ⚠️ Recordatorio: Para confirmar tu reserva del <span className="font-bold">{format(parseISO(pendingRental.start_date), "d 'de' MMMM", { locale: es })}</span>, debes subir el comprobante de la seña.
                         </p>
                       </div>
                     </div>
