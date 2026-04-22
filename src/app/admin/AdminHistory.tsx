@@ -16,15 +16,42 @@ interface RentalRow {
   is_maintenance?: boolean;
   external_professionals: { name: string; phone: string | null; email: string | null } | null;
   locations: { name: string } | null;
-}
-
 import { toast } from "sonner";
 import { deleteMaintenanceBlock, deleteReservation } from "./actions";
 import { Trash2 } from "lucide-react";
+import { ConfirmModal } from "./ConfirmModal";
 
 export function AdminHistory({ rentals }: { rentals: RentalRow[] }) {
   const [filterProf, setFilterProf] = useState("");
   const [filterStatus, setFilterStatus] = useState("ALL");
+  
+  const [modalOpen, setModalOpen] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteType, setDeleteType] = useState<"maintenance" | "reservation" | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const confirmDelete = async () => {
+    if (!deletingId || !deleteType) return;
+    setIsDeleting(true);
+    try {
+      if (deleteType === "maintenance") {
+        const res = await deleteMaintenanceBlock(deletingId);
+        if (res?.success) toast.success("Bloqueo eliminado.");
+        else toast.error(res?.error || "Error al eliminar");
+      } else {
+        const res = await deleteReservation(deletingId);
+        if (res?.success) toast.success("Reserva eliminada con éxito.");
+        else toast.error(res?.error || "Error al eliminar la reserva");
+      }
+    } catch {
+      toast.error("Error inesperado al eliminar.");
+    } finally {
+      setIsDeleting(false);
+      setModalOpen(false);
+      setDeletingId(null);
+      setDeleteType(null);
+    }
+  };
 
   const filtered = rentals.filter((r) => {
     const profName = r.external_professionals?.name?.toLowerCase() || "";
@@ -181,15 +208,10 @@ export function AdminHistory({ rentals }: { rentals: RentalRow[] }) {
                     <td className="px-8 py-5 text-right">
                       {r.is_maintenance ? (
                         <button
-                          onClick={async () => {
-                            if (!confirm("¿Eliminar este bloqueo de mantenimiento?")) return;
-                            try {
-                              const res = await deleteMaintenanceBlock(r.id);
-                              if (res?.success) toast.success("Bloqueo eliminado.");
-                              else toast.error(res?.error || "Error al eliminar");
-                            } catch {
-                              toast.error("Error inesperado al eliminar.");
-                            }
+                          onClick={() => {
+                            setDeletingId(r.id);
+                            setDeleteType("maintenance");
+                            setModalOpen(true);
                           }}
                           className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded inline-flex items-center justify-center gap-2 text-xs font-bold transition-colors w-full sm:w-auto border border-red-100"
                         >
@@ -198,15 +220,10 @@ export function AdminHistory({ rentals }: { rentals: RentalRow[] }) {
                         </button>
                       ) : (
                         <button
-                          onClick={async () => {
-                            if (!confirm("¿Estás seguro de que deseas eliminar esta reserva? Esta acción liberará el equipo para la fecha seleccionada y no se puede deshacer.")) return;
-                            try {
-                              const res = await deleteReservation(r.id);
-                              if (res?.success) toast.success("Reserva eliminada con éxito.");
-                              else toast.error(res?.error || "Error al eliminar la reserva");
-                            } catch {
-                              toast.error("Error inesperado al eliminar la reserva.");
-                            }
+                          onClick={() => {
+                            setDeletingId(r.id);
+                            setDeleteType("reservation");
+                            setModalOpen(true);
                           }}
                           className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded inline-flex items-center justify-center gap-2 text-xs font-bold transition-colors w-full sm:w-auto border border-red-100"
                         >
@@ -222,6 +239,17 @@ export function AdminHistory({ rentals }: { rentals: RentalRow[] }) {
           </table>
         </div>
       </div>
+
+      <ConfirmModal 
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onConfirm={confirmDelete}
+        title={deleteType === "maintenance" ? "Eliminar Bloqueo" : "Eliminar Reserva"}
+        description={deleteType === "maintenance" 
+          ? "¿Eliminar este bloqueo de mantenimiento?" 
+          : "¿Estás seguro de que deseas eliminar esta reserva? Esta acción liberará el equipo para la fecha seleccionada y no se puede deshacer."}
+        loading={isDeleting}
+      />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { confirmPayment } from "@/app/(protegido)/dashboard/actions";
 import { CheckCircle2, Loader2, ExternalLink, Trash2 } from "lucide-react";
 import { deleteReservation } from "./actions";
 import { toast } from "sonner";
+import { ConfirmModal } from "./ConfirmModal";
 
 interface Rental {
   id: string;
@@ -24,6 +25,26 @@ export function AdminActions({ rentals }: { rentals: Rental[] }) {
   const [confirmed, setConfirmed] = useState<Set<string>>(new Set());
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [, startTransition] = useTransition();
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const confirmDelete = async () => {
+    if (!deletingId) return;
+    setIsDeleting(true);
+    try {
+      const res = await deleteReservation(deletingId);
+      if (res?.success) toast.success("Reserva eliminada con éxito.");
+      else toast.error(res?.error || "Error al eliminar la reserva");
+    } catch {
+      toast.error("Error inesperado al eliminar la reserva.");
+    } finally {
+      setIsDeleting(false);
+      setModalOpen(false);
+      setDeletingId(null);
+    }
+  };
 
   const handleConfirm = (rentalId: string) => {
     setConfirming(rentalId);
@@ -136,15 +157,9 @@ export function AdminActions({ rentals }: { rentals: Rental[] }) {
                     <div className="flex flex-col items-end gap-2">
                        <div className="flex items-center gap-2">
                           <button
-                            onClick={async () => {
-                              if (!confirm("¿Estás seguro de que deseas eliminar esta reserva? Esta acción liberará el equipo para la fecha seleccionada y no se puede deshacer.")) return;
-                              try {
-                                const res = await deleteReservation(r.id);
-                                if (res?.success) toast.success("Reserva eliminada con éxito.");
-                                else toast.error(res?.error || "Error al eliminar la reserva");
-                              } catch {
-                                toast.error("Error inesperado al eliminar la reserva.");
-                              }
+                            onClick={() => {
+                              setDeletingId(r.id);
+                              setModalOpen(true);
                             }}
                             disabled={!!isLoading}
                             className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 disabled:bg-stone-100 disabled:text-stone-400 text-red-600 text-[9px] font-bold uppercase tracking-widest transition-all hover:scale-[1.03] active:scale-95 disabled:cursor-not-allowed border border-red-200"
@@ -177,6 +192,15 @@ export function AdminActions({ rentals }: { rentals: Rental[] }) {
           })}
         </tbody>
       </table>
+
+      <ConfirmModal 
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onConfirm={confirmDelete}
+        title="Eliminar Reserva"
+        description="¿Estás seguro de que deseas eliminar esta reserva? Esta acción liberará el equipo para la fecha seleccionada y no se puede deshacer."
+        loading={isDeleting}
+      />
     </div>
   );
 }

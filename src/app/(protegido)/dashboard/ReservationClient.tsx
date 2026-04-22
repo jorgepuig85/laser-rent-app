@@ -88,7 +88,6 @@ export function ReservationClient({
     try {
       if (!executeRecaptcha) {
         toast.error("reCAPTCHA no disponible. Inténtalo de nuevo.");
-        setLoading(false);
         return;
       }
 
@@ -122,33 +121,37 @@ export function ReservationClient({
 
       if (!result.success) {
         console.error("[ReservationClient] createRental error:", result.error);
-        toast.error("Error al procesar la reserva", {
-          description: result.error,
+        toast.error("No se pudo procesar la reserva", {
+          description: result.error || "Asegúrate de tener un CUIT configurado y revisá las reglas de la agenda.",
         });
-        setLoading(false);
         return;
       }
 
-      startTransition(() => {
-        router.refresh();
-        setDate(undefined);
-        setLocationId(""); // Reset location select
-        setLoading(false);
-      });
-      
-      toast.success("¡Reserva enviada con éxito!", {
-        description: "Ya puedes revisar los detalles en tu dashboard profesional.",
-        icon: <CheckCircle2 className="h-5 w-5 text-[--seasonal-primary]" />,
-        duration: 3000,
+      toast.success("¡Reserva confirmada!", {
+        description: "Los detalles de tus fechas ya están en tu panel.",
+        icon: <CheckCircle2 className="h-5 w-5 text-emerald-500" />,
+        duration: 4000,
       });
 
+      setDate(undefined);
+      setLocationId(""); 
+
+      // Pequeño delay de transición para que el form se limpie suavemente
+      setTimeout(() => {
+        startTransition(() => {
+          router.refresh();
+        });
+      }, 300);
+
     } catch (err: unknown) {
-      // Fallback: network or framework-level error
       console.error("[ReservationClient] unexpected error:", err);
-      toast.error("Error al procesar la reserva", {
-        description: "Ocurrió un problema de red. Intentá nuevamente.",
+      toast.error("Ocurrió un error inesperado", {
+        description: err instanceof Error ? err.message : "Fallo de red o servicio. Revisá tu conexión e intentá de nuevo.",
+        duration: 5000,
       });
-      setLoading(false);
+    } finally {
+      // Garantía absoluta de que el botón se desbloquea:
+      setTimeout(() => setLoading(false), 500);
     }
   };
 
