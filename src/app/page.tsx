@@ -10,7 +10,6 @@ const BENEFITS_IMAGE = "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/obje
 const CTA_IMAGE = "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/clinica-interior.webp";
 
 import { createClient } from "@/lib/supabaseServer";
-import { supabaseCentroBelleza } from "@/lib/supabaseCentroBellezaClient";
 import { AutoLoginTrigger } from "@/components/AutoLoginTrigger";
 import { Suspense } from "react";
 import { Calendar } from "lucide-react";
@@ -55,7 +54,7 @@ export default async function Home() {
   const dailyRateDB = tarifaData?.daily_rate || COSTO_ALQUILER_DIARIO;
   const sesionesNecesarias = Math.ceil(dailyRateDB / PRECIO_SESION_ESTIMADO);
 
-  const { data: locations } = await supabaseCentroBelleza
+  const { data: locations } = await supabase
     .from('locations')
     .select('name')
     .eq('is_active', true)

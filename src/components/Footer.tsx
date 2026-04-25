@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Mail, Phone, MapPin } from "lucide-react";
-import { supabaseCentroBelleza } from "@/lib/supabaseCentroBellezaClient";
+import { supabase } from "@/lib/supabaseClient";
 
 export async function Footer() {
-  const { data: locations } = await supabaseCentroBelleza
+  const { data: locations } = await supabase
     .from('locations')
     .select('name')
     .eq('is_active', true)
