@@ -1,14 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Mail, Phone, MapPin } from "lucide-react";
-import { supabase } from "@/lib/supabaseClient";
+import { supabaseCentroBelleza } from "@/lib/supabaseCentroBellezaClient";
 
 export async function Footer() {
-  const { data: locations } = await supabase
+  const { data: locations } = await supabaseCentroBelleza
     .from('locations')
-    .select('nombre')
-    .eq('activa', true)
-    .order('nombre');
+    .select('name')
+    .eq('is_active', true)
+    .order('name');
 
   const activeLocations = locations || [];
 
@@ -37,8 +37,8 @@ export async function Footer() {
           <div className="space-y-6">
             <h3 className="text-slate-900 font-bold uppercase tracking-wider text-xs">Zonas de Cobertura</h3>
             <nav className="flex flex-col gap-3">
-              {activeLocations.map((loc: { nombre: string }, i: number) => (
-                <span key={i} className="text-sm font-semibold text-slate-800">{loc.nombre}</span>
+              {activeLocations.map((loc: { name: string }, i: number) => (
+                <span key={i} className="text-sm font-semibold text-slate-800">{loc.name}</span>
               ))}
               <div className="pt-4 flex flex-col gap-3">
                 <Link href="/equipos" className="text-sm text-slate-500 hover:text-[--seasonal-primary] transition-colors w-fit font-medium">Equipos</Link>

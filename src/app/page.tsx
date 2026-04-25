@@ -10,6 +10,7 @@ const BENEFITS_IMAGE = "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/obje
 const CTA_IMAGE = "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/clinica-interior.webp";
 
 import { createClient } from "@/lib/supabaseServer";
+import { supabaseCentroBelleza } from "@/lib/supabaseCentroBellezaClient";
 import { AutoLoginTrigger } from "@/components/AutoLoginTrigger";
 import { Suspense } from "react";
 import { Calendar } from "lucide-react";
@@ -54,11 +55,11 @@ export default async function Home() {
   const dailyRateDB = tarifaData?.daily_rate || COSTO_ALQUILER_DIARIO;
   const sesionesNecesarias = Math.ceil(dailyRateDB / PRECIO_SESION_ESTIMADO);
 
-  const { data: locations } = await supabase
+  const { data: locations } = await supabaseCentroBelleza
     .from('locations')
-    .select('nombre')
-    .eq('activa', true)
-    .order('nombre');
+    .select('name')
+    .eq('is_active', true)
+    .order('name');
   
   const activeLocations = locations || [];
 
@@ -285,9 +286,9 @@ export default async function Home() {
             </p>
           </div>
           <div className="flex flex-wrap justify-center gap-4 mb-12">
-            {activeLocations.map((loc: { nombre: string }, i: number) => (
+            {activeLocations.map((loc: { name: string }, i: number) => (
               <span key={i} className="bg-white border border-slate-200 text-slate-700 px-6 py-3 rounded-full text-sm font-bold shadow-sm hover:shadow-md transition-shadow hover:border-primary/50 cursor-default">
-                {loc.nombre}
+                {loc.name}
               </span>
             ))}
           </div>
