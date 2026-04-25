@@ -27,6 +27,9 @@ export function Navbar() {
           <Link href="/equipos" className="transition-colors hover:text-[--seasonal-primary]">
             Equipos
           </Link>
+          <Link href="/servicios" className="transition-colors hover:text-[--seasonal-primary]">
+            Servicios
+          </Link>
           <Link href="/precios" className="transition-colors hover:text-[--seasonal-primary]">
             Precios
           </Link>
@@ -58,6 +61,13 @@ export function Navbar() {
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Equipos
+          </Link>
+          <Link 
+            href="/servicios" 
+            className="text-stone-800 font-medium py-2 border-b border-stone-100"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Servicios
           </Link>
           <Link 
             href="/precios" 
