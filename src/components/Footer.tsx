@@ -1,8 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Mail, Phone, MapPin } from "lucide-react";
+import { supabase } from "@/lib/supabaseClient";
 
-export function Footer() {
+export async function Footer() {
+  const { data: locations } = await supabase
+    .from('locations')
+    .select('nombre')
+    .eq('activa', true)
+    .order('nombre');
+
+  const activeLocations = locations || [];
+
   return (
     <footer className="border-t py-12 bg-slate-50 relative z-10">
       <div className="mx-auto w-full max-w-7xl px-4 md:px-6">
@@ -28,8 +37,9 @@ export function Footer() {
           <div className="space-y-6">
             <h3 className="text-slate-900 font-bold uppercase tracking-wider text-xs">Zonas de Cobertura</h3>
             <nav className="flex flex-col gap-3">
-              <span className="text-sm font-semibold text-slate-800">Santa Rosa</span>
-              <span className="text-sm font-semibold text-slate-800">Miguel Riglos</span>
+              {activeLocations.map((loc: { nombre: string }, i: number) => (
+                <span key={i} className="text-sm font-semibold text-slate-800">{loc.nombre}</span>
+              ))}
               <div className="pt-4 flex flex-col gap-3">
                 <Link href="/equipos" className="text-sm text-slate-500 hover:text-[--seasonal-primary] transition-colors w-fit font-medium">Equipos</Link>
                 <Link href="/precios" className="text-sm text-slate-500 hover:text-[--seasonal-primary] transition-colors w-fit font-medium">Precios</Link>

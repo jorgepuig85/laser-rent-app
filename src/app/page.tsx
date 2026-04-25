@@ -39,10 +39,10 @@ const getWhatsAppUrl = () => {
   return `https://wa.me/5492954631456?text=${encodeURIComponent(msg)}`;
 };
 
+export const revalidate = 60; // Actualizar zonas de cobertura y data dinámica
 export default async function Home() {
   const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
-  const ctaHref = session ? "/dashboard" : "/login?next=/dashboard";
 
   // Fetch dynamic rental price from DB
   const { data: tarifaData } = await supabase
@@ -53,6 +53,14 @@ export default async function Home() {
   
   const dailyRateDB = tarifaData?.daily_rate || COSTO_ALQUILER_DIARIO;
   const sesionesNecesarias = Math.ceil(dailyRateDB / PRECIO_SESION_ESTIMADO);
+
+  const { data: locations } = await supabase
+    .from('locations')
+    .select('nombre')
+    .eq('activa', true)
+    .order('nombre');
+  
+  const activeLocations = locations || [];
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-4rem)]">
@@ -263,6 +271,35 @@ export default async function Home() {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Zona de Cobertura Section */}
+      <section className="py-24 bg-slate-50 border-t border-slate-100">
+        <div className="mx-auto w-full max-w-7xl px-4 md:px-6 text-center">
+          <div className="space-y-4 mb-12 reveal-up">
+            <h2 className="text-3xl md:text-5xl font-serif font-bold tracking-tight text-slate-900">Nuestra Cobertura en La Pampa y Oeste de Buenos Aires</h2>
+            <p className="text-slate-500 text-lg max-w-[700px] mx-auto tracking-wide">
+              Llegamos a tu centro con logística propia, garantizando puntualidad y seguridad en la entrega.
+            </p>
+          </div>
+          <div className="flex flex-wrap justify-center gap-4 mb-12">
+            {activeLocations.map((loc: { nombre: string }, i: number) => (
+              <span key={i} className="bg-white border border-slate-200 text-slate-700 px-6 py-3 rounded-full text-sm font-bold shadow-sm hover:shadow-md transition-shadow hover:border-primary/50 cursor-default">
+                {loc.nombre}
+              </span>
+            ))}
+          </div>
+          <div className="bg-primary/5 rounded-2xl p-8 max-w-3xl mx-auto border border-primary/10 space-y-6">
+            <h3 className="text-xl font-bold text-slate-900">¿No ves tu localidad?</h3>
+            <p className="text-slate-600 font-medium">Consultanos, ampliamos nuestra logística constantemente para llegar a vos.</p>
+            <Button 
+              className="rounded-full font-bold px-8 text-md h-12" 
+              render={<Link href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" />}
+            >
+              Consultar por mi ciudad
+            </Button>
           </div>
         </div>
       </section>
