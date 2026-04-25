@@ -79,10 +79,10 @@ export default async function Home() {
                   Equipos de Última Generación
                 </div>
                 <h1 className="text-5xl font-serif font-black tracking-tighter sm:text-7xl xl:text-8xl text-foreground !leading-[1.1]">
-                  Alquilá Soprano Ice en La Pampa y multiplicá la rentabilidad de tu centro
+                  Multiplicá los ingresos de tu centro sin invertir en equipos
                 </h1>
                 <p className="max-w-[600px] text-xl text-slate-500 leading-relaxed tracking-wide font-medium">
-                  Tecnología de depilación láser líder en el mercado, con logística y soporte técnico garantizado en el día en Santa Rosa y zona.
+                  Alquilá tecnología Soprano Ice en La Pampa. Recuperá el costo del alquiler en tus primeras 5 a 10 sesiones.
                 </p>
               </div>
               <div className="flex flex-col gap-8 items-center sm:items-start">
@@ -92,7 +92,7 @@ export default async function Home() {
                     className="h-16 px-14 text-xl shadow-2xl transition-all hover:scale-105 btn-glint rounded-full bg-[#8F754F] text-white font-bold border-none" 
                     render={<Link href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" />}
                   >
-                    Reservar Equipo Ahora <Calendar className="ml-3 h-6 w-6" />
+                    Ver disponibilidad para esta semana <Calendar className="ml-3 h-6 w-6" />
                   </Button>
                   <p className="text-xs font-semibold text-slate-500 mt-[-4px]">✅ Respondemos en menos de 10 minutos</p>
                   <span className="text-sm font-bold text-[#8F754F] bg-[#8F754F]/10 px-4 py-2 rounded-full animate-pulse border border-[#8F754F]/20" suppressHydrationWarning>
@@ -134,35 +134,35 @@ export default async function Home() {
         <div className="mx-auto w-full max-w-7xl px-4 md:px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
             <div className="flex items-start gap-4 p-2">
-              <div className="bg-primary/10 p-3 rounded-2xl text-primary shrink-0">
-                <Truck className="h-6 w-6" />
+              <div className="bg-primary/10 p-3 rounded-2xl text-primary shrink-0 text-2xl">
+                🚚
               </div>
               <div className="space-y-1">
-                <h3 className="font-bold text-slate-900">Logística Propia</h3>
+                <h3 className="font-bold text-slate-900">Logística propia</h3>
                 <p className="text-sm text-slate-500 leading-relaxed">
-                  Entrega y retiro bonificado en Santa Rosa y zona de influencia.
+                  Entrega y retiro en tu puerta.
                 </p>
               </div>
             </div>
             <div className="flex items-start gap-4 p-2">
-              <div className="bg-primary/10 p-3 rounded-2xl text-primary shrink-0">
-                <ShieldCheck className="h-6 w-6" />
+              <div className="bg-primary/10 p-3 rounded-2xl text-primary shrink-0 text-2xl">
+                🛠️
               </div>
               <div className="space-y-1">
-                <h3 className="font-bold text-slate-900">Equipos Certificados</h3>
+                <h3 className="font-bold text-slate-900">Soporte Real</h3>
                 <p className="text-sm text-slate-500 leading-relaxed">
-                  Realizamos mantenimiento preventivo exhaustivo antes de cada jornada.
+                  Asistencia técnica en el día en toda La Pampa.
                 </p>
               </div>
             </div>
             <div className="flex items-start gap-4 p-2">
-              <div className="bg-primary/10 p-3 rounded-2xl text-primary shrink-0">
-                <GraduationCap className="h-6 w-6" />
+              <div className="bg-primary/10 p-3 rounded-2xl text-primary shrink-0 text-2xl">
+                📈
               </div>
               <div className="space-y-1">
-                <h3 className="font-bold text-slate-900">Capacitación Inicial</h3>
+                <h3 className="font-bold text-slate-900">Rentabilidad</h3>
                 <p className="text-sm text-slate-500 leading-relaxed">
-                  Te brindamos entrenamiento técnico en tu primera sesión de uso.
+                  Equipos listos para facturar desde el minuto 1.
                 </p>
               </div>
             </div>
@@ -320,7 +320,7 @@ export default async function Home() {
           </p>
           <div className="flex flex-col gap-3 items-center justify-center">
             <Button size="lg" className="h-16 px-10 text-lg rounded-full shadow-2xl bg-[#8F754F] text-white hover:bg-[#8F754F]/90 hover:scale-105 transition-all btn-glint border-none font-bold" render={<Link href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" />}>
-              Reservar Equipo Ahora
+              Quiero empezar a facturar
             </Button>
             <p className="text-sm font-semibold text-white/80 mt-[-4px]">✅ Respondemos en menos de 10 minutos</p>
             <span className="text-sm font-bold text-white bg-black/40 px-4 py-2 rounded-full border border-white/20" suppressHydrationWarning>

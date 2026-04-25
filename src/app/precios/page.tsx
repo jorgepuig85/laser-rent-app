@@ -37,6 +37,8 @@ export default async function PreciosPage() {
   const baseDia = dailyRate > 0 ? formatter.format(dailyRate) : "Consultar";
   const baseSemana = weeklyRate > 0 ? formatter.format(weeklyRate) : "Consultar";
 
+  const PRECIO_SESION = 15000;
+
   const plans = [
     {
       name: "Jornada Diaria",
@@ -50,7 +52,9 @@ export default async function PreciosPage() {
         "Geles y descartables opcionales"
       ],
       popular: false,
-      cta: "Reservar Día"
+      tag: "Ideal para empezar",
+      sessionsEquivalent: dailyRate > 0 ? Math.ceil(dailyRate / PRECIO_SESION) : 0,
+      cta: "Reservar este plan"
     },
     {
       name: "Semanal",
@@ -65,7 +69,9 @@ export default async function PreciosPage() {
         "Soporte técnico local presencial si es necesario"
       ],
       popular: true,
-      cta: "Reservar Semana"
+      tag: "Máxima Rentabilidad",
+      sessionsEquivalent: weeklyRate > 0 ? Math.ceil(weeklyRate / PRECIO_SESION) : 0,
+      cta: "Reservar este plan"
     },
     {
       name: "Mensual",
@@ -78,6 +84,8 @@ export default async function PreciosPage() {
         "Flexibilidad de cambio de equipo"
       ],
       popular: false,
+      tag: "",
+      sessionsEquivalent: 0,
       cta: "Cotizar Mes"
     }
   ];
@@ -98,10 +106,10 @@ export default async function PreciosPage() {
             className={`group relative flex flex-col h-full border-2 transition-all duration-300 ease-in-out premium-card-glow ${plan.popular ? 'border-primary shadow-xl z-10 scale-105' : 'border-slate-100/50'}`}
           >
             <CardHeader className={`text-center flex-initial space-y-4 pt-10 pb-6 ${plan.popular ? 'bg-primary/5' : ''}`}>
-              {plan.popular && (
+              {plan.tag && (
                 <div className="mb-2">
-                  <span className="bg-primary text-white text-[10px] font-black uppercase tracking-[0.2em] py-1.5 px-4 rounded-full shadow-md">
-                    Opción Más Elegida
+                  <span className={`text-[10px] font-black uppercase tracking-[0.2em] py-1.5 px-4 rounded-full shadow-md ${plan.popular ? 'bg-primary text-white' : 'bg-slate-200 text-slate-700'}`}>
+                    {plan.tag}
                   </span>
                 </div>
               )}
@@ -110,6 +118,9 @@ export default async function PreciosPage() {
               <div className="pt-4 pb-2">
                 <span className="text-5xl font-extrabold tracking-tight text-slate-900 font-serif">{plan.price}</span>
                 {plan.price !== "Consultar" && <span className="text-slate-500 font-bold ml-2 text-sm uppercase">ARS</span>}
+                {plan.sessionsEquivalent > 0 && (
+                  <p className="text-xs text-slate-500 mt-3 font-semibold bg-slate-100/50 py-1.5 px-3 rounded-md inline-block">Equivale a solo {plan.sessionsEquivalent} sesiones de tus clientes</p>
+                )}
               </div>
             </CardHeader>
             <CardContent className="flex-1">
