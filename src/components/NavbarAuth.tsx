@@ -8,6 +8,17 @@ import { createBrowserClient } from "@supabase/ssr";
 import { signOut } from "@/app/auth/actions";
 import { User } from "@supabase/supabase-js";
 
+const getWhatsAppUrl = () => {
+  const date = new Date();
+  const day = date.getDate();
+  const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  const currentMonth = months[date.getMonth()];
+  const nextMonth = months[(date.getMonth() + 1) % 12];
+  const targetMonth = day <= 20 ? currentMonth : nextMonth;
+  const msg = `¡Hola! Quiero consultar disponibilidad para alquilar un equipo en ${targetMonth}. ¿Tienen fechas libres?`;
+  return `https://wa.me/5492954631456?text=${encodeURIComponent(msg)}`;
+};
+
 export function NavbarAuth({
   isMobileView,
   isMobileMenu,
@@ -201,21 +212,40 @@ export function NavbarAuth({
   // Not logged in
   if (isMobileView || isMobileMenu) {
     return (
-      <Link href="/login?next=/dashboard" onClick={() => { if (onCloseMenu) onCloseMenu(); }}>
-        <Button className="w-full bg-primary text-white rounded-full">
-          <UserCircle className="mr-2 h-4 w-4" />
-          Login
+      <div className="flex flex-col gap-3 w-full">
+        <Button 
+          className="w-full bg-[#8F754F] text-white rounded-full hover:bg-[#8F754F]/90 font-bold"
+          onClick={() => {
+            window.open(getWhatsAppUrl(), '_blank');
+            if (onCloseMenu) onCloseMenu();
+          }}
+        >
+          Consultar Disponibilidad
         </Button>
-      </Link>
+        <Link 
+          href="https://laser-rent-app.vercel.app/login?next=/dashboard" 
+          onClick={() => { if (onCloseMenu) onCloseMenu(); }}
+          className="text-center text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors py-2"
+        >
+          Panel Clientes
+        </Link>
+      </div>
     );
   }
 
   return (
-    <Link href="/login?next=/dashboard">
-      <Button className="bg-primary text-white rounded-full px-6 min-w-[160px]">
-        <UserCircle className="mr-2 h-4 w-4" />
-        Login Profesional
-      </Button>
-    </Link>
+    <div className="flex items-center gap-4">
+      <Link 
+        href="https://laser-rent-app.vercel.app/login?next=/dashboard"
+        className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors hidden sm:block"
+      >
+        Panel Clientes
+      </Link>
+      <Link href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer">
+        <Button className="bg-[#8F754F] text-white rounded-full px-6 hover:bg-[#8F754F]/90 font-bold transition-all hover:scale-105 shadow-md">
+          Consultar Disponibilidad
+        </Button>
+      </Link>
+    </div>
   );
 }

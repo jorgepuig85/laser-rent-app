@@ -13,6 +13,31 @@ import { AutoLoginTrigger } from "@/components/AutoLoginTrigger";
 import { Suspense } from "react";
 import { Calendar } from "lucide-react";
 
+const getUrgencyText = () => {
+  const date = new Date();
+  const day = date.getDate();
+  const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  const currentMonth = months[date.getMonth()];
+  const nextMonth = months[(date.getMonth() + 1) % 12];
+
+  if (day <= 20) {
+    return `📅 Agenda de ${currentMonth} casi completa`;
+  } else {
+    return `📅 Cupos limitados para ${nextMonth} - ¡Reserva tu lugar!`;
+  }
+};
+
+const getWhatsAppUrl = () => {
+  const date = new Date();
+  const day = date.getDate();
+  const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  const currentMonth = months[date.getMonth()];
+  const nextMonth = months[(date.getMonth() + 1) % 12];
+  const targetMonth = day <= 20 ? currentMonth : nextMonth;
+  const msg = `¡Hola! Quiero consultar disponibilidad para alquilar un equipo en ${targetMonth}. ¿Tienen fechas libres?`;
+  return `https://wa.me/5492954631456?text=${encodeURIComponent(msg)}`;
+};
+
 export default async function Home() {
   const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
@@ -38,17 +63,23 @@ export default async function Home() {
                   Alquiler de Terapia Láser para <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/70">Profesionales</span>
                 </h1>
                 <p className="max-w-[600px] text-xl text-slate-500 leading-relaxed tracking-wide font-medium">
-                  Potencia tus ingresos sin inversión de capital. Alquilamos los equipos de depilación láser más avanzados del mercado con mantenimiento y soporte técnico incluido.
+                  Potencia tus ingresos sin inversión de capital en Santa Rosa y toda La Pampa. Alquilamos los equipos de depilación láser más avanzados del mercado con mantenimiento y soporte técnico incluido.
                 </p>
               </div>
               <div className="flex flex-col gap-8 items-center sm:items-start">
-                <Button 
-                  size="lg" 
-                  className="h-16 px-14 text-xl shadow-2xl transition-all hover:scale-105 btn-glint rounded-full bg-[#8F754F] text-white font-bold border-none" 
-                  render={<Link href={ctaHref} />}
-                >
-                  Quiero Alquilar <Calendar className="ml-3 h-6 w-6" />
-                </Button>
+                <div className="flex flex-col gap-3 items-center sm:items-start">
+                  <Button 
+                    size="lg" 
+                    className="h-16 px-14 text-xl shadow-2xl transition-all hover:scale-105 btn-glint rounded-full bg-[#8F754F] text-white font-bold border-none" 
+                    render={<Link href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" />}
+                  >
+                    Consultar Disponibilidad <Calendar className="ml-3 h-6 w-6" />
+                  </Button>
+                  <span className="text-sm font-bold text-[#8F754F] bg-[#8F754F]/10 px-4 py-2 rounded-full animate-pulse border border-[#8F754F]/20" suppressHydrationWarning>
+                    {getUrgencyText()}
+                  </span>
+                </div>
+
 
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4">
                   <Link href="/equipos" className="group flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-slate-900 transition-colors px-4 py-2">
@@ -186,11 +217,16 @@ export default async function Home() {
         <div className="mx-auto w-full max-w-4xl px-4 md:px-6 relative text-center space-y-10 animate-in fade-in zoom-in duration-700">
           <h2 className="text-4xl md:text-6xl font-serif font-bold tracking-tight leading-tight">Lleva tu centro de estética al siguiente nivel</h2>
           <p className="text-xl text-white/90 font-medium">
-            Reserva tu equipo hoy y comienza a ofrecer tratamientos de depilación definitiva de alta eficacia.
+            Reserva tu equipo hoy y comienza a ofrecer tratamientos de depilación definitiva de alta eficacia en Santa Rosa y toda La Pampa.
           </p>
-          <Button size="lg" className="h-16 px-10 text-lg rounded-full shadow-2xl bg-[#8F754F] text-white hover:bg-[#8F754F]/90 hover:scale-105 transition-all btn-glint border-none font-bold" render={<Link href="https://wa.me/5492954631456?text=Hola!%20Me%20interesa%20alquilar%20un%20equipo%20de%20depilaci%C3%B3n%20en%20La%20Pampa.%20Me%20podr%C3%ADas%20dar%20m%C3%A1s%20informaci%C3%B3n%3F" target="_blank" rel="noopener noreferrer" />}>
-            Chatea con un Asesor
-          </Button>
+          <div className="flex flex-col gap-3 items-center justify-center">
+            <Button size="lg" className="h-16 px-10 text-lg rounded-full shadow-2xl bg-[#8F754F] text-white hover:bg-[#8F754F]/90 hover:scale-105 transition-all btn-glint border-none font-bold" render={<Link href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" />}>
+              Consultar Disponibilidad
+            </Button>
+            <span className="text-sm font-bold text-white bg-black/40 px-4 py-2 rounded-full border border-white/20" suppressHydrationWarning>
+              {getUrgencyText()}
+            </span>
+          </div>
         </div>
       </section>
     </div>

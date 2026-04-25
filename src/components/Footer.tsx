@@ -30,7 +30,6 @@ export function Footer() {
               <div className="pt-4 flex flex-col gap-3">
                 <Link href="/equipos" className="text-sm text-slate-500 hover:text-[--seasonal-primary] transition-colors w-fit font-medium">Equipos</Link>
                 <Link href="/precios" className="text-sm text-slate-500 hover:text-[--seasonal-primary] transition-colors w-fit font-medium">Precios</Link>
-                <span className="text-sm text-slate-300 cursor-not-allowed w-fit font-medium">Preguntas Frecuentes (Próximamente)</span>
               </div>
             </nav>
           </div>
