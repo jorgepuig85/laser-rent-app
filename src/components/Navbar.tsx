@@ -30,6 +30,9 @@ export function Navbar() {
           <Link href="/precios" className="transition-colors hover:text-[--seasonal-primary]">
             Precios
           </Link>
+          <Link href="/cobertura" className="transition-colors hover:text-[--seasonal-primary]">
+            Zonas de Atención
+          </Link>
           <NavbarAuth />
         </nav>
 
@@ -62,6 +65,13 @@ export function Navbar() {
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Precios
+          </Link>
+          <Link 
+            href="/cobertura" 
+            className="text-stone-800 font-medium py-2 border-b border-stone-100"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Zonas de Atención
           </Link>
           
           <div className="pt-2">

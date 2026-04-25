@@ -1,16 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Mail, Phone, MapPin } from "lucide-react";
-import { supabase } from "@/lib/supabaseClient";
+import { Mail, Phone, MapPin, ArrowRight } from "lucide-react";
 
-export async function Footer() {
-  const { data: locations } = await supabase
-    .from('locations')
-    .select('name')
-    .eq('is_active', true)
-    .order('name');
-
-  const activeLocations = locations || [];
+export function Footer() {
 
   return (
     <footer className="border-t py-12 bg-slate-50 relative z-10">
@@ -33,18 +25,25 @@ export async function Footer() {
             </p>
           </div>
 
-          {/* Columna 2: Quick Links & Zones */}
+          {/* Columna 2: Cobertura Reducida */}
           <div className="space-y-6">
-            <h3 className="text-slate-900 font-bold uppercase tracking-wider text-xs">Zonas de Cobertura</h3>
-            <nav className="flex flex-col gap-3">
-              {activeLocations.map((loc: { name: string }, i: number) => (
-                <span key={i} className="text-sm font-semibold text-slate-800">{loc.name}</span>
-              ))}
-              <div className="pt-4 flex flex-col gap-3">
+            <h4 className="font-bold text-slate-900 tracking-tight text-xs uppercase tracking-wider">Zonas de Atención</h4>
+            <div className="space-y-4">
+              <p className="text-slate-500 text-sm leading-relaxed">
+                Nuestra red de logística cubre estratégicamente múltiples puntos en La Pampa y Oeste de Buenos Aires.
+              </p>
+              <Link 
+                href="/cobertura" 
+                className="inline-flex items-center text-sm font-semibold text-[--seasonal-primary] hover:text-[--seasonal-primary]/80 transition-colors group"
+              >
+                Ver mapa interactivo de cobertura
+                <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+              <div className="pt-2 flex flex-col gap-3">
                 <Link href="/equipos" className="text-sm text-slate-500 hover:text-[--seasonal-primary] transition-colors w-fit font-medium">Equipos</Link>
                 <Link href="/precios" className="text-sm text-slate-500 hover:text-[--seasonal-primary] transition-colors w-fit font-medium">Precios</Link>
               </div>
-            </nav>
+            </div>
           </div>
 
           {/* Columna 3: Contacto & Socials */}
