@@ -42,7 +42,7 @@ const getWhatsAppUrl = () => {
 export const revalidate = 60; // Actualizar zonas de cobertura y data dinámica
 export default async function Home() {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
+  await supabase.auth.getSession();
 
   // Fetch dynamic rental price from DB
   const { data: tarifaData } = await supabase

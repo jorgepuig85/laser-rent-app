@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { LogOut, UserCircle, Loader2, ShieldCheck } from "lucide-react";
+import { LogOut, Loader2, ShieldCheck } from "lucide-react";
 import { createBrowserClient } from "@supabase/ssr";
 import { signOut } from "@/app/auth/actions";
 import { User } from "@supabase/supabase-js";
