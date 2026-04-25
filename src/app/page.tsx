@@ -44,6 +44,16 @@ export default async function Home() {
   const { data: { session } } = await supabase.auth.getSession();
   const ctaHref = session ? "/dashboard" : "/login?next=/dashboard";
 
+  // Fetch dynamic rental price from DB
+  const { data: tarifaData } = await supabase
+    .from('rental_prices')
+    .select('daily_rate')
+    .limit(1)
+    .single();
+  
+  const dailyRateDB = tarifaData?.daily_rate || COSTO_ALQUILER_DIARIO;
+  const sesionesNecesarias = Math.ceil(dailyRateDB / PRECIO_SESION_ESTIMADO);
+
   return (
     <div className="flex flex-col min-h-[calc(100vh-4rem)]">
       <Suspense fallback={null}>
@@ -158,12 +168,12 @@ export default async function Home() {
           <div className="text-center space-y-4 mb-16 reveal-up">
             <h2 className="text-3xl md:text-5xl font-serif font-bold tracking-tight text-slate-900">Tu Negocio, Más Rentable</h2>
             <p className="text-slate-600 text-lg max-w-[800px] mx-auto">
-              Con solo 5 clientas por jornada, cubres el costo del alquiler ({formatCurrency(COSTO_ALQUILER_DIARIO)}). ¡Todo lo demás es ganancia pura para tu centro!
+              Con solo {sesionesNecesarias} clientas por jornada, cubres el costo del alquiler ({formatCurrency(dailyRateDB)}). ¡Todo lo demás es ganancia pura para tu centro!
             </p>
           </div>
           <div className="max-w-3xl mx-auto bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-primary/10 text-center">
             <div className="text-2xl md:text-4xl font-black text-slate-800 mb-6 font-serif">
-              5 sesiones x {formatCurrency(PRECIO_SESION_ESTIMADO)} = <span className="text-green-600">{formatCurrency(5 * PRECIO_SESION_ESTIMADO)}</span>
+              {sesionesNecesarias} sesiones x {formatCurrency(PRECIO_SESION_ESTIMADO)} = <span className="text-green-600">{formatCurrency(sesionesNecesarias * PRECIO_SESION_ESTIMADO)}</span>
             </div>
             <div className="inline-block bg-green-100 text-green-800 px-6 py-3 rounded-full font-bold text-lg">
               ¡Con media jornada ya pagaste el equipo!
