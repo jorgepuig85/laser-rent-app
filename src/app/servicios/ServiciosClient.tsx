@@ -6,27 +6,41 @@ import Image from "next/image";
 type Item = { id: string; name: string; price: number };
 
 const formatImageName = (name: string) => {
+  const isHombre = name.toLowerCase().startsWith("hombre");
   const cleanName = name.replace(/^(Mujer - |Hombre - )/i, '').trim();
-  
-  // Mapeo específico dictado para resolver mayúsculas y formatos exactos
-  const mappings: Record<string, string> = {
-    "axilas": "Axilas_mujer.png",
-    "rostro": "Rostro_mujer.png",
-    "cavado completo": "cavado_completo_mujer.jpg",
-    "brazos": "brazos_mujer.png",
-    "gluteos": "gluteos_mujer.png",
-    "glúteos": "gluteos_mujer.png",
-    "piernas completas": "piernas_completas_mujer.png",
-    "abdomen": "Abdomen_mujer.png",
-    "cavado bikini": "cavado_bikini_mujer.png",
-    "media pierna": "Media_pierna_mujer.jpg",
-    "bozo": "bozo_mujer.png",
-  };
-  
   const key = cleanName.toLowerCase();
-  if (mappings[key]) return mappings[key];
   
-  // Fallback genérico para cualquier otro servicio no mapeado (ej: Espalda -> espalda_mujer.png)
+  if (isHombre) {
+    const mappingsHombre: Record<string, string> = {
+      "axilas": "axilas_masculino.jpg",
+      "brazos": "brazos_masculino.jpg",
+      "espalda completa": "espalda_completa_masculino.jpg",
+      "pecho y abdomen": "pecho_abdomen_masculino.jpg",
+      "piernas completas": "piernas_completas_masculino.jpg",
+      "rostro": "rostro_masculino.jpg",
+      "zona pelvica": "zona_pelvica_masculino.jpg",
+      "zona pélvica": "zona_pelvica_masculino.jpg",
+    };
+    if (mappingsHombre[key]) return mappingsHombre[key];
+  } else {
+    // Mapeo específico dictado para resolver mayúsculas y formatos exactos
+    const mappingsMujer: Record<string, string> = {
+      "axilas": "Axilas_mujer.png",
+      "rostro": "Rostro_mujer.png",
+      "cavado completo": "cavado_completo_mujer.jpg",
+      "brazos": "brazos_mujer.png",
+      "gluteos": "gluteos_mujer.png",
+      "glúteos": "gluteos_mujer.png",
+      "piernas completas": "piernas_completas_mujer.png",
+      "abdomen": "Abdomen_mujer.png",
+      "cavado bikini": "cavado_bikini_mujer.png",
+      "media pierna": "Media_pierna_mujer.jpg",
+      "bozo": "bozo_mujer.png",
+    };
+    if (mappingsMujer[key]) return mappingsMujer[key];
+  }
+  
+  // Fallback genérico para cualquier otro servicio no mapeado (siempre asume mujer png por defecto para evitar roturas)
   const formatted = cleanName.toLowerCase().replace(/\s+/g, '_');
   return `${formatted}_mujer.png`;
 };
@@ -87,7 +101,7 @@ export function ServiciosClient({ items }: { items: Item[] }) {
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   className="object-cover object-center transition-transform duration-700 group-hover:scale-110"
-                  priority={index < 4}
+                  priority={index < 4 || cleanName.toLowerCase() === 'axilas' || cleanName.toLowerCase() === 'rostro'}
                 />
                 {/* Gradiente sutil para legibilidad del texto sobre cualquier imagen */}
                 <div className="absolute inset-0 bg-gradient-to-t from-stone-900/80 via-stone-900/20 to-transparent opacity-90" />
