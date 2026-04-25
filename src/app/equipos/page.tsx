@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ShieldCheck, Zap, Sun, CheckCircle2 } from "lucide-react";
 
-const ADSS_IMAGE = "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/equipo_depilacion.webp";
+const ADSS_IMAGE = "https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/equipos_imagenes/equipo_depilacion.webp";
 
 export const metadata = {
   title: "Equipo ADSS FG2000B | Centro de Belleza",

@@ -5,9 +5,9 @@ import { ArrowRight, CheckCircle2, Shield, Zap, TrendingUp, Truck, ShieldCheck, 
 import { SeasonalHeroEffects } from "@/components/SeasonalHeroEffects";
 import { COSTO_ALQUILER_DIARIO, PRECIO_SESION_ESTIMADO, formatCurrency } from "@/lib/constants";
 
-const HERO_IMAGE = "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/hero-profesional.webp";
-const BENEFITS_IMAGE = "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/beneficios-tech.webp";
-const CTA_IMAGE = "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/clinica-interior.webp";
+const HERO_IMAGE = "https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/equipos_imagenes/hero-profesional.webp";
+const BENEFITS_IMAGE = "https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/equipos_imagenes/beneficios-tech.webp";
+const CTA_IMAGE = "https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/equipos_imagenes/clinica-interior.webp";
 
 import { createClient } from "@/lib/supabaseServer";
 import { AutoLoginTrigger } from "@/components/AutoLoginTrigger";

@@ -19,7 +19,7 @@ export async function Footer() {
           {/* Columna 1: Branding & Missión */}
           <div className="space-y-6">
             <Image
-              src="https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/logo-laser-rent.svg"
+              src="https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/public/equipos_imagenes/logo-laser-rent.svg"
               alt="Centro de Belleza Logo"
               width={150}
               height={40}
