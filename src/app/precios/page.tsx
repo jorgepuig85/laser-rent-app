@@ -123,32 +123,20 @@ export default async function PreciosPage() {
               </ul>
             </CardContent>
             <CardFooter className="pt-8">
-              {plan.name === "Mensual" ? (
-                <Link 
-                  href={`https://wa.me/5492954631456?text=${encodeURIComponent("Hola! Me interesa el alquiler mensual del ADSS FG2000B. ¿Me podrías dar más información?")}`} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="w-full"
+              <Link 
+                href={`https://wa.me/5492954631456?text=${encodeURIComponent(`Hola! Quiero más info sobre el plan ${plan.name} de ${plan.price}`)}`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-full"
+              >
+                <Button 
+                  size="lg" 
+                  className={`w-full h-12 rounded-xl font-bold transition-all hover:scale-[1.02] ${plan.popular ? 'btn-glint' : ''}`}
+                  variant={plan.popular ? 'default' : 'outline'} 
                 >
-                  <Button 
-                    size="lg" 
-                    className={`w-full h-12 rounded-xl font-bold transition-all hover:scale-[1.02] ${plan.popular ? 'btn-glint' : ''}`}
-                    variant={plan.popular ? 'default' : 'outline'} 
-                  >
-                    {plan.cta}
-                  </Button>
-                </Link>
-              ) : (
-                <Link href="/login?next=/dashboard" className="w-full">
-                  <Button 
-                    size="lg" 
-                    className={`w-full h-12 rounded-xl font-bold transition-all hover:scale-[1.02] ${plan.popular ? 'btn-glint' : ''}`}
-                    variant={plan.popular ? 'default' : 'outline'} 
-                  >
-                    {plan.cta}
-                  </Button>
-                </Link>
-              )}
+                  {plan.cta}
+                </Button>
+              </Link>
             </CardFooter>
           </Card>
         ))}

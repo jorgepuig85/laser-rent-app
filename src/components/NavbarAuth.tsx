@@ -214,7 +214,7 @@ export function NavbarAuth({
     return (
       <div className="flex flex-col gap-3 w-full">
         <Button 
-          className="w-full bg-[#8F754F] text-white rounded-full hover:bg-[#8F754F]/90 font-bold"
+          className="w-full bg-cyan-500 text-white rounded-full hover:bg-cyan-600 font-bold"
           onClick={() => {
             window.open(getWhatsAppUrl(), '_blank');
             if (onCloseMenu) onCloseMenu();
@@ -242,7 +242,7 @@ export function NavbarAuth({
         Panel Clientes
       </Link>
       <Link href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer">
-        <Button className="bg-[#8F754F] text-white rounded-full px-6 hover:bg-[#8F754F]/90 font-bold transition-all hover:scale-105 shadow-md">
+        <Button className="bg-cyan-500 text-white rounded-full px-6 hover:bg-cyan-600 font-bold transition-all hover:scale-105 shadow-md">
           Reservar Equipo Ahora
         </Button>
       </Link>

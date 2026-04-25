@@ -71,10 +71,10 @@ export default async function Home() {
                   Equipos de Última Generación
                 </div>
                 <h1 className="text-5xl font-serif font-black tracking-tighter sm:text-7xl xl:text-8xl text-foreground !leading-[1.1]">
-                  Alquiler de Terapia Láser para <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/70">Profesionales</span>
+                  Alquilá Soprano Ice en La Pampa y multiplicá la rentabilidad de tu centro
                 </h1>
                 <p className="max-w-[600px] text-xl text-slate-500 leading-relaxed tracking-wide font-medium">
-                  El único servicio en La Pampa con entrega y soporte técnico garantizado en el día. Potencia tus ingresos sin inversión de capital alquilando los equipos de depilación láser más avanzados del mercado.
+                  Tecnología de depilación láser líder en el mercado, con logística y soporte técnico garantizado en el día en Santa Rosa y zona.
                 </p>
               </div>
               <div className="flex flex-col gap-8 items-center sm:items-start">
@@ -86,7 +86,7 @@ export default async function Home() {
                   >
                     Reservar Equipo Ahora <Calendar className="ml-3 h-6 w-6" />
                   </Button>
-                  <p className="text-xs font-semibold text-slate-500 mt-[-4px]">⚡ Respondemos en menos de 10 minutos</p>
+                  <p className="text-xs font-semibold text-slate-500 mt-[-4px]">✅ Respondemos en menos de 10 minutos</p>
                   <span className="text-sm font-bold text-[#8F754F] bg-[#8F754F]/10 px-4 py-2 rounded-full animate-pulse border border-[#8F754F]/20" suppressHydrationWarning>
                     {getUrgencyText()}
                   </span>
@@ -170,6 +170,9 @@ export default async function Home() {
             <p className="text-slate-600 text-lg max-w-[800px] mx-auto">
               Con solo {sesionesNecesarias} clientas por jornada, cubres el costo del alquiler ({formatCurrency(dailyRateDB)}). ¡Todo lo demás es ganancia pura para tu centro!
             </p>
+            <div className="inline-block bg-orange-100 text-orange-800 px-4 py-1.5 rounded-full font-bold text-sm border border-orange-200 mt-4 animate-pulse shadow-sm">
+              🔥 Quedan pocas fechas disponibles para toda la zona. ¡No te quedes sin tu reserva!
+            </div>
           </div>
           <div className="max-w-3xl mx-auto bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-primary/10 text-center">
             <div className="text-2xl md:text-4xl font-black text-slate-800 mb-6 font-serif">
@@ -282,7 +285,7 @@ export default async function Home() {
             <Button size="lg" className="h-16 px-10 text-lg rounded-full shadow-2xl bg-[#8F754F] text-white hover:bg-[#8F754F]/90 hover:scale-105 transition-all btn-glint border-none font-bold" render={<Link href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" />}>
               Reservar Equipo Ahora
             </Button>
-            <p className="text-sm font-semibold text-white/80 mt-[-4px]">⚡ Respondemos en menos de 10 minutos</p>
+            <p className="text-sm font-semibold text-white/80 mt-[-4px]">✅ Respondemos en menos de 10 minutos</p>
             <span className="text-sm font-bold text-white bg-black/40 px-4 py-2 rounded-full border border-white/20" suppressHydrationWarning>
               {getUrgencyText()}
             </span>
