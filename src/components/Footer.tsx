@@ -19,6 +19,9 @@ export function Footer() {
             <p className="text-slate-500 text-sm leading-relaxed max-w-xs">
               Nuestra misión es potenciar los centros de estética de La Pampa brindando tecnología láser de vanguardia con un soporte técnico y logístico inigualable en Santa Rosa y Miguel Riglos.
             </p>
+            <p className="text-slate-700 text-sm font-semibold leading-relaxed max-w-xs">
+              El único servicio en La Pampa con entrega y soporte técnico garantizado en el día.
+            </p>
           </div>
 
           {/* Columna 2: Quick Links & Zones */}

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2, Shield, Zap, TrendingUp, Truck, ShieldCheck, GraduationCap } from "lucide-react";
 import { SeasonalHeroEffects } from "@/components/SeasonalHeroEffects";
+import { COSTO_ALQUILER_DIARIO, PRECIO_SESION_ESTIMADO, formatCurrency } from "@/lib/constants";
 
 const HERO_IMAGE = "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/hero-profesional.webp";
 const BENEFITS_IMAGE = "https://pbvxslvihypfblbfyqle.supabase.co/storage/v1/object/public/equipos_imagenes/beneficios-tech.webp";
@@ -63,7 +64,7 @@ export default async function Home() {
                   Alquiler de Terapia Láser para <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/70">Profesionales</span>
                 </h1>
                 <p className="max-w-[600px] text-xl text-slate-500 leading-relaxed tracking-wide font-medium">
-                  Potencia tus ingresos sin inversión de capital en Santa Rosa y toda La Pampa. Alquilamos los equipos de depilación láser más avanzados del mercado con mantenimiento y soporte técnico incluido.
+                  El único servicio en La Pampa con entrega y soporte técnico garantizado en el día. Potencia tus ingresos sin inversión de capital alquilando los equipos de depilación láser más avanzados del mercado.
                 </p>
               </div>
               <div className="flex flex-col gap-8 items-center sm:items-start">
@@ -73,8 +74,9 @@ export default async function Home() {
                     className="h-16 px-14 text-xl shadow-2xl transition-all hover:scale-105 btn-glint rounded-full bg-[#8F754F] text-white font-bold border-none" 
                     render={<Link href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" />}
                   >
-                    Consultar Disponibilidad <Calendar className="ml-3 h-6 w-6" />
+                    Reservar Equipo Ahora <Calendar className="ml-3 h-6 w-6" />
                   </Button>
+                  <p className="text-xs font-semibold text-slate-500 mt-[-4px]">⚡ Respondemos en menos de 10 minutos</p>
                   <span className="text-sm font-bold text-[#8F754F] bg-[#8F754F]/10 px-4 py-2 rounded-full animate-pulse border border-[#8F754F]/20" suppressHydrationWarning>
                     {getUrgencyText()}
                   </span>
@@ -150,6 +152,53 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* Profitability Section */}
+      <section className="py-24 bg-primary/5">
+        <div className="mx-auto w-full max-w-7xl px-4 md:px-6">
+          <div className="text-center space-y-4 mb-16 reveal-up">
+            <h2 className="text-3xl md:text-5xl font-serif font-bold tracking-tight text-slate-900">Tu Negocio, Más Rentable</h2>
+            <p className="text-slate-600 text-lg max-w-[800px] mx-auto">
+              Con solo 5 clientas por jornada, cubres el costo del alquiler ({formatCurrency(COSTO_ALQUILER_DIARIO)}). ¡Todo lo demás es ganancia pura para tu centro!
+            </p>
+          </div>
+          <div className="max-w-3xl mx-auto bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-primary/10 text-center">
+            <div className="text-2xl md:text-4xl font-black text-slate-800 mb-6 font-serif">
+              5 sesiones x {formatCurrency(PRECIO_SESION_ESTIMADO)} = <span className="text-green-600">{formatCurrency(5 * PRECIO_SESION_ESTIMADO)}</span>
+            </div>
+            <div className="inline-block bg-green-100 text-green-800 px-6 py-3 rounded-full font-bold text-lg">
+              ¡Con media jornada ya pagaste el equipo!
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How it Works Section */}
+      <section className="py-24 bg-white border-b border-slate-100">
+        <div className="mx-auto w-full max-w-7xl px-4 md:px-6">
+          <div className="text-center space-y-4 mb-16 reveal-up">
+            <h2 className="text-3xl md:text-5xl font-serif font-bold tracking-tight text-slate-900">Cómo Funciona</h2>
+            <p className="text-slate-500 text-lg">Un proceso simple para que te enfoques en tus pacientes.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {[
+              { title: "Consultás", desc: "Elegís tu fecha por WhatsApp." },
+              { title: "Coordinamos", desc: "Confirmamos la logística en tu zona." },
+              { title: "Recibís", desc: "Llevamos el equipo listo para usar." },
+              { title: "Facturás", desc: "Empezás a generar ingresos desde el primer minuto." }
+            ].map((step, i) => (
+              <div key={i} className="text-center space-y-4 relative">
+                {i < 3 && <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-[2px] bg-primary/20 border-t-2 border-dashed border-primary/30"></div>}
+                <div className="w-16 h-16 mx-auto bg-primary text-white rounded-full flex items-center justify-center text-2xl font-bold relative z-10 shadow-lg">
+                  {i + 1}
+                </div>
+                <h3 className="text-xl font-bold text-slate-900">{step.title}</h3>
+                <p className="text-slate-500">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Benefits Section */}
       <section className="py-24 md:py-32 bg-white">
         <div className="mx-auto w-full max-w-7xl px-4 md:px-6">
@@ -173,8 +222,8 @@ export default async function Home() {
               {[
                 {
                   icon: Zap,
-                  title: "Tecnología Punta",
-                  desc: "Equipos de última generación con diodo y tres longitudes de onda para todos los fototipos de piel."
+                  title: "Eficaz en todos los tipos de piel",
+                  desc: "Más clientas posibles. Tratamiento sin dolor (Máximo confort para tus pacientes)."
                 },
                 {
                   icon: Shield,
@@ -221,8 +270,9 @@ export default async function Home() {
           </p>
           <div className="flex flex-col gap-3 items-center justify-center">
             <Button size="lg" className="h-16 px-10 text-lg rounded-full shadow-2xl bg-[#8F754F] text-white hover:bg-[#8F754F]/90 hover:scale-105 transition-all btn-glint border-none font-bold" render={<Link href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" />}>
-              Consultar Disponibilidad
+              Reservar Equipo Ahora
             </Button>
+            <p className="text-sm font-semibold text-white/80 mt-[-4px]">⚡ Respondemos en menos de 10 minutos</p>
             <span className="text-sm font-bold text-white bg-black/40 px-4 py-2 rounded-full border border-white/20" suppressHydrationWarning>
               {getUrgencyText()}
             </span>

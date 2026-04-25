@@ -220,7 +220,7 @@ export function NavbarAuth({
             if (onCloseMenu) onCloseMenu();
           }}
         >
-          Consultar Disponibilidad
+          Reservar Equipo Ahora
         </Button>
         <Link 
           href="https://laser-rent-app.vercel.app/login?next=/dashboard" 
@@ -243,7 +243,7 @@ export function NavbarAuth({
       </Link>
       <Link href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer">
         <Button className="bg-[#8F754F] text-white rounded-full px-6 hover:bg-[#8F754F]/90 font-bold transition-all hover:scale-105 shadow-md">
-          Consultar Disponibilidad
+          Reservar Equipo Ahora
         </Button>
       </Link>
     </div>
