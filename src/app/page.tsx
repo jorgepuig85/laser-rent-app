@@ -68,7 +68,7 @@ export default async function Home() {
         <AutoLoginTrigger />
       </Suspense>
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-16 md:pt-24 lg:pt-32 min-h-[85vh] flex items-center">
+      <section className="relative overflow-hidden pt-24 sm:pt-28 md:pt-24 lg:pt-32 min-h-[100svh] md:min-h-[85vh] flex items-center">
         <SeasonalHeroEffects />
         <div className="mx-auto w-full max-w-7xl px-6 sm:px-8 md:px-12 relative z-10">
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-center">
@@ -78,7 +78,7 @@ export default async function Home() {
                   <span className="flex h-2 w-2 rounded-full bg-primary mr-2 animate-pulse"></span>
                   Equipos de Última Generación
                 </div>
-                <h1 className="text-[clamp(2.5rem,8vw,4.5rem)] font-serif font-black tracking-tighter lg:text-7xl xl:text-8xl text-foreground !leading-[1.1]">
+                <h1 className="text-[clamp(2.5rem,8vw,4.5rem)] font-serif font-black tracking-tighter lg:text-7xl xl:text-8xl text-foreground !leading-[1.2] lg:!leading-[1.1]">
                   Multiplicá los ingresos de tu centro sin invertir en equipos
                 </h1>
                 <p className="max-w-[600px] text-lg sm:text-xl text-slate-500 leading-relaxed tracking-wide font-medium">

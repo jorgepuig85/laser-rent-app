@@ -41,7 +41,6 @@ export function Navbar() {
 
         {/* Hamburger Menu Button */}
         <div className="flex items-center md:hidden gap-2">
-          <NavbarAuth isMobileView={true} onCloseMenu={() => setIsMobileMenuOpen(false)} />
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Abrir menú de navegación"
