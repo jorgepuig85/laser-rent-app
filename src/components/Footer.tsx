@@ -27,22 +27,22 @@ export function Footer() {
 
           {/* Columna 2: Cobertura Reducida */}
           <div className="space-y-6">
-            <h4 className="font-bold text-slate-900 tracking-tight text-xs uppercase tracking-wider">Zonas de Atención</h4>
-            <div className="space-y-4">
-              <p className="text-slate-500 text-sm leading-relaxed">
+            <h4 className="font-bold text-slate-900 text-xs uppercase tracking-wider">Zonas de Atención</h4>
+            <div className="space-y-5">
+              <p className="text-slate-500 text-sm leading-relaxed pr-4">
                 Nuestra red de logística cubre estratégicamente múltiples puntos en La Pampa y Oeste de Buenos Aires.
               </p>
               <Link 
                 href="/cobertura" 
-                className="inline-flex items-center text-sm font-semibold text-[--seasonal-primary] hover:text-[--seasonal-primary]/80 transition-colors group"
+                className="inline-flex items-center text-sm font-semibold text-[--seasonal-primary] hover:text-[--seasonal-primary]/80 transition-colors group py-1"
               >
                 Ver mapa interactivo de cobertura
-                <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1 shrink-0" />
               </Link>
-              <div className="pt-2 flex flex-col gap-3">
-                <Link href="/equipos" className="text-sm text-slate-500 hover:text-[--seasonal-primary] transition-colors w-fit font-medium">Equipos</Link>
-                <Link href="/servicios" className="text-sm text-slate-500 hover:text-[--seasonal-primary] transition-colors w-fit font-medium">Servicios</Link>
-                <Link href="/precios" className="text-sm text-slate-500 hover:text-[--seasonal-primary] transition-colors w-fit font-medium">Precios</Link>
+              <div className="pt-4 flex flex-col gap-4 border-t border-slate-200/60 w-3/4">
+                <Link href="/equipos" className="text-sm text-slate-500 hover:text-[--seasonal-primary] transition-colors w-fit font-medium block py-1">Equipos</Link>
+                <Link href="/servicios" className="text-sm text-slate-500 hover:text-[--seasonal-primary] transition-colors w-fit font-medium block py-1">Servicios</Link>
+                <Link href="/precios" className="text-sm text-slate-500 hover:text-[--seasonal-primary] transition-colors w-fit font-medium block py-1">Precios</Link>
               </div>
             </div>
           </div>

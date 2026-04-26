@@ -54,37 +54,37 @@ export function Navbar() {
 
       {/* Mobile Menu Dropdown */}
       {isMobileMenuOpen && (
-        <div className="md:hidden absolute top-16 left-0 w-full bg-white border-b border-[--seasonal-primary]/20 shadow-lg p-4 flex flex-col gap-4">
+        <div className="md:hidden absolute top-16 left-0 w-full bg-white border-b border-[--seasonal-primary]/20 shadow-2xl p-6 flex flex-col gap-4 overflow-y-auto max-h-[calc(100vh-4rem)] z-50">
           <Link 
             href="/equipos" 
-            className="text-stone-800 font-medium py-2 border-b border-stone-100"
+            className="text-stone-800 font-medium py-3 border-b border-stone-100 transition-colors hover:text-[--seasonal-primary] active:bg-stone-50 rounded-lg px-2"
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Equipos
           </Link>
           <Link 
             href="/servicios" 
-            className="text-stone-800 font-medium py-2 border-b border-stone-100"
+            className="text-stone-800 font-medium py-3 border-b border-stone-100 transition-colors hover:text-[--seasonal-primary] active:bg-stone-50 rounded-lg px-2"
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Servicios
           </Link>
           <Link 
             href="/precios" 
-            className="text-stone-800 font-medium py-2 border-b border-stone-100"
+            className="text-stone-800 font-medium py-3 border-b border-stone-100 transition-colors hover:text-[--seasonal-primary] active:bg-stone-50 rounded-lg px-2"
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Precios
           </Link>
           <Link 
             href="/cobertura" 
-            className="text-stone-800 font-medium py-2 border-b border-stone-100"
+            className="text-stone-800 font-medium py-3 border-b border-stone-100 transition-colors hover:text-[--seasonal-primary] active:bg-stone-50 rounded-lg px-2"
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Zonas de Atención
           </Link>
           
-          <div className="pt-2">
+          <div className="pt-4 pb-2">
             <NavbarAuth 
               isMobileMenu={true} 
               onCloseMenu={() => setIsMobileMenuOpen(false)} 

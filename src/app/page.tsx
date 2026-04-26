@@ -70,7 +70,7 @@ export default async function Home() {
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-16 md:pt-24 lg:pt-32 min-h-[85vh] flex items-center">
         <SeasonalHeroEffects />
-        <div className="mx-auto w-full max-w-7xl px-4 md:px-6 relative z-10">
+        <div className="mx-auto w-full max-w-7xl px-6 sm:px-8 md:px-12 relative z-10">
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-center">
             <div className="flex flex-col justify-center space-y-8 reveal-up">
               <div className="space-y-4">
@@ -78,24 +78,24 @@ export default async function Home() {
                   <span className="flex h-2 w-2 rounded-full bg-primary mr-2 animate-pulse"></span>
                   Equipos de Última Generación
                 </div>
-                <h1 className="text-5xl font-serif font-black tracking-tighter sm:text-7xl xl:text-8xl text-foreground !leading-[1.1]">
+                <h1 className="text-[clamp(2.5rem,8vw,4.5rem)] font-serif font-black tracking-tighter lg:text-7xl xl:text-8xl text-foreground !leading-[1.1]">
                   Multiplicá los ingresos de tu centro sin invertir en equipos
                 </h1>
-                <p className="max-w-[600px] text-xl text-slate-500 leading-relaxed tracking-wide font-medium">
+                <p className="max-w-[600px] text-lg sm:text-xl text-slate-500 leading-relaxed tracking-wide font-medium">
                   Alquilá tecnología Soprano Ice en La Pampa. Recuperá el costo del alquiler en tus primeras 5 a 10 sesiones.
                 </p>
               </div>
-              <div className="flex flex-col gap-8 items-center sm:items-start">
-                <div className="flex flex-col gap-3 items-center sm:items-start">
+              <div className="flex flex-col gap-8 items-center sm:items-start w-full">
+                <div className="flex flex-col gap-4 items-center sm:items-start w-full sm:w-auto">
                   <Button 
                     size="lg" 
-                    className="h-16 px-14 text-xl shadow-2xl transition-all hover:scale-105 btn-glint rounded-full bg-[#8F754F] text-white font-bold border-none" 
+                    className="h-auto py-4 px-6 sm:px-14 text-base sm:text-xl shadow-2xl transition-all hover:scale-105 btn-glint rounded-[2rem] bg-[#8F754F] text-white font-bold border-none w-full sm:w-auto text-center flex flex-col sm:flex-row items-center justify-center gap-2" 
                     render={<Link href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" />}
                   >
-                    Ver disponibilidad para esta semana <Calendar className="ml-3 h-6 w-6" />
+                    <span>Ver disponibilidad para esta semana</span> <Calendar className="h-5 w-5 sm:h-6 sm:w-6 shrink-0 hidden sm:block" />
                   </Button>
-                  <p className="text-xs font-semibold text-slate-500 mt-[-4px]">✅ Respondemos en menos de 10 minutos</p>
-                  <span className="text-sm font-bold text-[#8F754F] bg-[#8F754F]/10 px-4 py-2 rounded-full animate-pulse border border-[#8F754F]/20" suppressHydrationWarning>
+                  <p className="text-xs sm:text-sm font-semibold text-slate-500 text-center sm:text-left w-full">✅ Respondemos en menos de 10 minutos</p>
+                  <span className="text-xs sm:text-sm font-bold text-[#8F754F] bg-[#8F754F]/10 px-4 py-2 rounded-full animate-pulse border border-[#8F754F]/20 text-center sm:text-left w-full sm:w-auto" suppressHydrationWarning>
                     {getUrgencyText()}
                   </span>
                 </div>
@@ -113,7 +113,7 @@ export default async function Home() {
                 </div>
               </div>
             </div>
-            <div className="relative mx-auto w-full max-w-[500px] lg:max-w-none lg:h-[600px] rounded-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-1000 delay-150">
+            <div className="relative mx-auto w-full max-w-[500px] lg:max-w-none aspect-[4/3] sm:aspect-square lg:aspect-auto lg:h-[600px] rounded-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-1000 delay-150">
               <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent z-10 rounded-2xl mix-blend-overlay"></div>
               {/* Image Placeholder */}
               <Image
@@ -314,16 +314,16 @@ export default async function Home() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/70 backdrop-blur-[1px]"></div>
         <div className="mx-auto w-full max-w-4xl px-4 md:px-6 relative text-center space-y-10 animate-in fade-in zoom-in duration-700">
-          <h2 className="text-4xl md:text-6xl font-serif font-bold tracking-tight leading-tight">Lleva tu centro de estética al siguiente nivel</h2>
-          <p className="text-xl text-white/90 font-medium">
+          <h2 className="text-[clamp(2rem,6vw,4rem)] md:text-6xl font-serif font-bold tracking-tight leading-tight">Lleva tu centro de estética al siguiente nivel</h2>
+          <p className="text-lg md:text-xl text-white/90 font-medium">
             Reserva tu equipo hoy y comienza a ofrecer tratamientos de depilación definitiva de alta eficacia en Santa Rosa y toda La Pampa.
           </p>
-          <div className="flex flex-col gap-3 items-center justify-center">
-            <Button size="lg" className="h-16 px-10 text-lg rounded-full shadow-2xl bg-[#8F754F] text-white hover:bg-[#8F754F]/90 hover:scale-105 transition-all btn-glint border-none font-bold" render={<Link href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" />}>
+          <div className="flex flex-col gap-4 items-center justify-center w-full">
+            <Button size="lg" className="h-auto py-4 px-8 md:px-10 text-base md:text-lg rounded-[2rem] shadow-2xl bg-[#8F754F] text-white hover:bg-[#8F754F]/90 hover:scale-105 transition-all btn-glint border-none font-bold w-full sm:w-auto text-center flex flex-col sm:flex-row" render={<Link href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" />}>
               Quiero empezar a facturar
             </Button>
-            <p className="text-sm font-semibold text-white/80 mt-[-4px]">✅ Respondemos en menos de 10 minutos</p>
-            <span className="text-sm font-bold text-white bg-black/40 px-4 py-2 rounded-full border border-white/20" suppressHydrationWarning>
+            <p className="text-xs sm:text-sm font-semibold text-white/80 text-center w-full">✅ Respondemos en menos de 10 minutos</p>
+            <span className="text-xs sm:text-sm font-bold text-white bg-black/40 px-4 py-2 rounded-full border border-white/20 text-center w-full sm:w-auto" suppressHydrationWarning>
               {getUrgencyText()}
             </span>
           </div>

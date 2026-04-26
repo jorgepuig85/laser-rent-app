@@ -58,11 +58,11 @@ export function ServiciosClient({ items }: { items: Item[] }) {
   });
 
   return (
-    <div className="space-y-12">
-      <div className="flex justify-center gap-4">
+    <div className="space-y-12 px-4 sm:px-0">
+      <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
         <button
           onClick={() => setActiveTab("mujer")}
-          className={`px-8 py-3 rounded-full text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
+          className={`px-8 py-3.5 sm:py-3 rounded-full text-sm font-bold uppercase tracking-wider transition-all duration-300 w-full sm:w-auto ${
             activeTab === "mujer" 
               ? "bg-[#D4AF37] text-white shadow-lg shadow-[#D4AF37]/30" 
               : "bg-white border border-stone-200 text-stone-500 hover:bg-stone-50"
@@ -72,7 +72,7 @@ export function ServiciosClient({ items }: { items: Item[] }) {
         </button>
         <button
           onClick={() => setActiveTab("hombre")}
-          className={`px-8 py-3 rounded-full text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
+          className={`px-8 py-3.5 sm:py-3 rounded-full text-sm font-bold uppercase tracking-wider transition-all duration-300 w-full sm:w-auto ${
             activeTab === "hombre" 
               ? "bg-[#D4AF37] text-white shadow-lg shadow-[#D4AF37]/30" 
               : "bg-white border border-stone-200 text-stone-500 hover:bg-stone-50"
