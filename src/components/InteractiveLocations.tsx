@@ -106,21 +106,20 @@ export function InteractiveLocations({ locations, variant }: InteractiveLocation
                   </div>
 
                   <div className="mt-4 flex flex-col gap-3">
-                    <a 
-                      href={selectedLocation ? getWhatsAppUrl(selectedLocation.name) : "#"} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="w-full"
+                    <Button
+                      type="button"
+                      className="w-full rounded-xl h-12 font-bold bg-[#25D366] hover:bg-[#20bd5a] text-white shadow-lg shadow-[#25D366]/20 transition-all hover:scale-105 flex items-center justify-center gap-2"
+                      onClick={() => {
+                        if (selectedLocation) {
+                          window.open(getWhatsAppUrl(selectedLocation.name), '_blank');
+                        }
+                        // Close modal after a tiny delay to ensure window.open fires reliably
+                        setTimeout(() => setSelectedLocation(null), 150);
+                      }}
                     >
-                      <Button
-                        type="button"
-                        className="w-full rounded-xl h-12 font-bold bg-[#25D366] hover:bg-[#20bd5a] text-white shadow-lg shadow-[#25D366]/20 transition-all hover:scale-105 flex items-center justify-center gap-2"
-                        onClick={() => setSelectedLocation(null)}
-                      >
-                        <WhatsAppIcon className="h-5 w-5" />
-                        Solicitar envío aquí
-                      </Button>
-                    </a>
+                      <WhatsAppIcon className="h-5 w-5" />
+                      Solicitar envío aquí
+                    </Button>
                     <Button
                       type="button"
                       variant="ghost"
