@@ -8,7 +8,7 @@ import { MapWrapper } from "@/components/MapWrapper";
 
 export const metadata = {
   title: "Zonas de Atención | Centro de Belleza",
-  description: "Conocé nuestras zonas de cobertura logística en La Pampa y Oeste de Buenos Aires. Envíos de equipos de depilación láser Soprano y ADSS."
+  description: "Conocé nuestras zonas de cobertura logística en La Pampa y Oeste de Buenos Aires. Envíos de equipos de depilación láser ADSS FG2000B."
 };
 
 // Revalidate every minute to capture new active locations

@@ -26,7 +26,7 @@ export default async function ServiciosPage() {
             Nuestros Servicios
           </h1>
           <p className="mt-4 text-stone-500 max-w-2xl mx-auto text-lg">
-            Tecnología Soprano Ice para resultados definitivos desde la primera sesión. Seleccioná tu tratamiento para conocer el valor.
+            Tecnología de 3 longitudes de onda (755/808/1064nm) con 1200W de potencia real y enfriamiento de zafiro para sesiones indoloras. Resultados definitivos desde la primera sesión. Seleccioná tu tratamiento para conocer el valor.
           </p>
         </div>
         

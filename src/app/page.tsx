@@ -82,7 +82,7 @@ export default async function Home() {
                   Multiplicá los ingresos de tu centro sin invertir en equipos
                 </h1>
                 <p className="max-w-[600px] text-lg sm:text-xl text-slate-500 leading-relaxed tracking-wide font-medium">
-                  Alquilá tecnología Soprano Ice en La Pampa. Recuperá el costo del alquiler en tus primeras 5 a 10 sesiones.
+                  Alquilá el Sistema de Depilación Láser de Alta Potencia ADSS FG2000B en La Pampa. Recuperá el costo del alquiler en tus primeras 5 a 10 sesiones.
                 </p>
               </div>
               <div className="flex flex-col gap-8 items-center sm:items-start w-full">
@@ -186,8 +186,31 @@ export default async function Home() {
             <div className="text-2xl md:text-4xl font-black text-slate-800 mb-6 font-serif">
               {sesionesNecesarias} sesiones x {formatCurrency(PRECIO_SESION_ESTIMADO)} = <span className="text-green-600">{formatCurrency(sesionesNecesarias * PRECIO_SESION_ESTIMADO)}</span>
             </div>
-            <div className="inline-block bg-green-100 text-green-800 px-6 py-3 rounded-full font-bold text-lg">
+            <div className="inline-block bg-green-100 text-green-800 px-6 py-3 rounded-full font-bold text-lg mb-8">
               ¡Con media jornada ya pagaste el equipo!
+            </div>
+            
+            <div className="bg-slate-50 rounded-2xl p-6 text-left border border-slate-100 shadow-sm mx-auto max-w-lg">
+              <h4 className="font-bold text-slate-900 mb-4 text-center text-xl">Jornada Típica</h4>
+              <ul className="space-y-3 text-slate-600 font-medium">
+                <li className="flex justify-between items-center border-b border-slate-200 pb-2">
+                  <span>⏰ Horario:</span>
+                  <span className="text-slate-900 font-bold">8:00 a 16:00 hs (8 horas)</span>
+                </li>
+                <li className="flex justify-between items-center border-b border-slate-200 pb-2">
+                  <span>👥 Capacidad:</span>
+                  <span className="text-slate-900 font-bold">Hasta 16 pacientes</span>
+                </li>
+                <li className="flex justify-between items-center border-b border-slate-200 pb-2">
+                  <span>🎯 Punto de equilibrio:</span>
+                  <span className="text-slate-900 font-bold">5 pacientes</span>
+                </li>
+                <li className="flex justify-between items-center pt-1">
+                  <span className="text-green-700 font-bold">💎 Ganancia potencial:</span>
+                  <span className="text-green-700 font-black text-lg">11 pacientes</span>
+                </li>
+              </ul>
+              <p className="text-xs text-center text-slate-400 mt-4 font-normal">Todo el ingreso de esos 11 pacientes va directo a tu centro.</p>
             </div>
           </div>
         </div>
@@ -243,8 +266,8 @@ export default async function Home() {
               {[
                 {
                   icon: Zap,
-                  title: "Eficaz en todos los tipos de piel",
-                  desc: "Más clientas posibles. Tratamiento sin dolor (Máximo confort para tus pacientes)."
+                  title: "Sistema ADSS FG2000B",
+                  desc: "Tecnología de 3 longitudes de onda (755/808/1064nm) con 1200W de potencia real y enfriamiento de zafiro para sesiones indoloras."
                 },
                 {
                   icon: Shield,
