@@ -12,6 +12,7 @@ const CTA_IMAGE = "https://aftweonqhxvbcujexyre.supabase.co/storage/v1/object/pu
 import { createClient } from "@/lib/supabaseServer";
 import { AutoLoginTrigger } from "@/components/AutoLoginTrigger";
 import { Suspense } from "react";
+import { InteractiveLocations } from "@/components/InteractiveLocations";
 import { Calendar } from "lucide-react";
 
 const getUrgencyText = () => {
@@ -307,13 +308,7 @@ export default async function Home() {
               Llegamos a tu centro con logística propia, garantizando puntualidad y seguridad en la entrega.
             </p>
           </div>
-          <div className="flex flex-wrap justify-center gap-4 mb-12">
-            {activeLocations.map((loc: { name: string }, i: number) => (
-              <span key={i} className="bg-white border border-slate-200 text-slate-700 px-6 py-3 rounded-full text-sm font-bold shadow-sm hover:shadow-md transition-shadow hover:border-primary/50 cursor-default">
-                {loc.name}
-              </span>
-            ))}
-          </div>
+          <InteractiveLocations locations={activeLocations} variant="pills" />
           <div className="bg-primary/5 rounded-2xl p-8 max-w-3xl mx-auto border border-primary/10 space-y-6">
             <h3 className="text-xl font-bold text-slate-900">¿No ves tu localidad?</h3>
             <p className="text-slate-600 font-medium">Consultanos, ampliamos nuestra logística constantemente para llegar a vos.</p>

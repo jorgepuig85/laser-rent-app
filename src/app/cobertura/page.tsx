@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 import { MapWrapper } from "@/components/MapWrapper";
+import { InteractiveLocations } from "@/components/InteractiveLocations";
 
 export const metadata = {
   title: "Zonas de Atención | Centro de Belleza",
@@ -53,14 +54,7 @@ export default async function CoberturaPage() {
             Nuestra Red
           </h2>
           
-          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-y-3 gap-x-4 mb-8 flex-1">
-            {validLocations.map((loc) => (
-              <li key={loc.id || loc.name} className="flex items-start text-sm sm:text-base text-slate-700 font-medium">
-                <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-green-500 mr-3 mt-1.5 shadow-sm shadow-green-500/50 shrink-0"></div>
-                <span className="flex-1 break-words leading-tight">{loc.name}</span>
-              </li>
-            ))}
-          </ul>
+          <InteractiveLocations locations={validLocations} variant="list" />
 
           <div className="mt-auto pt-6 sm:pt-8 border-t border-slate-200/60">
             <h3 className="font-bold text-slate-900 text-base sm:text-lg mb-2">¿No ves tu localidad?</h3>
